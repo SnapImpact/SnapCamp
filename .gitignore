@@ -47,3 +47,4 @@ test-output
 *.iml
 *.ipr
 *.iws
+.idea
