@@ -72,4 +72,11 @@ class Boot {
   private def makeUtf8(req: HTTPRequest) {
     req.setCharacterEncoding("UTF-8")
   }
+
+  /**
+   * Set up resources
+   */
+  ResourceServer.allow {
+    case "css" :: _ => true
+  }
 }

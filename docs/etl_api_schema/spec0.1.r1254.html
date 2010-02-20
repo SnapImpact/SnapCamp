@@ -1,0 +1,438 @@
+<html>
+<head>
+<title>Footprint XML Specification Version 0.1 </title>
+<style>
+body {
+    font-family: sans-serif;
+    font-size: 100%;
+    margin-left: 4%;
+    padding: 0;
+}
+
+.doc-text {
+    padding-top: 0.3%;
+    font-size: 100%;
+}
+
+.info {
+    font-size: 95%;
+}
+
+.entryName {
+    padding-top: 0.5%;
+    font-size: 130%;
+    font-weight: bold;
+    color: darkgreen;
+}
+
+.titleText {
+  color: darkgreen;
+  font-size: 150%;
+  font-weight: bold;
+  text-align:center;
+}
+
+.entry {
+  border-bottom: thin dotted #000000;
+}
+
+.namedType {
+  border-bottom: thin dotted #000000;
+}
+
+blockquote {
+  margin-left: 3%;
+  border-left: medium solid green;
+  padding-left: 0.3%;
+}
+
+
+</style>
+</head>
+<body>
+<div class="titleText">Footprint XML Specification Version 0.1 </div><br>
+  <div class="doc-text">The Footprint XML Specification is designed for easy delivery of volunteer opportunities that are collected by aggregating organizations         (e.g., VolunteerMatch, Idealist). These organizations are referred to as "providers" as they provide opportunity information to the          Footprint project. Footprint's goal is to organize these opportunities in one place and direct web traffic back to the provider when           a user locates a suitable opportunity.<p>        Overall, there are four main stand-alone objects: the <a href="#FeedInfo"><code>FeedInfo</code></a>, <a href="#Organization"><code>Organization</code></a>, <a href="#VolunteerOpportunity"><code>VolunteerOpportunity</code></a>,         and <a href="#Review"><code>Review</code></a> objects. The provider is the source of information for the <a href="#FeedInfo"><code>FeedInfo</code></a> object; this object specifies the details         of the feed being transmitted to Footprint. The <a href="#Organization"><code>Organization</code></a> object specifies the details of any group involved in the process, whether         it be a sponsoring organization (e.g., Habitat for Humanity) or a local volunteer hub that coordinates local opportunities from various         organizations. The <a href="#VolunteerOpportunity"><code>VolunteerOpportunity</code></a> object specifies the details of a volunteer opportunity and usually links to          at least one organization (e.g., a sponsoring organization and/or a volunteer hub). The <a href="#Review"><code>Review</code></a> objects can be reviews of         organizations or opportunities.<p>        The spec is based on several existing XML specifications (specifically the specs developed by Network for Good,         <a href="http://www.volunteermatch.org/schema/2007/2/listings.xsd">VolunteerMatch</a>, and 1-800-Volunteer for opportunities, and Great Nonprofits for reviews).         The major difference is that volunteer organizations and hubs are stand-alone objects to which opportunities refer, thus saving space in the XML document.         For instance, if Habitat for Humanity posts 100 opportunities on Idealist, Idealist would create a feed with one Habitat Organization         object and 100 <a href="#VolunteerOpportunity"><code>VolunteerOpportunity</code></a> objects, rather than 100 of each. Another difference is the use of the iCal         <a href="http://www.kanzaki.com/docs/ical/rrule.html">Recurrence Rule</a> format so that repeating opportunities need use multiple         <a href="#dateTimeRecurrance"><code>dateTimeRecurrance</code></a> sub-objects to represent one opportunity.<p>        Quick access to objects:<p>        <code>FeedInfo</code> <a href="#FeedInfo">elements</a><br>        <code>Organization</code> <a href="#Organization">elements</a><br>        <code>VolunteerOpportunity</code> <a href="#VolunteerOpportunity">elements</a><br>        <code>Review</code> <a href="#Review">elements</a><br>        <code>location</code> type <a href="#locationType">elements</a><br>        <code>dateTimeDuration</code> type <a href="#dateTimeDurationType">elements</a><br><p>        Sample data (so you can see the format in action) is available <a href="http://code.google.com/p/footprint2009dev/downloads/list">here</a>.</div><div class="entry"><div class="entryName"><a name="FootprintFeed">FootprintFeed (element)</a></div>
+   <div class="doc-text">The top-level object is <a href="#FootprintFeed"><code>FootprintFeed</code></a> and requires a <a href="#schemaVersion"><a href="#schemaVersion"><code>schemaVersion</code></a></a> attribute. Order of objects does not matter. Thus, a feed would be wrapped in the following XML:         <p><code>&lt;?xml version="1.0" ?&gt;<br>&lt;FootprintFeed schemaVersion="0.1"&gt;<br>&nbsp;...<br>&lt;/FootprintFeed&gt;</code></div>              <blockquote><div class="entry"><div class="entryName"><a name="FeedInfo">FeedInfo (element)</a></div>
+<span class="info">required: at least 1 times</span><br/>
+ <span class="info">Multiple not allowed</span><br/>
+            <div class="doc-text">The <a href="#FeedInfo"><code>FeedInfo</code></a> object contains the information about the feed being delivered from the provider.</div>                                      <blockquote><div class="entry"><div class="entryName"><a name="providerID">providerID (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+                  <div class="doc-text">A unique ID for the provider organization. Either a number assigned by Footprint or a <a href="http://en.wikipedia.org/wiki/Uniform_Resource_Identifier">URI</a>. Required. No default.                        <p>Examples:                        <br><code>                        &lt;providerID&gt;99&lt;/providerID&gt;<br>                        &lt;providerID&gt;adomainweown.org&lt;/providerID&gt;                        </code></div>                </div><div class="entry"><div class="entryName"><a name="providerName">providerName (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+                  <div class="doc-text">Name of organization providing the feed. Required.                        <p>Example:                        <br><code>                        &lt;providerName&gt;Volunteer Opportunity Aggregators&lt;/providerName&gt;<br>                        </code></div>                </div><div class="entry"><div class="entryName"><a name="feedID">feedID (element)</a></div>
+<span class="info">required: optional.</span><br/>
+ <span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+                  <div class="doc-text">Only needed if the provider delivers multiple, mutually exclusive feeds (can be <a href="http://en.wikipedia.org/wiki/Uniform_Resource_Identifier">URI</a>). Optional. Default is "0".                        <p>Example:                        <br><code>                        &lt;feedID&gt;1&lt;/feedID&gt;<br>                        </code></div>                </div><div class="entry"><div class="entryName"><a name="createdDateTime">createdDateTime (element)</a></div>
+<span class="info">datatype: <a href="#dateTimeOlsonDefaultPacific"><code>dateTimeOlsonDefaultPacific</code></a>
+</span><br/>
+                  <div class="doc-text">The date+time (Olson time zone attribute optional, default is "America/Los_Angeles" which represents the U.S. Pacific time zone) that this specific iteration of the feed was created. Required. No default.                        <p>Examples:                        <br><code>                        &lt;createdDateTime olsonTZ="Etc/UTC"&gt;2009-08-02T09:24:34&lt;/createdDateTime&gt;<br>                        &lt;createdDateTime olsonTZ="America/New_York"&gt;2009-03-02T09:24:34&lt;/createdDateTime&gt;<br>                        </code></div>                </div><div class="entry"><div class="entryName"><a name="providerURL">providerURL (element)</a></div>
+<span class="info">required: optional.</span><br/>
+ <span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+                  <div class="doc-text">URL to the provider organization's homepage. Optional. No default.                        <p>Example:                        <br><code>                        &lt;providerURL&gt;http://www.voloppaggregator.org&lt;/providerURL&gt;<br>                        </code></div>                </div><div class="entry"><div class="entryName"><a name="termsOfUse">termsOfUse (element)</a></div>
+<span class="info">required: optional.</span><br/>
+ <span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+                  <div class="doc-text">Terms of use. Optional. Recommended. No default.                        <p>Examples:                        <br><code>                        &lt;termsOfUse&gt;Public Domain.&lt;/termsOfUse&gt;<br>                        &lt;termsOfUse&gt;See terms of use on our website: http://www.voloppaggregator.org/terms.html&lt;/termsOfUse&gt;<br>                        </code></div>                </div><div class="entry"><div class="entryName"><a name="description">description (element)</a></div>
+<span class="info">required: optional.</span><br/>
+ <span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+                  <div class="doc-text">Any notes about the feed. Optional. Not recommended. No default.                        <p>Examples:                        <br><code>                        &lt;description&gt;This feed contains all volunteer opportunities from Volunteer Opportunity Aggregators. &lt;/description&gt;<br>                        &lt;description&gt;This feed contains only virtual volunteer opportunities from Volunteer Opportunity Aggregators. See feed with feedID=2 for physical opportunities. &lt;/description&gt;<br>                        </code></div>                </div>
+                                              </blockquote>                      </div><div class="entry"><div class="entryName"><a name="Organizations">Organizations (element)</a></div>
+<span class="info">required: optional.</span><br/>
+            <div class="doc-text">The <a href="#Organizations"><code>Organizations</code></a> object wraps a set of <a href="#Organization"><code>Organization</code></a> objects. Order of <a href="#Organization"><code>Organization</code></a> objects has no semantic meaning.</div>                          <blockquote><div class="entry repeated"><div class="entryName"><a name="Organization">Organization (repeated element)</a></div>
+<span class="info">required: optional.</span><br/>
+ 
+                  <div class="doc-text">The <a href="#Organization"><code>Organization</code></a> object represents any organization involved in the non-profit process (specifically volunteer hubs count as organizations). <a href="#Organization"><code>Organization</code></a> objects are wrapped in an <a href="#Organizations"><code>Organizations</code></a>. Order of fields does not matter.</div>                                                  <blockquote><div class="entry"><div class="entryName"><a name="organizationID">organizationID (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+                        <div class="doc-text">Unique ID within the feed. Most likely a number (from a database primary key) but can be a <a href="http://en.wikipedia.org/wiki/Uniform_Resource_Identifier">URI</a>. Required.  No default. Would be helpful if it were constant across feeds from one provider.                              <p>Examples:                              <br><code>                              &lt;organizationID&gt;57&lt;/providerID&gt;<br>                              &lt;organizationID&gt;genericvolorg.org&lt;/organizationID&gt;                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="nationalEIN">nationalEIN (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">National Employer Identification Number. Optional. No default.                              <p>Example:                              <br><code>                              &lt;nationalEIN&gt;91-1914867&lt;/nationalEIN&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="guidestarID">guidestarID (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_numeric.asp"><code>integer</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">ID number from guidestar.org. Optional. No default. Cannot be blank.                              <p>Example:                              <br><code>                              &lt;guidestarID&gt;91&lt;/guidestarID&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="name">name (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+                        <div class="doc-text">Name of the organization. Required.  No default.                              <p>Example:                              <br><code>                              &lt;name&gt;American Helpers United&lt;/name&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="missionStatement">missionStatement (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Mission statement of organization. Optional.  No default.                              <p>Example:                              <br><code>                              &lt;missionStatement&gt;Change the world. Do good.&lt;/missionStatement&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="description">description (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Description of organization. Optional.  No default.                              <p>Example:                              <br><code>                              &lt;description&gt;Based in Faketown, VA, we help people change the world and do good things.&lt;/description&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="location">location (element)</a></div>
+<span class="info">datatype: <a href="#locationType"><code>locationType</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Physical location of organization. See locationType for type definition. Optional, but recommended at the city/regional/postalCode level.  No default.                              <p>Example:                              <br><code>                              &lt;location&gt;<br>                               &nbsp;&lt;virtual&gt;no&lt;/virtual&gt;<br>                               &nbsp;&lt;streetAddress1&gt;45 W 3rd St&lt;/streetAddress1&gt;<br>                               &nbsp;&lt;city&gt;Faketown&lt;/city&gt;<br>                               &nbsp;&lt;region&gt;VA&lt;/region&gt;<br>                               &nbsp;&lt;postalCode&gt;22322&lt;/postalCode&gt;<br>                              &lt;/location&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="phone">phone (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Phone number (and extension) of organization. Optional. No default. Not expected from most providers.                              <p>Examples:                              <br><code>                              &lt;phone&gt;121-555-1212&lt;/phone&gt;<br>                              &lt;phone&gt;1215551212&lt;/phone&gt;<br>                              &lt;phone&gt;44 844 394 0 787&lt;/phone&gt;                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="fax">fax (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Fax number of organization. Optional. No default. Not expected from most providers.                              <p>Examples:                              <br><code>                              &lt;fax&gt;121-555-1213&lt;/fax&gt;<br>                              &lt;fax&gt;1215551213&lt;/fax&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="email">email (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Email of organization. Optional. No default. Not expected from most providers.                              <p>Example:                              <br><code>                              &lt;email&gt;contact@coolvols.org&lt;/email&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="organizationURL">organizationURL (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">URL of the organization's homepage. Optional. No default.                              <p>Example:                              <br><code>                              &lt;organizationURL&gt;http://www.coolvols.org&lt;/organizationURL&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="donateURL">donateURL (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">URL of the organization's donation page. Optional. No default.                              <p>Example:                              <br><code>                              &lt;donateURL&gt;http://www.coolvols.org/donate&lt;/donateURL&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="logoURL">logoURL (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">URL of the organization's logo. Optional.  No default. Dimensions are TBD.                              <p>Example:                              <br><code>                              &lt;logoURL&gt;http://www.coolvols.org/logo.gif&lt;/logoURL&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="detailURL">detailURL (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">URL of the organization's page on the providers site. Optional. No default. Highly recommended.                              <p>Examples:                              <br><code>                              &lt;detailURL&gt;http://www.awesomevolaggergator.org/orgs.php?id=3&lt;/detailURL&gt;<br>                              &lt;detailURL&gt;http://www.anothervolaggergator.org/coolvols.html&lt;/detailURL&gt;<br>                              </code></div>                      </div>
+                                          </blockquote>                                  </div>
+               </blockquote>                      </div><div class="entry"><div class="entryName"><a name="VolunteerOpportunities">VolunteerOpportunities (element)</a></div>
+<span class="info">required: optional.</span><br/>
+            <div class="doc-text">The <a href="#VolunteerOpportunities"><code>VolunteerOpportunities</code></a> object wraps a set of <a href="#VolunteerOpportunity"><code>VolunteerOpportunity</code></a> objects. Order of <a href="#VolunteerOpportunity"><code>VolunteerOpportunity</code></a> objects has no semantic meaning.                  <p>Example:                  <br><code>                  &lt;VolunteerOpportunities&gt;<br>                                          &nbsp;&lt;VolunteerOpportunity&gt;<br>                  &nbsp;&nbsp;...<br>                  &nbsp;&lt;/VolunteerOpportunity&gt;<br>                  &nbsp;&lt;VolunteerOpportunity&gt;<br>                  &nbsp;&nbsp;...<br>                  &nbsp;&lt;/VolunteerOpportunity&gt;<br>                  &lt;/VolunteerOpportunities&gt;<br>                                          </code></div>                          <blockquote><div class="entry repeated"><div class="entryName"><a name="VolunteerOpportunity">VolunteerOpportunity (repeated element)</a></div>
+<span class="info">required: optional.</span><br/>
+ 
+                  <div class="doc-text">The <a href="#VolunteerOpportunity"><code>VolunteerOpportunity</code></a> object represents one volunteer opportunity listing. It is capable of representing a repeating or ongoing event.                        Often an <a href="#Opportunity"><code>Opportunity</code></a> object will link to an <a href="#Organization"><code>Organization</code></a> object via the sponsoringOrganizationID or volunteerHubOrganizationID fields. Order of fields does not matter.</div>                                      <blockquote><div class="entry"><div class="entryName"><a name="volunteerOpportunityID">volunteerOpportunityID (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+                        <div class="doc-text">Unique ID within the feed. Often a primary key from a database, but can be a <a href="http://en.wikipedia.org/wiki/Uniform_Resource_Identifier">URI</a>. Required.  No default.                              <p>Examples:                              <br><code>                              &lt;volunteerOpportunityID&gt;157&lt;/volunteerOpportunityID&gt;<br>                              &lt;volunteerOpportunityID&gt;urn:fpvol:101-001-157&lt;/volunteerOpportunityID&gt;                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="sponsoringOrganizationIDs">sponsoringOrganizationIDs (element)</a></div>
+<span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Wrapper for <a href="#sponsoringOrganizationID"><code>sponsoringOrganizationID</code></a> fields to allow multiple sponsoring organizations. Order <b>does</b> matter semantically and indicates the order that the sponsors should be shown (i.e., first sponsor is lead sponsor). Optional. Recommended.</div>                                                                          <blockquote><div class="entry repeated"><div class="entryName"><a name="sponsoringOrganizationID">sponsoringOrganizationID (repeated element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+ 
+                              <div class="doc-text">Link to an <a href="#Organization"><code>Organization</code></a> object that relates to this opportunity as the sponsoring organization via the <a href="#organizationID"><code>organizationID</code></a> field. Most opportunities will have an associated <a href="#sponsoringOrganizationID"><code>sponsoringOrganizationID</code></a>, which funds and/or conducts the opportunity. Optional. Recommended.                                    If present, must be the same as exactly one <a href="#Organization.organizationID"><code>Organization.organizationID</code></a> value in the same field.                                    <p>Example:                                    <br><code>                                    &lt;sponsoringOrganizationIDs&gt;<br>                                    &nbsp;&lt;sponsoringOrganizationID&gt;57&lt;/sponsoringOrganizationID&gt;<br>                                    &lt;/sponsoringOrganizationIDs&gt;<br>                                    </code></div>                            </div>
+                          </blockquote>                                              </div><div class="entry"><div class="entryName"><a name="volunteerHubOrganizationIDs">volunteerHubOrganizationIDs (element)</a></div>
+<span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Wrapper for <a href="#volunteerHubOrganizationID"><code>volunteerHubOrganizationID</code></a>. Semantic order of <a href="#volunteerHubOrganizationID"><code>volunteerHubOrganizationID</code></a> fields does not matter.</div>                                                  <blockquote><div class="entry repeated"><div class="entryName"><a name="volunteerHubOrganizationID">volunteerHubOrganizationID (repeated element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+ 
+                              <div class="doc-text">Link to an <a href="#Organization"><code>Organization</code></a> object that relates to this opportunity as the local volunteer hub via the <a href="#organizationID"><code>organizationID</code></a> field. In contrast to the sponsoring organization, the volunteer hub is the organization that coordinates many local opportunities conducted by several sponsoring organizations. A minority of opportunities will have a volunteer hub associated with them, so if you are confused by this field, that's fine, you probably do not have the data in your database. Optional.  No default.                                    If present, must be the same as exactly one <a href="#Organization.organizationID"><code>Organization.organizationID</code></a> value in the same field.                                    <p>Example:                                    <br><code>                                    &lt;volunteerHubOrganizationID&gt;<br>                                    &nbsp;&lt;volunteerHubOrganizationID&gt;genericvolorg.org&lt;/volunteerHubOrganizationID&gt;<br>                                    &lt;/volunteerHubOrganizationID&gt;<br>                                    </code></div>                            </div>
+                          </blockquote>                                              </div><div class="entry"><div class="entryName"><a name="title">title (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+                        <div class="doc-text">Short title of the opportunity. Required. No default.                              <p>Examples:                              <br><code>                              &lt;title&gt;Help at the Newville Shelter&lt;/title&gt;<br>                              &lt;title&gt;Plant some Trees in Widerton&lt;/title&gt;                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="abstract">abstract (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text"><p>Examples:                              <br><code>                              &lt;abstract&gt;Help cook, pass out food and clean at the Newville Shelter. Every Sunday at 10am to noon. Bring friends.&lt;/abstract&gt;<br>                              &lt;abstract&gt;Come to Widerton park and plant trees this Sunday, April 19th, 2:00pm. Sponsored by the local SAVE organization. Bring gloves.&lt;/abstract&gt;                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="volunteersNeeded">volunteersNeeded (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_numeric.asp"><code>integer</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">How many volunteers are needed for this opportunity. Special codes: -999 for unlimited. -8888 for unknown number of volunteers. Other than those exceptions, must be a non-negative integer. Optional. Default is -8888 to represent unknown number of volunteers. Cannot be blank.                              May not be up-to-date as volunteers sign up.                              Design decision: large negative numbers for special codes since overbooking might lead to accidental use of negative numbers.                              <p>Examples:                              <br><code>                              &lt;volunteersNeeded&gt;10&lt;/volunteersNeeded&gt;<br>                              &lt;volunteersNeeded&gt;-999&lt;/volunteersNeeded&gt;<br>                              &lt;volunteersNeeded&gt;-8888&lt;/volunteersNeeded&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="rsvpCount">rsvpCount (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_numeric.asp"><code>integer</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">How many people have signed up for this event (through partner's website). Special codes: -8888 for unknown. Other than that exception, must be a non-negative integer. Optional. Default is -8888 to represent unknown number of rsvp's. Cannot be blank.                              May not be up-to-date as volunteers sign up.                              <p>Examples:                              <br><code>                              &lt;rsvpCount&gt;5&lt;/rsvpCount&gt;<br>                              &lt;rsvpCount&gt;-8888&lt;/rsvpCount&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="dateTimeDurations">dateTimeDurations (element)</a></div>
+                       <div class="doc-text">A wrapper around one or more <a href="#dateTimeDuration"><code>dateTimeDuration</code></a> sub-objects. See the sub-object documentation. Given the recurrence field in <a href="#dateTimeDuration"><code>dateTimeDuration</code></a> sub-object, the vast majority of cases should only need one <a href="#dateTimeDuration"><code>dateTimeDuration</code></a> sub-object.  Order of <a href="#dateTimeDuration"><code>dateTimeDuration</code></a> objects has no semantic meaning. Required.</div>                                                                        <blockquote><div class="entry repeated"><div class="entryName"><a name="dateTimeDuration">dateTimeDuration (repeated element)</a></div>
+<span class="info">datatype: <a href="#dateTimeDurationType"><code>dateTimeDurationType</code></a>
+</span><br/>
+ <span class="info">required: at least 1 times</span><br/>
+ 
+                              <div class="doc-text">Represents the dates/timing of the event. Has a recurrence element for repeated opportunities. Required. Order of fields does not matter.                                    <p>Example of one-time event:<br><code>                                    &lt;dateTimeDurations&gt;<br>                                    &nbsp;&lt;dateTimeDuration&gt;<br>                                    &nbsp;&nbsp;&lt;openEnded&gt;No&lt;/openEnded&gt;<br>                                    &nbsp;&nbsp;&lt;startDate&gt;2009-04-19&lt;/startDate&gt;<br>                                    &nbsp;&nbsp;&lt;endDate&gt;2009-04-19&lt;/endDate&gt;<br>                                    &nbsp;&nbsp;&lt;startTime olsonTZ="America/Chicago"&gt;14:00:00&lt;/startTime&gt;<br>                                    &nbsp;&nbsp;&lt;endTime olsonTZ="America/Chicago"&gt;16:00:00&lt;/endTime&gt;<br>                                    &nbsp;&lt;/dateTimeDuration&gt;<br>                                    &lt;/dateTimeDurations&gt;<br>                                    </code>                                    <p>Example of two-time (in this case, two-day) event:<br><code>                                    &lt;dateTimeDurations&gt;<br>                                    &nbsp;&lt;dateTimeDuration&gt;<br>                                    &nbsp;&nbsp;&lt;openEnded&gt;No&lt;/openEnded&gt;<br>                                    &nbsp;&nbsp;&lt;startDate&gt;2009-04-18&lt;/startDate&gt;<br>                                    &nbsp;&nbsp;&lt;endDate&gt;2009-04-18&lt;/endDate&gt;<br>                                    &nbsp;&nbsp;&lt;startTime olsonTZ="America/Chicago"&gt;14:00:00&lt;/startTime&gt;<br>                                    &nbsp;&nbsp;&lt;endTime olsonTZ="America/Chicago"&gt;16:00:00&lt;/endTime&gt;<br>                                    &nbsp;&lt;/dateTimeDuration&gt;<br>                                    &nbsp;&nbsp;&lt;openEnded&gt;No&lt;/openEnded&gt;<br>                                    &nbsp;&nbsp;&lt;startDate&gt;2009-04-19&lt;/startDate&gt;<br>                                    &nbsp;&nbsp;&lt;endDate&gt;2009-04-19&lt;/endDate&gt;<br>                                    &nbsp;&nbsp;&lt;startTime olsonTZ="America/Chicago"&gt;14:00:00&lt;/startTime&gt;<br>                                    &nbsp;&nbsp;&lt;endTime olsonTZ="America/Chicago"&gt;16:00:00&lt;/endTime&gt;<br>                                    &nbsp;&lt;/dateTimeDuration&gt;<br>                                    &lt;/dateTimeDurations&gt;<br>                                    </code>                                    <p>Same example, but using the <code>iCalRecurrance</code> to specify a two-day event:<br><code>                                    &lt;dateTimeDurations&gt;<br>                                    &nbsp;&lt;dateTimeDuration&gt;<br>                                    &nbsp;&nbsp;&lt;openEnded&gt;No&lt;/openEnded&gt;<br>                                    &nbsp;&nbsp;&lt;startDate&gt;2009-04-18&lt;/startDate&gt;<br>                                    &nbsp;&nbsp;&lt;endDate&gt;2009-04-19&lt;/endDate&gt;<br>                                    &nbsp;&nbsp;&lt;startTime olsonTZ="America/Chicago"&gt;14:00:00&lt;/startTime&gt;<br>                                    &nbsp;&nbsp;&lt;endTime olsonTZ="America/Chicago"&gt;16:00:00&lt;/endTime&gt;<br>                                    &nbsp;&nbsp;&lt;iCalRecurrence&gt;FREQ=DAILY;COUNT=2&lt;/iCalRecurrence&gt;<br>                                    &nbsp;&lt;/dateTimeDuration&gt;<br>                                    &lt;/dateTimeDurations&gt;<br>                                    </code>                                    <p>Example of using the <code>iCalRecurrance</code> to specify a biweekly Tuesday meeting, open-ended:<br><code>                                    &lt;dateTimeDurations&gt;<br>                                    &nbsp;&lt;dateTimeDuration&gt;<br>                                    &nbsp;&nbsp;&lt;openEnded&gt;Yes&lt;/openEnded&gt;<br>                                    &nbsp;&nbsp;&lt;startTime olsonTZ="America/New_York"&gt;17:00:00&lt;/startTime&gt;<br>                                    &nbsp;&nbsp;&lt;endTime olsonTZ="America/New_York"&gt;18:00:00&lt;/endTime&gt;<br>                                    &nbsp;&nbsp;&lt;iCalRecurrence&gt;FREQ=WEEKLY;INTERVAL=2;WKST=SU;BYDAY=TU&lt;/iCalRecurrence&gt;<br>                                    &nbsp;&lt;/dateTimeDuration&gt;<br>                                    &lt;/dateTimeDurations&gt;<br>                                    </code>                                    <p>Example of an open inviation to come in during business hours for a day:<br><code>                                    &lt;dateTimeDurations&gt;<br>                                    &nbsp;&lt;dateTimeDuration&gt;<br>                                    &nbsp;&nbsp;&lt;openEnded&gt;No&lt;/openEnded&gt;<br>                                    &nbsp;&nbsp;&lt;startDate&gt;2009-04-16&lt;/startDate&gt;<br>                                    &nbsp;&nbsp;&lt;endDate&gt;2009-04-16&lt;/endDate&gt;<br>                                    &nbsp;&nbsp;&lt;startTime olsonTZ="America/New_York"&gt;09:00:00&lt;/startTime&gt;<br>                                    &nbsp;&nbsp;&lt;endTime olsonTZ="America/New_York"&gt;17:00:00&lt;/endTime&gt;<br>                                    &nbsp;&nbsp;&lt;timeFlexible&gt;Yes&lt;/timeFlexible&gt;<br>                                    &nbsp;&lt;/dateTimeDuration&gt;<br>                                    &lt;/dateTimeDurations&gt;<br>                                    </code>                                    <p>Example of a flexible, commitment of 2 months, with 10 hours of work per week:<br><code>                                    &lt;dateTimeDurations&gt;<br>                                    &nbsp;&lt;dateTimeDuration&gt;<br>                                    &nbsp;&nbsp;&lt;openEnded&gt;Yes&lt;/openEnded&gt;<br>                                    &nbsp;&nbsp;&lt;duration&gt;P2M&lt;/duration&gt;<br>                                    &nbsp;&nbsp;&lt;timeFlexible&gt;Yes&lt;/timeFlexible&gt;<br>                                    &nbsp;&nbsp;&lt;commitmentHoursPerWeek&gt;10&lt;/commitmentHoursPerWeek&gt;<br>                                    &nbsp;&lt;/dateTimeDuration&gt;<br>                                    &lt;/dateTimeDurations&gt;<br>                                    </code></div>                            </div>
+                          </blockquote>                                              </div><div class="entry"><div class="entryName"><a name="locations">locations (element)</a></div>
+<span class="info">required: optional.</span><br/>
+                        <div class="doc-text">A wrapper around one or more <a href="#location"><code>location</code></a> sub-objects. See the sub-object documentation. Order of <a href="#location"><code>location</code></a> objects matters only in that the first location is the default time zone if the time zone for the opportunity start or end time is unspecified. Required, unless <a href="#volunteerHubOrganizationID"><code>volunteerHubOrganizationID</code></a> is present and that <a href="#Organization"><code>Organization</code></a> object has <a href="#location"><code>location</code></a> informaion.</div>                                                  <blockquote><div class="entry repeated"><div class="entryName"><a name="location">location (repeated element)</a></div>
+<span class="info">datatype: <a href="#locationType"><code>locationType</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+ 
+                               <div class="doc-text">Represents where the opportunity is physically located or denotes a virtual (non-physical) opportunity. May use multiple <a href="#location"><code>location</code></a> elements to represent multiple opportunity sites. Required, unless <a href="#volunteerHubOrganizationID"><code>volunteerHubOrganizationID</code></a> is present and that <a href="#Organization"><code>Organization</code></a> object has <a href="#location"><code>location</code></a> informaion. Order of fields does not matter.                                    <p>Example of one physical location:<br><code>                                    &lt;locations&gt;<br>                                    &nbsp;&lt;location&gt;<br>                                    &nbsp;&nbsp;&lt;virtual&gt;No&lt;/virtual&gt;<br>                                    &nbsp;&nbsp;&lt;name&gt;Widerton Homless Shelter&lt;/name&gt;<br>                                    &nbsp;&nbsp;&lt;streetAddress1&gt;10 City Ln&lt;/streetAddress1&gt;<br>                                    &nbsp;&nbsp;&lt;city&gt;Widerton&lt;/city&gt;<br>                                    &nbsp;&nbsp;&lt;region&gt;VA&lt;/region&gt;<br>                                    &nbsp;&nbsp;&lt;postalCode&gt;22003&lt;/postalCode&gt;<br>                                    &nbsp;&nbsp;&lt;directions&gt;Use door on the First St side of building&lt;/directions&gt;<br>                                    &nbsp;&lt;/location&gt;<br>                                    &lt;/locations&gt;<br>                                    </code>                                    <p>Example of an event taking place in two physical locations:<br><code>                                    &lt;locations&gt;<br>                                    &nbsp;&lt;location&gt;<br>                                    &nbsp;&nbsp;&lt;virtual&gt;No&lt;/virtual&gt;<br>                                    &nbsp;&nbsp;&lt;name&gt;Widerton Homless Shelter&lt;/name&gt;<br>                                    &nbsp;&nbsp;&lt;streetAddress1&gt;10 City Ln&lt;/streetAddress1&gt;<br>                                    &nbsp;&nbsp;&lt;city&gt;Widerton&lt;/city&gt;<br>                                    &nbsp;&nbsp;&lt;region&gt;VA&lt;/region&gt;<br>                                    &nbsp;&nbsp;&lt;postalCode&gt;22003&lt;/postalCode&gt;<br>                                    &nbsp;&lt;/location&gt;<br>                                    &nbsp;&lt;location&gt;<br>                                    &nbsp;&nbsp;&lt;virtual&gt;No&lt;/virtual&gt;<br>                                    &nbsp;&nbsp;&lt;name&gt;Narrowton Homless Shelter&lt;/name&gt;<br>                                    &nbsp;&nbsp;&lt;streetAddress1&gt;101 Park St&lt;/streetAddress1&gt;<br>                                    &nbsp;&nbsp;&lt;city&gt;Narrowton&lt;/city&gt;<br>                                    &nbsp;&nbsp;&lt;region&gt;VA&lt;/region&gt;<br>                                    &nbsp;&nbsp;&lt;postalCode&gt;22004&lt;/postalCode&gt;<br>                                    &nbsp;&lt;/location&gt;<br>                                    &lt;/locations&gt;<br>                                    </code>                                    <p>Example of a virtual event (such as online translation help):<br><code>                                    &lt;locations&gt;<br>                                    &nbsp;&lt;location&gt;<br>                                    &nbsp;&nbsp;&lt;virtual&gt;Yes&lt;/virtual&gt;<br>                                    &nbsp;&lt;/location&gt;<br>                                    &lt;/locations&gt;<br>                                    </code></div>                            </div>
+                          </blockquote>                                              </div><div class="entry"><div class="entryName"><a name="paid">paid (element)</a></div>
+<span class="info">datatype: <a href="#yesNoEnum"><code>yesNoEnum</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Does the opportunity pay volunteers. Domain is {"Yes" | "No"}. Optional. Default is "No".</div>                      </div><div class="entry"><div class="entryName"><a name="audienceTags">audienceTags (element)</a></div>
+<span class="info">required: optional.</span><br/>
+                        <div class="doc-text">A wrapper for one or more <a href="#audienceTag"><code>audienceTag</code></a> fields. An <a href="#audienceTag"><code>audienceTag</code></a> field is a string that describes a group of people who would be appropriate volunteers. There is no set domain for the <a href="#audienceTag"><code>audienceTag</code></a> field.  Optional. Order of <a href="#audienceTag"><code>audienceTag</code></a> entries has no semantic meaning.</div>                                                                        <blockquote><div class="entry repeated"><div class="entryName"><a name="audienceTag">audienceTag (repeated element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+ 
+                              <div class="doc-text">String that represents a target audience. No domain. Optional. No default.                                    <p>Example of a two-audience event:                                    <br><code>                                    &lt;audienceTags&gt;<br>                                    &nbsp;&nbsp; &lt;audienceTag&gt;Teens&lt;/audienceTag&gt;<br>                                    &nbsp;&nbsp; &lt;audienceTag&gt;College-aged&lt;/audienceTag&gt;<br>                                    &lt;/audienceTags&gt;</code></div>                            </div>
+                          </blockquote>                                              </div><div class="entry"><div class="entryName"><a name="categoryTags">categoryTags (element)</a></div>
+<span class="info">required: optional.</span><br/>
+                        <div class="doc-text">A wrapper for one or more <a href="#categoryTag"><code>categoryTag</code></a> fields. A <a href="#categoryTag"><code>categoryTag</code></a> field is a short string that describes the opportunity. Keywords also belong here, as <a href="#categoryTag"><code>categoryTag</code></a> fields. There is no set domain for the <a href="#categoryTag"><code>categoryTag</code></a> field.  Order of <a href="#categoryTag"><code>categoryTag</code></a> entries has no semantic meaning.</div>                                                  <blockquote><div class="entry repeated"><div class="entryName"><a name="categoryTag">categoryTag (repeated element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+ 
+                              <div class="doc-text">String that represents a category of the opportunity or a keyword/phrase of the opportunity. No domain. Optional. No default. Recommended.                                   <p>Example of a three-category event:<br><code>                                   &lt;categoryTags&gt;<br>                                   &nbsp;&nbsp; &lt;categoryTag&gt;Homeless&lt;/categoryTag&gt;<br>                                   &nbsp;&nbsp; &lt;categoryTag&gt;Hunger&lt;/categoryTag&gt;<br>                                   &nbsp;&nbsp; &lt;categoryTag&gt;Weekend opportunity&lt;/categoryTag&gt;<br>                                   &lt;/categoryTags&gt;</code></div>                            </div>
+                                                      </blockquote>                                              </div><div class="entry"><div class="entryName"><a name="minimumAge">minimumAge (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_numeric.asp"><code>integer</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">The minimum age of volunteers. Optional. Recommended. Cannot be blank.                              <p>Examples:                              <br><code>                              &lt;minimumAge&gt;18&lt;/minimumAge&gt;<br>                              &lt;minimumAge&gt;7&lt;/minimumAge&gt;<br>                              &lt;minimumAge&gt;50&lt;/minimumAge&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="sexRestrictedTo">sexRestrictedTo (element)</a></div>
+<span class="info">datatype: <a href="#sexRestrictedEnum"><code>sexRestrictedEnum</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Is the opportunity restricted to one sex/gender. Domain: {"Female" | "Male" | "Neither"}. Optional. Default is "Neither".                              <p>Examples:                              <br><code>                              &lt;sexRestrictedTo&gt;Neither&lt;/sexRestrictedTo&gt;<br>                              &lt;sexRestrictedTo&gt;Female&lt;/sexRestrictedTo&gt;<br>                              &lt;sexRestrictedTo&gt;Male&lt;/sexRestrictedTo&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="skills">skills (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">String of all the skills a volunteer needs. One (potentially long) string. Optional. Recommended. No default.                              <p>Examples:                              <br><code>                              &lt;skills&gt;Able-bodied.&lt;/skills&gt;<br>                              &lt;skills&gt;Be able to translate Spanish to English and back. Must be able to work remotely via the Internet.&lt;/skills&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="contactName">contactName (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Name of contact for this opportunity. Many providers will choose to populate the <a href="#detailURL"><code>detailURL</code></a> instead of this field. Optional. No default.                              <p>Example:                              <br><code>                              &lt;contactName&gt;John Smith&lt;/contactName&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="contactPhone">contactPhone (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Phone number (and extension) for the contact for this opportunity. Many providers will choose to populate the <a href="#detailURL"><code>detailURL</code></a> instead of this fields. Optional. No default.                              <p>Examples:                              <br><code>                              &lt;contactPhone&gt;121-555-1212x32&lt;/contactPhone&gt;<br>                              &lt;contactPhone&gt;1215551212&lt;/contactPhone&gt;<br>                              &lt;contactPhone&gt;44 844 394 0 787&lt;/contactPhone&gt;                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="contactEmail">contactEmail (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Email for the contact for this opportunity. Many providers will choose to populate the <a href="#detailURL"><code>detailURL</code></a> instead of this field. Optional. No default.                              <p>Example:                              <br><code>                              &lt;contactEmail&gt;johnsmith@example.com&lt;/contactEmail&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="detailURL">detailURL (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Links to the page on the provider's website that displays detailed information about the opportunity. Optional. No default. Highly recommended for feeds that do not transmit contact info.                              <p>Examples:                              <br><code>                              &lt;detailURL&gt;http://www.awesomevolaggergator.org/opps.php?id=3&lt;/detailURL&gt;<br>                              &lt;detailURL&gt;http://www.anothervolaggergator.org/goodopportunity.html&lt;/detailURL&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="language">language (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Language of the opportunity. Optional. Default is "English".                              <p>Examples:                              <br><code>                              &lt;language&gt;English&lt;/language&gt;<br>                              &lt;language&gt;Spanish&lt;/language&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="description">description (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Full description of the opportunity. Optional. No default. Recommended.                              <p>Example:                              <br><code>                              &lt;description&gt;Some really long text that describes the event.&lt;/description&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="lastUpdated">lastUpdated (element)</a></div>
+<span class="info">datatype: <a href="#dateTimeOlsonDefaultPacific"><code>dateTimeOlsonDefaultPacific</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Date+time (Olson time zone attribute, <a href="#olsonTZ"><code>olsonTZ</code></a>, optional; default is "America/Los_Angeles" which represents the U.S. Pacific time zone) of last update to the opportunity on the provider's site. Optional. No default.                              <p>Examples:                              <br><code>                              &lt;lastUpdated olsonTZ="Etc/UTC"&gt;2009-08-02T09:24:34&lt;/lastUpdated&gt;<br>                              &lt;lastUpdated olsonTZ="America/New_York"&gt;2009-03-02T09:24:34&lt;/lastUpdated&gt;<br>                              &lt;lastUpdated&gt;2009-03-02T06:24:34&lt;/lastUpdated&gt;<br>                              </code></div>                      </div><div class="entry"><div class="entryName"><a name="expires">expires (element)</a></div>
+<span class="info">datatype: <a href="#dateTimeOlsonDefaultPacific"><code>dateTimeOlsonDefaultPacific</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Date+time (Olson time zone attribute, <a href="#olsonTZ"><code>olsonTZ</code></a>, optional; default is "America/Los_Angeles" which represents the U.S. Pacific time zone) of when the ulisting/u of the opportunity (not the opportunity itself) expires on the provider's site. Optional. No default.                              <p>Examples:                              <br><code>                              &lt;expires olsonTZ="Etc/UTC"&gt;2010-08-02T09:24:34&lt;/expires&gt;<br>                              &lt;expires olsonTZ="America/New_York"&gt;2010-03-02T09:24:34&lt;/expires&gt;<br>                              &lt;expires&gt;2010-03-02T06:24:34&lt;/expires&gt;<br>                              </code></div>                      </div>
+                    </blockquote>                                  </div>
+               </blockquote>                      </div><div class="entry"><div class="entryName"><a name="Reviews">Reviews (element)</a></div>
+<span class="info">required: optional.</span><br/>
+            <div class="doc-text">The <a href="#Review"><code>Review</code></a> object wraps a set of <a href="#Reviews"><code>Reviews</code></a> objects. Order of <a href="#Review"><code>Review</code></a> objects has no semantic meaning.</div>                          <blockquote><div class="entry repeated"><div class="entryName"><a name="Review">Review (repeated element)</a></div>
+<span class="info">required: optional.</span><br/>
+ 
+                  <div class="doc-text">The <a href="#Review"><code>Review</code></a> object represents a review of an organization or volunteer opportunity. <a href="#Review"><code>Review</code></a> objects are wrapped in <a href="#Reviews"><code>Reviews</code></a>. Order of fields does not matter.</div>                                      <blockquote><div class="entry"><div class="entryName"><a name="reviewID">reviewID (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+                        <div class="doc-text">A unique ID for the review. Can be a <a href="http://en.wikipedia.org/wiki/Uniform_Resource_Identifier">URI</a>. Required. No default.</div>                      </div><div class="entry"><div class="entryName"><a name="organizationID">organizationID (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Link to <a href="#organizationID"><code>organizationID</code></a> in the <a href="#Organization"><code>Organization</code></a> object. Optional, though required if <a href="#volunteerOpportunityID"><code>volunteerOpportunityID</code></a> is not present. No default.</div>                      </div><div class="entry"><div class="entryName"><a name="volunteerOpportunityID">volunteerOpportunityID (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Link to <a href="#volunteerOpportunityID"><code>volunteerOpportunityID</code></a> in the <a href="#VolunteerOpportunity"><code>VolunteerOpportunity</code></a> object. Optional, though required if <a href="#organizationID"><code>organizationID</code></a> is not present. No default.</div>                      </div><div class="entry"><div class="entryName"><a name="rating">rating (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_numeric.asp"><code>decimal</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">The rating, or numeric score, of the review. For instance, this field would be 4 if the review gives 4 of 5 stars. Optional. No default.</div>                      </div><div class="entry"><div class="entryName"><a name="ratingMaximum">ratingMaximum (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_numeric.asp"><code>decimal</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">The maximum rating, or numeric score, possible of the review. For instance, this field would be 5 if the review gives 4 of 5 stars. Optional. Highly recommended if <a href="#numericScore"><code>numericScore</code></a> is present. No default.</div>                      </div><div class="entry"><div class="entryName"><a name="text">text (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">The text of the review. Optional. No default.</div>                      </div><div class="entry"><div class="entryName"><a name="reviewerName">reviewerName (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">The name of the reviewer. Optional. No default. Recommended.</div>                      </div><div class="entry"><div class="entryName"><a name="reviewerID">reviewerID (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">An ID for the reviewer. If present, must identify a unique reviewer. Optional. No default.</div>                      </div><div class="entry"><div class="entryName"><a name="reviewerRole">reviewerRole (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">What role the reviewer played in the review entity (either an organization or volunteer opportunity). No default.</div>                      </div><div class="entry"><div class="entryName"><a name="lastUpdated">lastUpdated (element)</a></div>
+<span class="info">datatype: <a href="#dateTimeOlsonDefaultPacific"><code>dateTimeOlsonDefaultPacific</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+                        <div class="doc-text">Date+time of when the review was created or last updated (Olson time zone attribute, <a href="#olsonTZ"><code>olsonTZ</code></a>, optional; default is "America/Los_Angeles" which represents the U.S. Pacific time zone). Optional. No default.</div>                      </div>
+                    </blockquote>                                  </div>
+               </blockquote>                      </div>
+                                         </blockquote><div class="entry"><blockquote><div class="entryName"><a name="schemaVersion">schemaVersion (attribute)</a></div>
+ <span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_numeric.asp"><code>decimal</code></a>
+</span><br/>
+ <span class="info">use is required</span><br/>
+ <span class="info">fixed value: <code>0.1</code></span><br/>
+         </div>
+  <div class="namedType"><div class="entryName"><a name="dateTimeDurationType">dateTimeDurationType (complex type)</a></div>      <div class="doc-text">See <a href="#VolunteerOpportunity">VolunteerOpportunity</a> for use examples.</div>      <blockquote><div class="entry"><div class="entryName"><a name="openEnded">openEnded (element)</a></div>
+<span class="info">datatype: <a href="#yesNoEnum"><code>yesNoEnum</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">Whether the opportunity is not limited by dates. Domain: Yes, No. Optional. Default is "No". If Yes, parser ignores startDate and endDate fields.</div>      </div><div class="entry"><div class="entryName"><a name="startDate">startDate (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_date.asp"><code>date</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">The start date of the opportunity. Optional. No default. Highly recommended if openEnded is No.<br/>
+<br/>
+             If left unspecified, the implementation is liable to either display its own epoch (e.g., 12/31/1969 00:00:00) as the opportunity start date or force <a href="#openEnded"><code>openEnded</code></a> to Yes.<br/>
+<br/>
+             Implementations should avoid displaying default dates when <a href="#startDate"><code>startDate</code></a> is unspecified.</div>      </div><div class="entry"><div class="entryName"><a name="endDate">endDate (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_date.asp"><code>date</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">The end date of the opportunity. Optional. No default. Highly recommended if openEnded is No.<br/>
+<br/>
+             If left unspecified, the implementation is liable to either display its own epoch (e.g., 12/31/1969 00:00:00) as the opportunity end date or force <a href="#openEnded"><code>openEnded</code></a> to Yes.<br/>
+<br/>
+             Implementations should avoid displaying default dates when <a href="#endDate"><code>endDate</code></a> is unspecified.</div>      </div><div class="entry"><div class="entryName"><a name="iCalRecurrence">iCalRecurrence (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">String from <a href="http://www.kanzaki.com/docs/ical/rrule.html">iCal format</a> specifying the frequency of the opportunity. Optional. Default is the empty string, representing no recurrence.             String does not include "RRULE:" and should start with "FREQ=".<p>             Example for a biweekly meeting:<br><code>             &nbsp;&nbsp;&lt;iCalRecurrence&gt;FREQ=WEEKLY;INTERVAL=2;&lt;/iCalRecurrence&gt;<br></code></div>      </div><div class="entry"><div class="entryName"><a name="duration">duration (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_date.asp"><code>duration</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">The duration of open-ended opportunity; i.e., the long-term commitment. For instance, a six-month club that meets only once a week for an hour would have a duration of six months. Type is <a href="http://www.w3schools.com/Schema/schema_dtypes_date.asp">xs:duration</a> (e.g., P6M for six months). Optional. No default. Highly recommended if openEnded is Yes. Ignored if startDate and endDate are populated.</div>      </div><div class="entry"><div class="entryName"><a name="startTime">startTime (element)</a></div>
+<span class="info">datatype: <a href="#timeOlson"><code>timeOlson</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">Start time for the opportunity (Olson time zone attribute, <a href="#olsonTZ"><code>olsonTZ</code></a>, optional; defaults to time zone of first <a href="#location"><code>location</code></a> of opportunity; if virtual opportunity, default is "America/Los_Angeles" which represents the U.S. Pacific time zone). There is no "all day" option: exact times should be specified where applicable. Optional. No default.</div>      </div><div class="entry"><div class="entryName"><a name="endTime">endTime (element)</a></div>
+<span class="info">datatype: <a href="#timeOlson"><code>timeOlson</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">End time for the opportunity (Olson time zone attribute, <a href="#olsonTZ"><code>olsonTZ</code></a>, optional; defaults to time zone of first <a href="#location"><code>location</code></a> of opportunity; if virtual opportunity, default is "America/Los_Angeles" which represents the U.S. Pacific time zone). There is no "all day" option: exact times should be specified where applicable. Optional. No default.</div>      </div><div class="entry"><div class="entryName"><a name="timeFlexible">timeFlexible (element)</a></div>
+<span class="info">datatype: <a href="#yesNoEnum"><code>yesNoEnum</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">Whether the opportunity is not limited by time of day. Domain: Yes, No. Optional. Default is "Yes" if both startTime and endTime are missing; default is "No" otherwise. If startTime and endTime are present and timeFlexible is Yes then the opportunity is assumed to be open between startTime and endTime but not necessarily fill up that entire time. If timeFlexible is Yes, then commitmentHoursPerWeek is recommended.</div>      </div><div class="entry"><div class="entryName"><a name="commitmentHoursPerWeek">commitmentHoursPerWeek (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_numeric.asp"><code>decimal</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">For long-term or time-flexible opportunities, how many hours per week are expected? Decimal values allowed. Optional. No default. Recommended if either openEnded or timeFlexible is Yes.</div>      </div>
+          </blockquote>  </div>  <div class="namedType"><div class="entryName"><a name="locationType">locationType (complex type)</a></div>    <div class="doc-text">See <a href="#VolunteerOpportunity">VolunteerOpportunity</a> for use examples.</div>    <blockquote><div class="entry"><div class="entryName"><a name="virtual">virtual (element)</a></div>
+<span class="info">datatype: <a href="#yesNoEnum"><code>yesNoEnum</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">Is the opportunity virtual (i.e., not physically located anywhere)? Domain: Yes, No. Optional. Default is "No".</div>      </div><div class="entry"><div class="entryName"><a name="name">name (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">Name of physical location. Example: Camelot Elementary School. Optional. No default.</div>      </div><div class="entry"><div class="entryName"><a name="streetAddress1">streetAddress1 (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">First line of street address. Optional. No default. Not expected from most providers.</div>      </div><div class="entry"><div class="entryName"><a name="streetAddress2">streetAddress2 (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">Second line of street address. Optional. No default. Not expected from most providers.             Only provide if streetAddress1 is provided.</div>      </div><div class="entry"><div class="entryName"><a name="streetAddress3">streetAddress3 (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">Third line of street address. Optional. No default. Not expected from most providers.             Only provide if streetAddress1 and streetAddress2 are provided.</div>      </div><div class="entry"><div class="entryName"><a name="city">city (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">City of physical location. Optional. No default. Expected from most providers.</div>      </div><div class="entry"><div class="entryName"><a name="region">region (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">Region (e.g., State or Province) of physical location. Optional. No default. Expected from most providers.</div>      </div><div class="entry"><div class="entryName"><a name="postalCode">postalCode (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">Postal Code (e.g., zip code) of physical location. Optional. No default. Expected from most providers.</div>      </div><div class="entry"><div class="entryName"><a name="country">country (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">Country. Optional. Default is "US".</div>      </div><div class="entry"><div class="entryName"><a name="latitude">latitude (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_numeric.asp"><code>decimal</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">Latitude of location. Optional. No default. If conflicts with streetAddress1/city/region/postalCode, the latter has precedence.</div>      </div><div class="entry"><div class="entryName"><a name="longitude">longitude (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_numeric.asp"><code>decimal</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">Longitude of location. Optional. No default. If conflicts with streetAddress1/city/region/postalCode, the latter has precedence.</div>      </div><div class="entry"><div class="entryName"><a name="directions">directions (element)</a></div>
+<span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">required: optional.</span><br/>
+        <div class="doc-text">Directions to or special instructions for the location. Optional. No default.</div>      </div>
+          </blockquote>  </div>  <div class="namedType"><div class="entryName"><a name="yesNoEnum">yesNoEnum (simple type)</a></div>    <div class="doc-text">Specific type of string with the restricted domain of "Yes" or "No" (without quotes).</div>    <div class="info">derived from: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</div>      <span class="info">allowed value: <code>Yes</code></span><br/>
+      <span class="info">allowed value: <code>No</code></span><br/>
+      </div>  <div class="namedType"><div class="entryName"><a name="sexRestrictedEnum">sexRestrictedEnum (simple type)</a></div>    <div class="doc-text">Specific type of string with the restricted domain of "Female", "Male", or "Neither" (without quotes). For sex restriction.</div>    <div class="info">derived from: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</div>      <span class="info">allowed value: <code>Female</code></span><br/>
+      <span class="info">allowed value: <code>Male</code></span><br/>
+      <span class="info">allowed value: <code>Neither</code></span><br/>
+      </div>  <div class="namedType"><div class="entryName"><a name="dateTimeOlsonDefaultPacific">dateTimeOlsonDefaultPacific (complex type)</a></div>    <div class="doc-text">Date/time type that has an attribute called olsonTZ, which is a string from the <a href="http://en.wikipedia.org/wiki/Zoneinfo">Olson timezone database</a> (default: "America/Los_Angeles").<br/>
+         The content is of the base type <a href="#xs:datetime"><code>xs:datetime</code></a>, except any additional timezone data is disallowed.</div>          <div class="info">derived from: <a href="#dateTimeNoTZ"><code>dateTimeNoTZ</code></a>
+</div><div class="entry"><blockquote><div class="entryName"><a name="olsonTZ">olsonTZ (attribute)</a></div>
+ <span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">use is optional</span><br/>
+ <span class="info">default value: <code>America/Los_Angeles</code></span><br/>
+            </div>  <div class="namedType"><div class="entryName"><a name="timeOlson">timeOlson (complex type)</a></div>    <div class="doc-text">Time type that has an attribute called olsonTZ, which is a string from the <a href="http://en.wikipedia.org/wiki/Zoneinfo">Olson timezone database</a> (default: "America/Los_Angeles").<br/>
+         The content is of the base type <a href="#xs:time"><code>xs:time</code></a>, except any additional timezone data is disallowed.</div>          <div class="info">derived from: <a href="#timeNoTZ"><code>timeNoTZ</code></a>
+</div><div class="entry"><blockquote><div class="entryName"><a name="olsonTZ">olsonTZ (attribute)</a></div>
+ <span class="info">datatype: <a href="http://www.w3schools.com/Schema/schema_dtypes_string.asp"><code>string</code></a>
+</span><br/>
+ <span class="info">use is optional</span><br/>
+ <span class="info">default value: <code>(empty string)</code></span><br/>
+             </div>  <div class="namedType"><div class="entryName"><a name="dateTimeNoTZ">dateTimeNoTZ (simple type)</a></div>    <div class="doc-text">Date/time without time zone.</div>    <div class="info">derived from: <a href="http://www.w3schools.com/Schema/schema_dtypes_date.asp"><code>dateTime</code></a>
+</div>      <span class="info">must match (regular expression): <code>.+[0-9]</code></span><br/>
+      </div>  <div class="namedType"><div class="entryName"><a name="timeNoTZ">timeNoTZ (simple type)</a></div>    <div class="doc-text">Time without time zone.</div>    <div class="info">derived from: <a href="http://www.w3schools.com/Schema/schema_dtypes_date.asp"><code>time</code></a>
+</div>      <span class="info">must match (regular expression): <code>.+[0-9]</code></span><br/>
+      </div>
+</body></html>
