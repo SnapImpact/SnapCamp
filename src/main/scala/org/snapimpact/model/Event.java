@@ -67,7 +67,7 @@ import javax.persistence.Table;
                 "l.geom && EXPAND(GeometryFromText(?, 4326), ?) AND " +
                 "Distance(GeometryFromText(?, 4326), l.geom) < ? " +
                 "ORDER BY ST_Distance_Sphere(GeometryFromText(?, 4326), l.geom) ",
-        resultClass = persistence.Event.class
+        resultClass = Event.class
         )
 
 public class Event implements Serializable, IdInterface {
