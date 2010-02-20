@@ -38,6 +38,8 @@ class Boot {
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
     Menu(Loc("Static", Link(List("static"), true, "/static/index"), 
 	     "Static Content")) ::
+    Menu(Loc("api", Link(List("api"), true, "/api/index"), 
+	     "API")) ::
     Nil
 
     LiftRules.setSiteMap(SiteMap(entries:_*))
