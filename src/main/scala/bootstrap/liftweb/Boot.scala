@@ -58,6 +58,11 @@ class Boot {
 
     LiftRules.early.append(makeUtf8)
 
+    LiftRules.dispatch.append { 
+      case Req("api" :: "volopps" :: Nil, _, _) =>
+        org.snapimpact.dispatch.api.volopps _
+    }
+
     S.addAround(DB.buildLoanWrapper)
   }
 
