@@ -15,7 +15,7 @@ class HelloWorld {
 
     def howdy(in: NodeSeq): NodeSeq = {
         val tf = new Timeframe(UUID.randomUUID.toString, UUID.randomUUID.toString, new BigInteger("10"))
-        Model.persist(tf)
+        Model.merge(tf)
         Helpers.bind("b", in, "time" -> date.map(d => Text(d.toString)))
     }
 
