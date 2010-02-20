@@ -23,12 +23,15 @@
 package org.snapimpact.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -39,37 +42,40 @@ import javax.persistence.Table;
  * @author Dave Angulo
  */
 @Entity
-@Table(name = "TIMEFRAME")
+@Table(name = "INTEREST_AREA")
 @NamedQueries( {
-		@NamedQuery(name = "Timeframe.findAll", query = "SELECT t FROM Timeframe t"),
-		@NamedQuery(name = "Timeframe.findById", query = "SELECT t FROM Timeframe t WHERE t.id = :id"),
-		@NamedQuery(name = "Timeframe.findByBucket", query = "SELECT t FROM Timeframe t WHERE t.bucket = :bucket") })
-public class Timeframe implements Serializable, IdInterface {
-	private static final long	serialVersionUID	= 1L;
+		@NamedQuery(name = "InterestArea.findAll", query = "SELECT i FROM InterestArea i"),
+		@NamedQuery(name = "InterestArea.findById", query = "SELECT i FROM InterestArea i WHERE i.id = :id"),
+		@NamedQuery(name = "InterestArea.findByName", query = "SELECT i FROM InterestArea i WHERE i.name = :name") })
+public class InterestArea implements Serializable, IdInterface {
+	private static final long				serialVersionUID	= 1L;
 	@Id
 	@Basic(optional = false)
 	@Column(name = "id")
-	private String				id;
+	private String							id;
 	@Basic(optional = false)
 	@Column(name = "name")
-	private String				name;
-	@Basic(optional = false)
-	@Column(name = "bucket")
-	private BigInteger			bucket;
-	@OneToMany(mappedBy = "timeframeId")
-	private Collection<Filter>	filterCollection;
+	private String							name;
+	@ManyToMany(mappedBy = "interestAreaCollection")
+	private Collection<Event>				eventCollection;
+	@JoinTable(name = "ORGANIZATION_INTEREST_AREA", joinColumns = { @JoinColumn(name = "interest_area_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "organization_id", referencedColumnName = "id") })
+	@ManyToMany
+	private Collection<Organization>		organizationCollection;
+	@ManyToMany(mappedBy = "interestAreaCollection")
+	private Collection<Filter>				filterCollection;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "interestAreaId")
+	private Collection<SourceInterestMap>	sourceInterestMapCollection;
 
-	public Timeframe() {
+	public InterestArea() {
 	}
 
-	public Timeframe(String id) {
+	public InterestArea(String id) {
 		this.id = id;
 	}
 
-	public Timeframe(String id, String name, BigInteger bucket) {
+	public InterestArea(String id, String name) {
 		this.id = id;
 		this.name = name;
-		this.bucket = bucket;
 	}
 
 	public String getId() {
@@ -88,12 +94,20 @@ public class Timeframe implements Serializable, IdInterface {
 		this.name = name;
 	}
 
-	public BigInteger getBucket() {
-		return bucket;
+	public Collection<Event> getEventCollection() {
+		return eventCollection;
 	}
 
-	public void setBucket(BigInteger bucket) {
-		this.bucket = bucket;
+	public void setEventCollection(Collection<Event> eventCollection) {
+		this.eventCollection = eventCollection;
+	}
+
+	public Collection<Organization> getOrganizationCollection() {
+		return organizationCollection;
+	}
+
+	public void setOrganizationCollection(Collection<Organization> organizationCollection) {
+		this.organizationCollection = organizationCollection;
 	}
 
 	public Collection<Filter> getFilterCollection() {
@@ -102,6 +116,15 @@ public class Timeframe implements Serializable, IdInterface {
 
 	public void setFilterCollection(Collection<Filter> filterCollection) {
 		this.filterCollection = filterCollection;
+	}
+
+	public Collection<SourceInterestMap> getSourceInterestMapCollection() {
+		return sourceInterestMapCollection;
+	}
+
+	public void setSourceInterestMapCollection(
+			Collection<SourceInterestMap> sourceInterestMapCollection) {
+		this.sourceInterestMapCollection = sourceInterestMapCollection;
 	}
 
 	@Override
@@ -115,10 +138,10 @@ public class Timeframe implements Serializable, IdInterface {
 	public boolean equals(Object object) {
 		// TODO: Warning - this method won't work in the case the id fields are
 		// not set
-		if (!(object instanceof Timeframe)) {
+		if (!(object instanceof InterestArea)) {
 			return false;
 		}
-		Timeframe other = (Timeframe) object;
+		InterestArea other = (InterestArea) object;
 		if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
 			return false;
 		}
@@ -127,7 +150,7 @@ public class Timeframe implements Serializable, IdInterface {
 
 	@Override
 	public String toString() {
-		return "persistence.Timeframe[id=" + id + "]";
+		return "persistence.InterestArea[id=" + id + "]";
 	}
 
 }

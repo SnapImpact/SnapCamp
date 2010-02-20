@@ -23,9 +23,9 @@
 package org.snapimpact.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -39,37 +39,36 @@ import javax.persistence.Table;
  * @author Dave Angulo
  */
 @Entity
-@Table(name = "TIMEFRAME")
+@Table(name = "NETWORK")
 @NamedQueries( {
-		@NamedQuery(name = "Timeframe.findAll", query = "SELECT t FROM Timeframe t"),
-		@NamedQuery(name = "Timeframe.findById", query = "SELECT t FROM Timeframe t WHERE t.id = :id"),
-		@NamedQuery(name = "Timeframe.findByBucket", query = "SELECT t FROM Timeframe t WHERE t.bucket = :bucket") })
-public class Timeframe implements Serializable, IdInterface {
-	private static final long	serialVersionUID	= 1L;
+		@NamedQuery(name = "Network.findAll", query = "SELECT n FROM Network n"),
+		@NamedQuery(name = "Network.findById", query = "SELECT n FROM Network n WHERE n.id = :id"),
+		@NamedQuery(name = "Network.findByName", query = "SELECT n FROM Network n WHERE n.name = :name"),
+		@NamedQuery(name = "Network.findByUrl", query = "SELECT n FROM Network n WHERE n.url = :url") })
+public class Network implements Serializable, IdInterface {
+	private static final long		serialVersionUID	= 1L;
 	@Id
 	@Basic(optional = false)
 	@Column(name = "id")
-	private String				id;
+	private String					id;
 	@Basic(optional = false)
 	@Column(name = "name")
-	private String				name;
-	@Basic(optional = false)
-	@Column(name = "bucket")
-	private BigInteger			bucket;
-	@OneToMany(mappedBy = "timeframeId")
-	private Collection<Filter>	filterCollection;
+	private String					name;
+	@Column(name = "url")
+	private String					url;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "networkId")
+	private Collection<Integration>	integrationCollection;
 
-	public Timeframe() {
+	public Network() {
 	}
 
-	public Timeframe(String id) {
+	public Network(String id) {
 		this.id = id;
 	}
 
-	public Timeframe(String id, String name, BigInteger bucket) {
+	public Network(String id, String name) {
 		this.id = id;
 		this.name = name;
-		this.bucket = bucket;
 	}
 
 	public String getId() {
@@ -88,20 +87,20 @@ public class Timeframe implements Serializable, IdInterface {
 		this.name = name;
 	}
 
-	public BigInteger getBucket() {
-		return bucket;
+	public String getUrl() {
+		return url;
 	}
 
-	public void setBucket(BigInteger bucket) {
-		this.bucket = bucket;
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
-	public Collection<Filter> getFilterCollection() {
-		return filterCollection;
+	public Collection<Integration> getIntegrationCollection() {
+		return integrationCollection;
 	}
 
-	public void setFilterCollection(Collection<Filter> filterCollection) {
-		this.filterCollection = filterCollection;
+	public void setIntegrationCollection(Collection<Integration> integrationCollection) {
+		this.integrationCollection = integrationCollection;
 	}
 
 	@Override
@@ -115,10 +114,10 @@ public class Timeframe implements Serializable, IdInterface {
 	public boolean equals(Object object) {
 		// TODO: Warning - this method won't work in the case the id fields are
 		// not set
-		if (!(object instanceof Timeframe)) {
+		if (!(object instanceof Network)) {
 			return false;
 		}
-		Timeframe other = (Timeframe) object;
+		Network other = (Network) object;
 		if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
 			return false;
 		}
@@ -127,7 +126,7 @@ public class Timeframe implements Serializable, IdInterface {
 
 	@Override
 	public String toString() {
-		return "persistence.Timeframe[id=" + id + "]";
+		return "persistence.Network[id=" + id + "]";
 	}
 
 }

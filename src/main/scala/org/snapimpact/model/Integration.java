@@ -23,15 +23,14 @@
 package org.snapimpact.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
-import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -39,37 +38,40 @@ import javax.persistence.Table;
  * @author Dave Angulo
  */
 @Entity
-@Table(name = "TIMEFRAME")
+@Table(name = "INTEGRATION")
 @NamedQueries( {
-		@NamedQuery(name = "Timeframe.findAll", query = "SELECT t FROM Timeframe t"),
-		@NamedQuery(name = "Timeframe.findById", query = "SELECT t FROM Timeframe t WHERE t.id = :id"),
-		@NamedQuery(name = "Timeframe.findByBucket", query = "SELECT t FROM Timeframe t WHERE t.bucket = :bucket") })
-public class Timeframe implements Serializable, IdInterface {
+		@NamedQuery(name = "Integration.findAll", query = "SELECT i FROM Integration i"),
+		@NamedQuery(name = "Integration.findById", query = "SELECT i FROM Integration i WHERE i.id = :id"),
+		@NamedQuery(name = "Integration.findByUserName", query = "SELECT i FROM Integration i WHERE i.userName = :userName"),
+		@NamedQuery(name = "Integration.findByPassword", query = "SELECT i FROM Integration i WHERE i.password = :password") })
+public class Integration implements Serializable, IdInterface {
 	private static final long	serialVersionUID	= 1L;
 	@Id
 	@Basic(optional = false)
 	@Column(name = "id")
 	private String				id;
 	@Basic(optional = false)
-	@Column(name = "name")
-	private String				name;
-	@Basic(optional = false)
-	@Column(name = "bucket")
-	private BigInteger			bucket;
-	@OneToMany(mappedBy = "timeframeId")
-	private Collection<Filter>	filterCollection;
+	@Column(name = "user_name")
+	private String				userName;
+	@Column(name = "password")
+	private String				password;
+	@JoinColumn(name = "user_id", referencedColumnName = "ID")
+	@ManyToOne(optional = false)
+	private IvUser				userId;
+	@JoinColumn(name = "network_id", referencedColumnName = "ID")
+	@ManyToOne(optional = false)
+	private Network				networkId;
 
-	public Timeframe() {
+	public Integration() {
 	}
 
-	public Timeframe(String id) {
+	public Integration(String id) {
 		this.id = id;
 	}
 
-	public Timeframe(String id, String name, BigInteger bucket) {
+	public Integration(String id, String userName) {
 		this.id = id;
-		this.name = name;
-		this.bucket = bucket;
+		this.userName = userName;
 	}
 
 	public String getId() {
@@ -80,28 +82,36 @@ public class Timeframe implements Serializable, IdInterface {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
-	public BigInteger getBucket() {
-		return bucket;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setBucket(BigInteger bucket) {
-		this.bucket = bucket;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
-	public Collection<Filter> getFilterCollection() {
-		return filterCollection;
+	public IvUser getUserId() {
+		return userId;
 	}
 
-	public void setFilterCollection(Collection<Filter> filterCollection) {
-		this.filterCollection = filterCollection;
+	public void setUserId(IvUser userId) {
+		this.userId = userId;
+	}
+
+	public Network getNetworkId() {
+		return networkId;
+	}
+
+	public void setNetworkId(Network networkId) {
+		this.networkId = networkId;
 	}
 
 	@Override
@@ -115,10 +125,10 @@ public class Timeframe implements Serializable, IdInterface {
 	public boolean equals(Object object) {
 		// TODO: Warning - this method won't work in the case the id fields are
 		// not set
-		if (!(object instanceof Timeframe)) {
+		if (!(object instanceof Integration)) {
 			return false;
 		}
-		Timeframe other = (Timeframe) object;
+		Integration other = (Integration) object;
 		if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
 			return false;
 		}
@@ -127,7 +137,7 @@ public class Timeframe implements Serializable, IdInterface {
 
 	@Override
 	public String toString() {
-		return "persistence.Timeframe[id=" + id + "]";
+		return "persistence.Integration[id=" + id + "]";
 	}
 
 }

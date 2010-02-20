@@ -23,53 +23,57 @@
 package org.snapimpact.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  * 
  * @author Dave Angulo
  */
 @Entity
-@Table(name = "TIMEFRAME")
+@Table(name = "TIMESTAMP")
 @NamedQueries( {
-		@NamedQuery(name = "Timeframe.findAll", query = "SELECT t FROM Timeframe t"),
-		@NamedQuery(name = "Timeframe.findById", query = "SELECT t FROM Timeframe t WHERE t.id = :id"),
-		@NamedQuery(name = "Timeframe.findByBucket", query = "SELECT t FROM Timeframe t WHERE t.bucket = :bucket") })
-public class Timeframe implements Serializable, IdInterface {
+		@NamedQuery(name = "Timestamp.findAll", query = "SELECT t FROM Timestamp t"),
+		@NamedQuery(name = "Timestamp.findById", query = "SELECT t FROM Timestamp t WHERE t.id = :id"),
+		@NamedQuery(name = "Timestamp.findByTimestamp", query = "SELECT t FROM Timestamp t WHERE t.timestamp = :timestamp") })
+@NamedNativeQueries( {
+    @NamedNativeQuery(name = "Timestamp.deleteOld", query = "DELETE FROM Timestamp where timestamp < now()")
+})                       
+public class Timestamp implements Serializable, IdInterface {
 	private static final long	serialVersionUID	= 1L;
 	@Id
 	@Basic(optional = false)
 	@Column(name = "id")
 	private String				id;
 	@Basic(optional = false)
-	@Column(name = "name")
-	private String				name;
-	@Basic(optional = false)
-	@Column(name = "bucket")
-	private BigInteger			bucket;
-	@OneToMany(mappedBy = "timeframeId")
-	private Collection<Filter>	filterCollection;
+	@Column(name = "timestamp")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date				timestamp;
+	@ManyToMany(mappedBy = "timestampCollection")
+	private Collection<Event>	eventCollection;
 
-	public Timeframe() {
+	public Timestamp() {
 	}
 
-	public Timeframe(String id) {
+	public Timestamp(String id) {
 		this.id = id;
 	}
 
-	public Timeframe(String id, String name, BigInteger bucket) {
+	public Timestamp(String id, Date timestamp) {
 		this.id = id;
-		this.name = name;
-		this.bucket = bucket;
+		this.timestamp = timestamp;
 	}
 
 	public String getId() {
@@ -80,28 +84,20 @@ public class Timeframe implements Serializable, IdInterface {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public Date getTimestamp() {
+		return timestamp;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 
-	public BigInteger getBucket() {
-		return bucket;
+	public Collection<Event> getEventCollection() {
+		return eventCollection;
 	}
 
-	public void setBucket(BigInteger bucket) {
-		this.bucket = bucket;
-	}
-
-	public Collection<Filter> getFilterCollection() {
-		return filterCollection;
-	}
-
-	public void setFilterCollection(Collection<Filter> filterCollection) {
-		this.filterCollection = filterCollection;
+	public void setEventCollection(Collection<Event> eventCollection) {
+		this.eventCollection = eventCollection;
 	}
 
 	@Override
@@ -115,10 +111,10 @@ public class Timeframe implements Serializable, IdInterface {
 	public boolean equals(Object object) {
 		// TODO: Warning - this method won't work in the case the id fields are
 		// not set
-		if (!(object instanceof Timeframe)) {
+		if (!(object instanceof Timestamp)) {
 			return false;
 		}
-		Timeframe other = (Timeframe) object;
+		Timestamp other = (Timestamp) object;
 		if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
 			return false;
 		}
@@ -127,7 +123,7 @@ public class Timeframe implements Serializable, IdInterface {
 
 	@Override
 	public String toString() {
-		return "persistence.Timeframe[id=" + id + "]";
+		return "persistence.Timestamp[id=" + id + "]";
 	}
 
 }

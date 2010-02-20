@@ -23,9 +23,9 @@
 package org.snapimpact.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -39,37 +39,43 @@ import javax.persistence.Table;
  * @author Dave Angulo
  */
 @Entity
-@Table(name = "TIMEFRAME")
+@Table(name = "IV_USER")
 @NamedQueries( {
-		@NamedQuery(name = "Timeframe.findAll", query = "SELECT t FROM Timeframe t"),
-		@NamedQuery(name = "Timeframe.findById", query = "SELECT t FROM Timeframe t WHERE t.id = :id"),
-		@NamedQuery(name = "Timeframe.findByBucket", query = "SELECT t FROM Timeframe t WHERE t.bucket = :bucket") })
-public class Timeframe implements Serializable, IdInterface {
-	private static final long	serialVersionUID	= 1L;
+		@NamedQuery(name = "IvUser.findAll", query = "SELECT i FROM IvUser i"),
+		@NamedQuery(name = "IvUser.findById", query = "SELECT i FROM IvUser i WHERE i.id = :id"),
+		@NamedQuery(name = "IvUser.findByName", query = "SELECT i FROM IvUser i WHERE i.name = :name"),
+		@NamedQuery(name = "IvUser.findByPassword", query = "SELECT i FROM IvUser i WHERE i.password = :password"),
+		@NamedQuery(name = "IvUser.findByIphoneId", query = "SELECT i FROM IvUser i WHERE i.iphoneId = :iphoneId") })
+public class IvUser implements Serializable, IdInterface {
+	private static final long		serialVersionUID	= 1L;
 	@Id
 	@Basic(optional = false)
 	@Column(name = "id")
-	private String				id;
+	private String					id;
 	@Basic(optional = false)
 	@Column(name = "name")
-	private String				name;
+	private String					name;
 	@Basic(optional = false)
-	@Column(name = "bucket")
-	private BigInteger			bucket;
-	@OneToMany(mappedBy = "timeframeId")
-	private Collection<Filter>	filterCollection;
+	@Column(name = "password")
+	private String					password;
+	@Column(name = "iphone_id")
+	private String					iphoneId;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+	private Collection<Filter>		filterCollection;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+	private Collection<Integration>	integrationCollection;
 
-	public Timeframe() {
+	public IvUser() {
 	}
 
-	public Timeframe(String id) {
+	public IvUser(String id) {
 		this.id = id;
 	}
 
-	public Timeframe(String id, String name, BigInteger bucket) {
+	public IvUser(String id, String name, String password) {
 		this.id = id;
 		this.name = name;
-		this.bucket = bucket;
+		this.password = password;
 	}
 
 	public String getId() {
@@ -88,12 +94,20 @@ public class Timeframe implements Serializable, IdInterface {
 		this.name = name;
 	}
 
-	public BigInteger getBucket() {
-		return bucket;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setBucket(BigInteger bucket) {
-		this.bucket = bucket;
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getIphoneId() {
+		return iphoneId;
+	}
+
+	public void setIphoneId(String iphoneId) {
+		this.iphoneId = iphoneId;
 	}
 
 	public Collection<Filter> getFilterCollection() {
@@ -102,6 +116,14 @@ public class Timeframe implements Serializable, IdInterface {
 
 	public void setFilterCollection(Collection<Filter> filterCollection) {
 		this.filterCollection = filterCollection;
+	}
+
+	public Collection<Integration> getIntegrationCollection() {
+		return integrationCollection;
+	}
+
+	public void setIntegrationCollection(Collection<Integration> integrationCollection) {
+		this.integrationCollection = integrationCollection;
 	}
 
 	@Override
@@ -115,10 +137,10 @@ public class Timeframe implements Serializable, IdInterface {
 	public boolean equals(Object object) {
 		// TODO: Warning - this method won't work in the case the id fields are
 		// not set
-		if (!(object instanceof Timeframe)) {
+		if (!(object instanceof IvUser)) {
 			return false;
 		}
-		Timeframe other = (Timeframe) object;
+		IvUser other = (IvUser) object;
 		if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
 			return false;
 		}
@@ -127,7 +149,7 @@ public class Timeframe implements Serializable, IdInterface {
 
 	@Override
 	public String toString() {
-		return "persistence.Timeframe[id=" + id + "]";
+		return "persistence.IvUser[id=" + id + "]";
 	}
 
 }

@@ -23,12 +23,13 @@
 package org.snapimpact.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -39,37 +40,31 @@ import javax.persistence.Table;
  * @author Dave Angulo
  */
 @Entity
-@Table(name = "TIMEFRAME")
+@Table(name = "ORGANIZATION_TYPE")
 @NamedQueries( {
-		@NamedQuery(name = "Timeframe.findAll", query = "SELECT t FROM Timeframe t"),
-		@NamedQuery(name = "Timeframe.findById", query = "SELECT t FROM Timeframe t WHERE t.id = :id"),
-		@NamedQuery(name = "Timeframe.findByBucket", query = "SELECT t FROM Timeframe t WHERE t.bucket = :bucket") })
-public class Timeframe implements Serializable, IdInterface {
-	private static final long	serialVersionUID	= 1L;
+		@NamedQuery(name = "OrganizationType.findAll", query = "SELECT o FROM OrganizationType o"),
+		@NamedQuery(name = "OrganizationType.findById", query = "SELECT o FROM OrganizationType o WHERE o.id = :id"),
+		@NamedQuery(name = "OrganizationType.findByName", query = "SELECT o FROM OrganizationType o WHERE o.name = :name") })
+public class OrganizationType implements Serializable, IdInterface {
+	private static final long				serialVersionUID	= 1L;
 	@Id
 	@Basic(optional = false)
 	@Column(name = "id")
-	private String				id;
-	@Basic(optional = false)
+	private String							id;
 	@Column(name = "name")
-	private String				name;
-	@Basic(optional = false)
-	@Column(name = "bucket")
-	private BigInteger			bucket;
-	@OneToMany(mappedBy = "timeframeId")
-	private Collection<Filter>	filterCollection;
+	private String							name;
+	@ManyToMany(mappedBy = "organizationTypeCollection")
+	private Collection<Filter>				filterCollection;
+	@OneToMany(mappedBy = "organizationTypeId")
+	private Collection<Organization>		organizationCollection;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "organizationTypeId")
+	private Collection<SourceOrgTypeMap>	sourceOrgTypeMapCollection;
 
-	public Timeframe() {
+	public OrganizationType() {
 	}
 
-	public Timeframe(String id) {
+	public OrganizationType(String id) {
 		this.id = id;
-	}
-
-	public Timeframe(String id, String name, BigInteger bucket) {
-		this.id = id;
-		this.name = name;
-		this.bucket = bucket;
 	}
 
 	public String getId() {
@@ -88,20 +83,29 @@ public class Timeframe implements Serializable, IdInterface {
 		this.name = name;
 	}
 
-	public BigInteger getBucket() {
-		return bucket;
-	}
-
-	public void setBucket(BigInteger bucket) {
-		this.bucket = bucket;
-	}
-
 	public Collection<Filter> getFilterCollection() {
 		return filterCollection;
 	}
 
 	public void setFilterCollection(Collection<Filter> filterCollection) {
 		this.filterCollection = filterCollection;
+	}
+
+	public Collection<Organization> getOrganizationCollection() {
+		return organizationCollection;
+	}
+
+	public void setOrganizationCollection(Collection<Organization> organizationCollection) {
+		this.organizationCollection = organizationCollection;
+	}
+
+	public Collection<SourceOrgTypeMap> getSourceOrgTypeMapCollection() {
+		return sourceOrgTypeMapCollection;
+	}
+
+	public void setSourceOrgTypeMapCollection(
+			Collection<SourceOrgTypeMap> sourceOrgTypeMapCollection) {
+		this.sourceOrgTypeMapCollection = sourceOrgTypeMapCollection;
 	}
 
 	@Override
@@ -115,10 +119,10 @@ public class Timeframe implements Serializable, IdInterface {
 	public boolean equals(Object object) {
 		// TODO: Warning - this method won't work in the case the id fields are
 		// not set
-		if (!(object instanceof Timeframe)) {
+		if (!(object instanceof OrganizationType)) {
 			return false;
 		}
-		Timeframe other = (Timeframe) object;
+		OrganizationType other = (OrganizationType) object;
 		if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
 			return false;
 		}
@@ -127,7 +131,7 @@ public class Timeframe implements Serializable, IdInterface {
 
 	@Override
 	public String toString() {
-		return "persistence.Timeframe[id=" + id + "]";
+		return "persistence.OrganizationType[id=" + id + "]";
 	}
 
 }

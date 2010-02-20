@@ -23,7 +23,6 @@
 package org.snapimpact.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -39,36 +38,32 @@ import javax.persistence.Table;
  * @author Dave Angulo
  */
 @Entity
-@Table(name = "TIMEFRAME")
+@Table(name = "DISTANCE")
 @NamedQueries( {
-		@NamedQuery(name = "Timeframe.findAll", query = "SELECT t FROM Timeframe t"),
-		@NamedQuery(name = "Timeframe.findById", query = "SELECT t FROM Timeframe t WHERE t.id = :id"),
-		@NamedQuery(name = "Timeframe.findByBucket", query = "SELECT t FROM Timeframe t WHERE t.bucket = :bucket") })
-public class Timeframe implements Serializable, IdInterface {
+		@NamedQuery(name = "Distance.findAll", query = "SELECT d FROM Distance d"),
+		@NamedQuery(name = "Distance.findById", query = "SELECT d FROM Distance d WHERE d.id = :id"),
+		@NamedQuery(name = "Distance.findByBucket", query = "SELECT d FROM Distance d WHERE d.bucket = :bucket") })
+public class Distance implements Serializable, IdInterface {
 	private static final long	serialVersionUID	= 1L;
 	@Id
 	@Basic(optional = false)
 	@Column(name = "id")
 	private String				id;
 	@Basic(optional = false)
-	@Column(name = "name")
-	private String				name;
-	@Basic(optional = false)
 	@Column(name = "bucket")
-	private BigInteger			bucket;
-	@OneToMany(mappedBy = "timeframeId")
+	private short				bucket;
+	@OneToMany(mappedBy = "distanceId")
 	private Collection<Filter>	filterCollection;
 
-	public Timeframe() {
+	public Distance() {
 	}
 
-	public Timeframe(String id) {
+	public Distance(String id) {
 		this.id = id;
 	}
 
-	public Timeframe(String id, String name, BigInteger bucket) {
+	public Distance(String id, short bucket) {
 		this.id = id;
-		this.name = name;
 		this.bucket = bucket;
 	}
 
@@ -80,19 +75,11 @@ public class Timeframe implements Serializable, IdInterface {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public BigInteger getBucket() {
+	public short getBucket() {
 		return bucket;
 	}
 
-	public void setBucket(BigInteger bucket) {
+	public void setBucket(short bucket) {
 		this.bucket = bucket;
 	}
 
@@ -115,10 +102,10 @@ public class Timeframe implements Serializable, IdInterface {
 	public boolean equals(Object object) {
 		// TODO: Warning - this method won't work in the case the id fields are
 		// not set
-		if (!(object instanceof Timeframe)) {
+		if (!(object instanceof Distance)) {
 			return false;
 		}
-		Timeframe other = (Timeframe) object;
+		Distance other = (Distance) object;
 		if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
 			return false;
 		}
@@ -127,7 +114,7 @@ public class Timeframe implements Serializable, IdInterface {
 
 	@Override
 	public String toString() {
-		return "persistence.Timeframe[id=" + id + "]";
+		return "persistence.Distance[id=" + id + "]";
 	}
 
 }
