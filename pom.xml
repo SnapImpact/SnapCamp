@@ -115,6 +115,11 @@
             <artifactId>persistence-api</artifactId>
             <version>1.0</version>
         </dependency>
+	    <dependency>
+	      <groupId>org.scala-tools</groupId>
+	      <artifactId>time</artifactId>
+	      <version>2.7.0-0.1</version>
+	    </dependency>
         <!-- for LiftConsole -->
         <dependency>
             <groupId>org.scala-lang</groupId>
