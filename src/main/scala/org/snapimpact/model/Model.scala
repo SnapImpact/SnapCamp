@@ -36,4 +36,16 @@ object Model extends LocalEMF("pgunit") with RequestVarEM {
 
         //TODO: add findNearLocation here once you've figured out what the hell the syntax is
     }
+
+
+    object InterestArea {
+        def findAll = Model.findAll("InterestArea.findAll")
+
+        def findById(id: String) = Model.findAll("InterestArea.findById", 'id -> id) match {
+            case list if list.size > 0 => Some(list.first)
+            case _ => None
+        }
+
+        def findByName(name: String) = Model.findAll("InterestArea.findByName", 'name -> name)
+    }
 }

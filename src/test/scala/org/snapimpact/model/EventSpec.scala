@@ -3,13 +3,6 @@ package org.snapimpact.model
 import org.specs.Specification
 import org.slf4j.LoggerFactory
 
-/**
- * Created by IntelliJ IDEA.
- * User: zkim
- * Date: Feb 20, 2010
- * Time: 10:56:15 PM
- * To change this template use File | Settings | File Templates.
- */
 
 object EventSpec extends Specification {
     import DbTestUtil.{withTx, clearDatabase}
@@ -37,11 +30,12 @@ object EventSpec extends Specification {
 
         doAfter {
             clearDatabase
+            Model.close
         }
 
         "Be created successfully" in {
             val eventFromDb = Model.findAll[Event]("Event.findById", "id" -> ev1.getId).first
-            eventFromDb.getId must be(ev1.getId)
+            eventFromDb.getId must be(ev1.getId)            
         }
 
         "findAll should find 3 Event records" in {
