@@ -111,8 +111,8 @@ object Organizations {
 
 case class VolunteerOpportunity(
   volunteerOpportunityID:String,
-  sponsoringOrganizationsIDs:String[/*sponsoringOrganizationID*/],
-  volunteerHubOrganizationsIDs:String[/*volunteerHubOrganizationID*/],
+  sponsoringOrganizationsIDs:List[String],
+  volunteerHubOrganizationsIDs:List[String],
   title:String,
   abstractStr:String, /* * is abstract in schema ** */
   volunteersNeeded:Integer,
