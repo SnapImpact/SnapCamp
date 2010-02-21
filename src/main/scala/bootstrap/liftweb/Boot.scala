@@ -38,6 +38,8 @@ class Boot {
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
     Menu(Loc("Static", Link(List("static"), true, "/static/index"), 
 	     "Static Content")) ::
+    Menu(Loc("api", Link(List("api"), true, "/api/index"), 
+	     "API")) ::
     Nil
 
     LiftRules.setSiteMap(SiteMap(entries:_*))
@@ -55,6 +57,11 @@ class Boot {
       Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
 
     LiftRules.early.append(makeUtf8)
+
+    LiftRules.dispatch.append { 
+      case Req("api" :: "volopps" :: Nil, _, _) =>
+        org.snapimpact.dispatch.api.volopps _
+    }
 
     S.addAround(DB.buildLoanWrapper)
   }
