@@ -23,6 +23,8 @@ class SnapCampProject(info: ProjectInfo) extends DefaultWebProject(info) {
   // required because Ivy doesn't pull repositories from poms
   val smackRepo = "m2-repository-smack" at "http://maven.reucon.com/public"
 
+
+  //UGLY: Growl notifications for successful / failed tests 
   override def testListeners : Seq[TestReportListener] = super.testListeners ++ Seq(new TestReportListener {
       def startGroup(name: String) = {}
       /** called for each test method or equivalent */
