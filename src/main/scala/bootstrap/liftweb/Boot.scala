@@ -40,6 +40,8 @@ class Boot {
 	     "Static Content")) ::
     Menu(Loc("api", Link(List("api"), true, "/api/index"), 
 	     "API")) ::
+    Menu(Loc("Test", Link(List("Test"), true, "/test/hello"),
+	     "TestOrn")) ::
     Nil
 
     LiftRules.setSiteMap(SiteMap(entries:_*))
