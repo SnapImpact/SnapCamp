@@ -26,11 +26,11 @@
         <class>org.snapimpact.model.Timestamp</class>
 
 		<properties>
-			<property name="eclipselink.jdbc.driver" value="org.postgresql.Driver" />
-			<property name="eclipselink.jdbc.url" value="jdbc:postgresql://localhost/snapcamp" />
+			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost/snapcamp" />
 			<!-- I work in this example without user / password.-->
-			<property name="eclipselink.jdbc.user" value="postgres" />
-			<property name="eclipselink.jdbc.password" value="" />
+			<property name="javax.persistence.jdbc.user" value="postgres" />
+			<property name="javax.persistence.jdbc.password" value="" />
 
 			<!-- EclipseLink should create the database schema automatically -->
 
