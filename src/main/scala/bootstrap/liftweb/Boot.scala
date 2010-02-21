@@ -32,7 +32,7 @@ class Boot {
 
     // where to search snippet
     LiftRules.addToPackages("org.snapimpact")
-    Schemifier.schemify(true, Log.infoF _, SampleModel)
+    
 
     // Build SiteMap
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
