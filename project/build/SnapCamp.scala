@@ -16,6 +16,7 @@ class SnapCampProject(info: ProjectInfo) extends DefaultWebProject(info) {
     "org.slf4j" % "slf4j-log4j12" % "1.4.1",
     "org.eclipse.persistence" % "eclipselink" % "2.0.0",
     "javax.persistence" % "persistence-api" % "1.0",
+    "org.scala-tools" % "time" % "2.7.0-0.1"
   ) ++ super.libraryDependencies
 
   // required because Ivy doesn't pull repositories from poms 
