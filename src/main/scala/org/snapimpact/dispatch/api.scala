@@ -4,7 +4,7 @@ import scala.xml.NodeSeq
 import net.liftweb.http.{S, LiftResponse, InMemoryResponse, XmlResponse}
 import net.liftweb.common.{Box, Empty, Full}
 import net.liftweb.json._
-
+import org.snapimpact.lib.Serializers.anyToRss
 
 
 
@@ -31,5 +31,5 @@ object api {
   val sampleHtml =
     <p>here's some info on volunteer opportunities</p>
 
-  val sampleRss = <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:fp="http://www.allforgood.org/" xmlns:georss="http://www.georss.org/georss" xmlns:gml="http://www.opengis.net/gml"><p>here's some rss with the wrong doctype</p></rss>
+  val sampleRss = <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:fp="http://www.allforgood.org/" xmlns:georss="http://www.georss.org/georss" xmlns:gml="http://www.opengis.net/gml">{anyToRss(sample)}</rss>
 }

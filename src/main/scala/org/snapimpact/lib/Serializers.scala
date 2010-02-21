@@ -19,7 +19,7 @@ object Serializers {
    */
   def anyToRss(a: AnyRef): NodeSeq = a match { 
     case p if primitives contains p.getClass => Text(p.toString)
-    case s: Seq[AnyRef]  => s.flatMap(x => anyToRss(x))
+    case s: Seq[AnyRef]  => s.flatMap(x => anyToRss(x) ++ Text(" "))
     case _ => ccToRss(a)
   } 
 
