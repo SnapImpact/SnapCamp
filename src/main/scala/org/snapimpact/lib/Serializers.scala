@@ -28,9 +28,15 @@ object Serializers {
    */
   def ccToRss(cc: AnyRef): NodeSeq = { 
     val fields = cc.getClass.getDeclaredFields
-    fields.map( f => { 
-      f.setAccessible(true)
-      Elem(ns, f.getName, Null, TopScope, anyToRss(f.get(cc)): _*)
+    fields.map( f => {
+      val fname = f.getName
+      //hack to avoid recursing indefinitely on enums
+      if (fname == "MODULE$") {
+        XText("")  
+      } else { 
+        f.setAccessible(true)
+        Elem(ns, fname, Null, TopScope, anyToRss(f.get(cc)): _*)
+      } 
     })
   }
   
