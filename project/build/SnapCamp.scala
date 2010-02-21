@@ -2,13 +2,13 @@ import sbt._
 
 class SnapCampProject(info: ProjectInfo) extends DefaultWebProject(info) {
   val mavenLocal = "Local Maven Repository" at "file://"+Path.userHome+"/.m2/repository"
-  val liftVersion = "2.0-M2" 
+  val liftVersion = "2.0-M2"
 
   override def libraryDependencies = Set(
-    "net.liftweb" % "lift-webkit" % liftVersion % "compile->default", 
-    "net.liftweb" % "lift-mapper" % liftVersion % "compile->default", 
-    "net.liftweb" % "lift-jpa" % liftVersion % "compile->default", 
-    "org.mortbay.jetty" % "jetty" % "6.1.22" % "test->default", 
+    "net.liftweb" % "lift-webkit" % liftVersion % "compile->default",
+    "net.liftweb" % "lift-mapper" % liftVersion % "compile->default",
+    "net.liftweb" % "lift-jpa" % liftVersion % "compile->default",
+    "org.mortbay.jetty" % "jetty" % "6.1.22" % "test->default",
     "com.h2database" % "h2" % "1.2.121",
     "junit" % "junit" % "4.5" % "test->default",
     "org.scala-tools.testing" % "specs" % "1.6.1" % "test->default",
@@ -19,6 +19,26 @@ class SnapCampProject(info: ProjectInfo) extends DefaultWebProject(info) {
     "org.scala-tools" % "time" % "2.7.0-0.1"
   ) ++ super.libraryDependencies
 
-  // required because Ivy doesn't pull repositories from poms 
+  // required because Ivy doesn't pull repositories from poms
   val smackRepo = "m2-repository-smack" at "http://maven.reucon.com/public"
+
+  override def testListeners : Seq[TestReportListener] = super.testListeners ++ Seq(new TestReportListener {
+      def startGroup(name: String) = {}
+      /** called for each test method or equivalent */
+      def testEvent(event: TestEvent) = {}
+      /** called if there was an error during test */
+      def endGroup(name: String, t: Throwable) = {}
+      /** called if test completed */
+      def endGroup(name: String, result: Result.Value) = {
+
+          import Process._
+
+          result match {
+              case Result.Passed => "growlnotify -m pass" !
+              case _ => "growlnotify -m FAIL " + name + "" !
+          }
+      }
+      /** Used by the test framework for logging test results*/
+      //override def contentLogger: Option[org.scalatools.testing.Logger] = None
+  })
 }
