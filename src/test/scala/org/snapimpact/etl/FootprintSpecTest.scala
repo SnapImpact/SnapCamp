@@ -26,13 +26,13 @@ object FootprintSpecTest {
  * Read the sample file
  */
 class FootprintSpecTest extends TestCase("app") {
-  def testFootprintFeed() = {
-    val ffXml = XML.fromFile("src/test/resources/sampleData0.1.r1254.xml")
-    val xmlFeed = FootprintFeed.fromXML(subject)
-    println(xmlFeed.toString)
-  }
+//  def testFootprintFeed() = {
+//    val ffXml = XML.fromFile("src/test/resources/sampleData0.1.r1254.xml")
+//    val xmlFeed = FootprintFeed.fromXML(subject)
+//    println(xmlFeed.toString)
+//  }
 
-  def testDurations() = {
+  def testDuration() = {
     val subject = <duration>P0Y1347M0D</duration>
 
     val item = Duration.fromXML(subject)
