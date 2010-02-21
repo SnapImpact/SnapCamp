@@ -22,7 +22,7 @@ case class FootprintFeed(
 object FootprintFeed {
   def fromXML(node: scala.xml.Node) =
     FootprintFeed(
-      FeedInfo.fromXML((node \ "feedInfo").headOption.get),
+      FeedInfo.fromXML((node \ "FeedInfo").headOption.get),
       Organizations.fromXML((node \ "Organizations").headOption.get),
       VolunteerOpportunities.fromXML((node \ "VolunteerOpportunities").headOption.get),
       Reviews.fromXML((node \ "Reviews").headOption.get)

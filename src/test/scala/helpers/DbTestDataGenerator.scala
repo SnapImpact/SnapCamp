@@ -1,6 +1,7 @@
-package org.snapimpact.model
+package helpers
 
 import java.util.{ArrayList, UUID}
+import org.snapimpact.model.{InterestArea, Event}
 
 /**
  * Created by IntelliJ IDEA.
