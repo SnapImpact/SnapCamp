@@ -1,6 +1,6 @@
 package org.snapimpact.lib
 
-import scala.xml.{NodeSeq, Elem, Null, TopScope, Text}
+import scala.xml.{NodeSeq, Elem, Null, TopScope, Text => XText}
 
 object Serializers {
   val ns = "fp"
@@ -18,8 +18,8 @@ object Serializers {
    * serialize anything to allforgood fp rss
    */
   def anyToRss(a: AnyRef): NodeSeq = a match { 
-    case p if primitives contains p.getClass => Text(p.toString)
-    case s: Seq[AnyRef]  => s.flatMap(x => anyToRss(x) ++ Text(" "))
+    case p if primitives contains p.getClass => XText(p.toString)
+    case s: Seq[AnyRef]  => s.flatMap(x => anyToRss(x) ++ XText(" "))
     case _ => ccToRss(a)
   } 
 
