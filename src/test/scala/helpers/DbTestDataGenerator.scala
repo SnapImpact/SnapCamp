@@ -1,6 +1,7 @@
-package org.snapimpact.model
+package helpers
 
-import java.util.UUID
+import java.util.{ArrayList, UUID}
+import org.snapimpact.model.{InterestArea, Event}
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,12 +24,23 @@ object DbTestDataGenerator {
         e.setEmail(rndStr)
         e.setSourceKey(rndStr)
         e.setSourceUrl(rndStr)
+        e.setInterestAreaCollection(new ArrayList[InterestArea]())
+        e.getInterestAreaCollection.add(genInterestArea)
+        e.getInterestAreaCollection.add(genInterestArea)
+        e.getInterestAreaCollection.add(genInterestArea)
 
         e
     }
 
+    def genInterestArea = {
+        val i = new InterestArea
+        i.setId(rndStr)
+        i.setName(rndStr)
+
+        i
+    }
 
     def rndStr = UUID.randomUUID.toString
     def rndLong = (Math.random * 1000).asInstanceOf[Long]
-
+    
 }

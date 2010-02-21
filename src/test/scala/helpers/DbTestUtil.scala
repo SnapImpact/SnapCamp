@@ -1,6 +1,7 @@
-package org.snapimpact.model
+package helpers
 
 import javax.persistence.EntityManager
+import org.snapimpact.model.Model
 
 object DbTestUtil {
 
