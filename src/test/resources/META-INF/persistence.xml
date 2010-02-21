@@ -27,13 +27,13 @@
 
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
-			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost/snapcamp" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost/snapcamp_test" />
 			<!-- I work in this example without user / password.-->
 			<property name="javax.persistence.jdbc.user" value="postgres" />
 			<property name="javax.persistence.jdbc.password" value="" />
 
 			<!-- EclipseLink should create the database schema automatically -->
-
+            <property name="show-sql" value="true" />
 			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
 			<property name="eclipselink.ddl-generation.output-mode" value="database" />
 		</properties>
