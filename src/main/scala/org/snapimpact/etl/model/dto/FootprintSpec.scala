@@ -185,3 +185,26 @@ case class DateTimeOlsonDefaultPacific(
 case class TimeOlson() {
   
 }
+
+sealed trait YesNoEnum {
+  def value: String
+  def fromXML(node: scala.xml.Node) = node.text match {
+    case "Yes" => Yes
+    case "No" => No
+  }
+}
+case object Yes extends YesNoEnum { val value = "Yes" }
+case object No extends YesNoEnum { val value = "No" }
+
+sealed trait SexRestrictedEnum {
+  def value: String
+  def fromXML(node: scala.xml.Node ) = node.text match {
+    case "Male" => Male
+    case "Female" => Female
+    case "Neither" => Neither
+  }
+}
+case object Male extends SexRestrictedEnum { val value = "Male"}
+case object Female extends SexRestrictedEnum { val value = "Female" }
+case object Neither extends SexRestrictedEnum { val value = "Neither" }
+
