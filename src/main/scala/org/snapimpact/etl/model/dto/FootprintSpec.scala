@@ -13,19 +13,26 @@ import org.joda.time.DateTime
 
 case class FootprintFeed(
   feedInfo: FeedInfo,
-  organizations: Organizations,
+  // Organizations is optional
+  organizations: Option[Organizations],
   opportunities: VolunteerOpportunities,
-  reviews: Reviews) extends DataModel {
+  // Reviews is optional
+  reviews: Option[Reviews]) extends DataModel {
 }
 
 object FootprintFeed {
   def fromXML(node: scala.xml.Node) =
     FootprintFeed(
-      FeedInfo.fromXML((node \ "feedInfo").headOption.get),
-      // TODO Organizations is optional
-      Organizations.fromXML((node \ "Organizations").headOption.get),
+      FeedInfo.fromXML((node \ "FeedInfo").headOption.get),
+      (node \ "Organizations").headOption match {
+        case None    => None
+        case Some(x) => Some(Organizations.fromXML(x))
+      },
       VolunteerOpportunities.fromXML((node \ "VolunteerOpportunities").headOption.get),
-      Reviews.fromXML((node \ "Reviews").headOption.get)
+      (node \ "Reviews").headOption match {
+        case None    => None
+        case Some(x) => Some(Reviews.fromXML(x))
+      }
     )
 }
 
