@@ -35,7 +35,7 @@ case class Organizations(
 
 object Organizations {
   def fromXML(node: scala.xml.Node) =
-    Organizations((node \ "Organization").toList.map(Organizations.fromXML(_)))
+    Organizations((node \ "Organizations").toList.map(Organizations.fromXML(_)))
 }
 
 case class VolunteerOpportunities(
@@ -104,15 +104,10 @@ case class Location(
 
 }
 
-object Organizations {
-  def fromXML(node: scala.xml.Node) =
-    Organizations((node \ "Organization").toList.map(Organization.fromXML(_)))
-}
-
 case class VolunteerOpportunity(
   volunteerOpportunityID:String,
-  sponsoringOrganizationsIDs:String[/*sponsoringOrganizationID*/],
-  volunteerHubOrganizationsIDs:String[/*volunteerHubOrganizationID*/],
+  sponsoringOrganizationsIDs:List[String/*sponsoringOrganizationID*/],
+  volunteerHubOrganizationsIDs:List[String/*volunteerHubOrganizationID*/],
   title:String,
   abstractStr:String, /* * is abstract in schema ** */
   volunteersNeeded:Integer,
