@@ -13,9 +13,7 @@ import java.math.BigInteger
 class HelloWorld {
     lazy val date: Box[Date] = DependencyFactory.inject[Date] // inject the date
 
-    def howdy(in: NodeSeq): NodeSeq = {
-        val tf = new Timeframe(UUID.randomUUID.toString, UUID.randomUUID.toString, new BigInteger("10"))
-        Model.merge(tf)
+    def howdy(in: NodeSeq): NodeSeq = {        
         Helpers.bind("b", in, "time" -> date.map(d => Text(d.toString)))
     }
 
