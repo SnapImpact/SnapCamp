@@ -2,6 +2,7 @@ package org.snapimpact.etl.model.dto
 
 import java.util.Date
 import org.snapimpact.etl.model.DataModel
+import org.joda.time.DateTime
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,37 +13,47 @@ import org.snapimpact.etl.model.DataModel
  */
 
 case class FootprintFeed(
-  partNum: String,
-  productName: String,
-  quantity: BigInt,
-  USPrice: BigDecimal,
-  comment: Option[String],
-  shipDate: Option[java.util.Calendar]) extends DataModel {
+  feedInfo: FeedInfo,
+  organizations: Organizations,
+  opportunities: VolunteerOpportunities,
+  reviews: Reviews) extends DataModel {
 }
 
 object FootprintFeed {
   def fromXML(node: scala.xml.Node) =
-    Item((node \ "@partNum").text,
-      (node \ "productName").text,
-      BigInt((node \ "quantity").text),
-      BigDecimal((node \ "USPrice").text),
-      (node \ "comment").headOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node \ "shipDate").headOption match {
-        case None    => None
-        case Some(x) => Some(Helper.toCalendar(x.text))
-      })
+    FootprintFeed(
+      FeedInfo(node \ "feedInfo"),
+      Organizations(node \ "Organizations"),
+      VolunteerOpportunities((node \ "VolunteerOpportunities")),
+      Reviews((node \ "Reviews"))
+    )
 }
 
-case class Items(
-  item: List[Item]) extends DataModel {
+case class Organizations(
+  orgs: List[Organization]) extends DataModel {
 }
 
-object Items {
+object Organizations {
   def fromXML(node: scala.xml.Node) =
-    Items((node \ "item").toList.map(Item.fromXML(_)))
+    Organizations((node \ "Organization").toList.map(Organizations.fromXML(_)))
+}
+
+case class VolunteerOpportunities(
+  opps: List[VolunteerOpportunity]) extends DataModel {
+}
+
+object VolunteerOpportunities {
+  def fromXML(node: scala.xml.Node) =
+    VolunteerOpportunities((node \ "VolunteerOpportunity").toList.map(VolunteerOpportunities.fromXML(_)))
+}
+
+case class Reviews(
+  reviews: List[Review]) extends DataModel {
+}
+
+object Reviews {
+  def fromXML(node: scala.xml.Node) =
+    Reviews((node \ "review").toList.map(Reviews.fromXML(_)))
 }
 
 case class FeedInfo(
@@ -106,11 +117,11 @@ case class VolunteerOpportunity(
   abstractStr:String, /* * is abstract in schema ** */
   volunteersNeeded:Integer,
   rsvpCount:Integer,
-  dateTimeDurations:DateTimeDuration[],
-  locations:Location[],
+  dateTimeDurations:List[DateTimeDuration],
+  locations:List[Location],
   paid:YesNoEnum,
-  audienceTags:String[],
-  categoryTags:String[],
+  audienceTags:List[String],
+  categoryTags:List[String],
   minimumAge:Integer,
   sexRestrictedTo:SexRestrictedEnum,
   skills:String,
@@ -126,17 +137,18 @@ case class VolunteerOpportunity(
 
 }
 
-case class Review() extends DataModel {
-  reviewID:String,
-  organizationID:String,
-  volunteerOpportunityID:String,
-  rating:Float,
-  ratingMaximum:Float,
-  text:String,
-  reviewerName:String,
-  reviewerID:String,
-  reviewerRole:String,
-  lastUpdated:DateTimeOlsonDefaultPacific
+case class Review(
+    reviewID:String,
+    organizationID:String,
+    volunteerOpportunityID:String,
+    rating:Float,
+    ratingMaximum:Float,
+    text:String,
+    reviewerName:String,
+    reviewerID:String,
+    reviewerRole:String,
+    lastUpdated:DateTimeOlsonDefaultPacific
+  ) extends DataModel {
 }
 
 object Reviews {
