@@ -36,10 +36,10 @@ class Boot {
 
     // Build SiteMap
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
+    Menu(Loc("docs.api", List("docs", "api"), "API Docs")) ::
     Menu(Loc("Static", Link(List("static"), true, "/static/index"), 
 	     "Static Content")) ::
-    Menu(Loc("api", Link(List("api"), true, "/api/index"), 
-	     "API")) ::
+    Menu(Loc("api", Link(List("api"), true, "/api"), "API", Hidden)) ::
     Menu(Loc("Test", Link(List("Test"), true, "/test/hello"),
 	     "TestOrn")) ::
     Nil
