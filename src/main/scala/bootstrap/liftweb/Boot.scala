@@ -61,6 +61,8 @@ class Boot {
     LiftRules.early.append(makeUtf8)
 
     LiftRules.dispatch.append { 
+      case r @ Req("api" :: "upload" :: Nil, _, _) =>
+        () => org.snapimpact.dispatch.FeedUpload.upload(r)
       case Req("api" :: "volopps" :: Nil, _, _) =>
         org.snapimpact.dispatch.api.volopps _
     }
