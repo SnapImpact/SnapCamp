@@ -1,5 +1,4 @@
 package org.snapimpact.dispatch
-//import _root_.net.liftweb.example.model._
 import _root_.scala.xml.{NodeSeq, Text, Group, XML}
 import _root_.net.liftweb.http._
 import _root_.net.liftweb.http.S
@@ -19,6 +18,9 @@ import java.io.ByteArrayInputStream
  * Date: Feb 23, 2010
  * Time: 8:49:19 PM
  * To change this template use File | Settings | File Templates.
+ *
+ * Almost worked: wget --post-file sampleData0.1.r1254.xml localhost:8080/api/upload
+ * 
  */
 
 object FeedUpload {
