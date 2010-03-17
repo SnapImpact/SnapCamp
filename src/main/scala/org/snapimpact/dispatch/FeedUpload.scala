@@ -1,5 +1,5 @@
 package org.snapimpact.dispatch
-import _root_.net.liftweb.example.model._
+//import _root_.net.liftweb.example.model._
 import _root_.scala.xml.{NodeSeq, Text, Group}
 import _root_.net.liftweb.http._
 import _root_.net.liftweb.http.S
@@ -24,9 +24,10 @@ object FeedUpload {
   private object theUpload extends RequestVar[Box[FileParamHolder]](Empty)
 
   def upload(r:Req): Box[LiftResponse] = {
-    r.uploadedFiles /* list [FileParamHolder] */
-    r.body/* Box[Array[Byte]] */
-    r.xml/* Box[Elem] */
+//    r.uploadedFiles /* list [FileParamHolder] */
+//    r.body/* Box[Array[Byte]] */
+//    r.xml/* Box[Elem] */
+    Empty
   }
 }
   

@@ -39,6 +39,7 @@ class Boot {
     Menu(Loc("docs.api", List("docs", "api"), "API Docs")) ::
     Menu(Loc("Static", Link(List("static"), true, "/static/index"), "Static Content")) ::
     Menu(Loc("api", Link(List("api"), true, "/api"), "API", Hidden)) ::
+    Menu(Loc("xmlupload", List("xml_upload"), "Xml Upload")) ::
     Menu(Loc("test", Link(List("test"), true, "/test/hello"), "TestOrn")) ::
     Nil
 
