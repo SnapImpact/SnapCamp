@@ -12,6 +12,7 @@
     <inceptionYear>2010</inceptionYear>
     <properties>
         <scala.version>2.7.7</scala.version>
+        <lift.version>2.0-M3</lift.version>
     </properties>
 
     <repositories>
@@ -38,12 +39,12 @@
         <dependency>
             <groupId>net.liftweb</groupId>
             <artifactId>lift-mapper</artifactId>
-            <version>2.0-M2</version>
+            <version>${lift.version}</version>
         </dependency>
         <dependency>
             <groupId>net.liftweb</groupId>
             <artifactId>lift-jpa</artifactId>
-            <version>2.0-M2</version>
+            <version>${lift.version}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -128,6 +129,16 @@
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
                 <version>2.13.1</version>
+                <configuration>
+                  <jvmArgs>
+                    <jvmArg>-Xmx1024m</jvmArg>
+                  </jvmArgs>
+                  <args>
+                    <arg>-unchecked</arg>
+                    <arg>-deprecation</arg>
+                    <arg>-Xno-varargs-conversion</arg>
+                  </args>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

@@ -28,19 +28,28 @@ object FeedUpload {
   private object theUpload extends RequestVar[Box[FileParamHolder]](Empty)
 
   def upload(r:Req): Box[LiftResponse] = {
-//    r.uploadedFiles /* list [FileParamHolder] */
+    /* list [FileParamHolder] */
+    r.uploadedFiles.map(v => {
+      val subject = XML.load(new ByteArrayInputStream(v.file))
+      val item = FootprintFeed.fromXML(subject)
+      println("FeedUpload.upload: "+item.toString)
+      v.fileName
+    })
+
 //    r.body/* Box[Array[Byte]] */
 //    r.xml/* Box[Elem] */
 //    "file_name" -> theUpload.is.map(v => Text(v.fileName)),
 //    "mime_type" -> theUpload.is.map(v => Box.legacyNullTest(v.mimeType).map(Text).openOr(Text("No mime type supplied"))), // Text(v.mimeType)),
 //    "length" -> theUpload.is.map(v => Text(v.file.length.toString)),
 //    "md5" -> theUpload.is.map(v => Text(hexEncode(md5(v.file))))
-    theUpload.is.map(v => {
-      val subject = XML.load(new ByteArrayInputStream(v.file))
-      val item = FootprintFeed.fromXML(subject)
-      println("FeedUpload.upload: "+item.toString)
-      v.fileName
-    })
+
+    // so far this isn't getting set
+  //    theUpload.is.map(v => {
+//      val subject = XML.load(new ByteArrayInputStream(v.file))
+//      val item = FootprintFeed.fromXML(subject)
+//      println("FeedUpload.upload: "+item.toString)
+//      v.fileName
+//    })
 
     Full(OkResponse())
   }

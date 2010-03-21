@@ -46,9 +46,9 @@ class XmlUploadSnippet {
    * Bind the appropriate XHTML to the form
    */
   def upload(xhtml: Group): NodeSeq =
-  if (S.get_?) bind("ul", chooseTemplate("choose", "get", xhtml),
+    if (S.get_?) bind("ul", chooseTemplate("choose", "get", xhtml),
                     "file_upload" -> fileUpload(ul => theUpload(Full(ul))))
-  else bind("ul", chooseTemplate("choose", "post", xhtml),
+    else bind("ul", chooseTemplate("choose", "post", xhtml),
             "file_name" -> theUpload.is.map(v => Text(v.fileName)),
             "mime_type" -> theUpload.is.map(v => Box.legacyNullTest(v.mimeType).map(Text).openOr(Text("No mime type supplied"))), // Text(v.mimeType)),
             "length" -> theUpload.is.map(v => Text(v.file.length.toString)),
@@ -57,13 +57,13 @@ class XmlUploadSnippet {
 
 
   def lang(xhtml: Group): NodeSeq =
-  bind("showLoc", xhtml,
+    bind("showLoc", xhtml,
        "lang" -> locale.getDisplayLanguage(locale),
        "select" -> selectObj(locales.map(lo => (lo, lo.getDisplayName)),
                              definedLocale, setLocale))
 
   private def locales =
-  Locale.getAvailableLocales.toList.sort(_.getDisplayName < _.getDisplayName)
+    Locale.getAvailableLocales.toList.sort(_.getDisplayName < _.getDisplayName)
 
   private def setLocale(loc: Locale) = definedLocale(Full(loc))
 }
