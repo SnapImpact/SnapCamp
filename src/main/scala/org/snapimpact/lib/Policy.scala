@@ -3,140 +3,134 @@ package org.snapimpact.lib
 import org.scala_tools.time.Imports._
 
 /**
- * Classes related to search parameters.
+ * Classes related to search.
+ *
  */
 
-abstract class SearchQuery {}
+// Where in the world are the events of San Diego?
+case class LatLong(lat: Double, long: Double) {}
 
-abstract class GeoQuery extends SearchQuery() {}
-
-case class State(id: String) extends GeoQuery {
-    def isValid: Boolean = Constants.UspsStateAbbr.contains(id)
-}
-case class City(name: String, state: State) extends GeoQuery {}
-case class County(name: String, state: State) extends GeoQuery {}
-case class Zip(code: String) extends GeoQuery {}
-case class LatLong(lat: Double, long: Double) extends GeoQuery {}
-case object Discover extends GeoQuery {}
-
-abstract class TemporalQuery extends SearchQuery() {}
-
-case class TimeWindow(after: DateTime, before: DateTime)
-    extends TemporalQuery {}
-
-abstract class CategoryQuery extends SearchQuery() {}
-
-case class Category(name: String) extends CategoryQuery() {}
-
-abstract class TagQuery extends SearchQuery() {}
-
-case class Tag(name: String) extends TagQuery() {}
-
-abstract class TextQuery extends SearchQuery() {}
-
-case class Text(str: String) extends SearchQuery() {}
+// What do we care/not-care about?
+case class RSWhere(
+    radius: Double,     // how far to search from latLong
+    after: DateTime,    // only events after
+    before: DateTime,   // only events before
+    tags: Seq[String],  // for this set of tags
+    categories: Seq[String],    // in these categories
+    texts: Seq[String]  // and oh yeah, free form text constraints
+    ) {}
 
 /**
  * Classes related to Order preference
+ *
+ * To date we have output displayed ByTime, by TimeBins and/or ByGeo.
+ * TimeBins are predefined but can be ordered as preferred.  There
+ * is a bit more flexibility here than really needed but should be
+ * useful if new order types are defined.  E.g., ByCategory, ByTag, etc.
+ *
+ * Example:
+ *
+ *  val policy = new Policy(latLong, constraints, List( ByGeo, ByTime ) )
+ *
  */
-
-class OrderPref(val order: Seq[OrderVal]) {}
 
 abstract class OrderVal {}
 
-abstract class TimeBucket {}
+abstract class TimeBin {}
 
-case object Today extends TimeBucket() {}
-case object Tomorrow extends TimeBucket() {}
-case object ThisWeek extends TimeBucket() {}
-case object ThisMonth extends TimeBucket() {}
+case object Today extends TimeBin() {}
+case object Tomorrow extends TimeBin() {}
+case object ThisWeek extends TimeBin() {}
+case object ThisMonth extends TimeBin() {}
 
 abstract class TimeVal extends OrderVal() {}
 
 case object ByTime extends TimeVal() {}
-case class ByTimeBuckets(buckets: Seq[TimeBucket]) extends TimeVal() {}
+case class ByTimeBins(bins: Seq[TimeBin]) extends TimeVal() {}
 
 object Constants {
-    val UspsStateAbbr: Map[String,String] = Map(
-        "AL" -> "ALABAMA",
-        "AK" -> "ALASKA",
-        "AS" -> "AMERICAN SAMOA",
-        "AZ" -> "ARIZONA",
-        "AR" -> "ARKANSAS",
-        "CA" -> "CALIFORNIA",
-        "CO" -> "COLORADO",
-        "CT" -> "CONNECTICUT",
-        "DE" -> "DELAWARE",
-        "DC" -> "DISTRICT OF COLUMBIA",
-        "FM" -> "FEDERATED STATES OF MICRONESIA",
-        "FL" -> "FLORIDA",
-        "GA" -> "GEORGIA",
-        "GU" -> "GUAM",
-        "HI" -> "HAWAII",
-        "ID" -> "IDAHO",
-        "IL" -> "ILLINOIS",
-        "IN" -> "INDIANA",
-        "IA" -> "IOWA",
-        "KS" -> "KANSAS",
-        "KY" -> "KENTUCKY",
-        "LA" -> "LOUISIANA",
-        "ME" -> "MAINE",
-        "MH" -> "MARSHALL ISLANDS",
-        "MD" -> "MARYLAND",
-        "MA" -> "MASSACHUSETTS",
-        "MI" -> "MICHIGAN",
-        "MN" -> "MINNESOTA",
-        "MS" -> "MISSISSIPPI",
-        "MO" -> "MISSOURI",
-        "MT" -> "MONTANA",
-        "NE" -> "NEBRASKA",
-        "NV" -> "NEVADA",
-        "NH" -> "NEW HAMPSHIRE",
-        "NJ" -> "NEW JERSEY",
-        "NM" -> "NEW MEXICO",
-        "NY" -> "NEW YORK",
-        "NC" -> "NORTH CAROLINA",
-        "ND" -> "NORTH DAKOTA",
-        "MP" -> "NORTHERN MARIANA ISLANDS",
-        "OH" -> "OHIO",
-        "OK" -> "OKLAHOMA",
-        "OR" -> "OREGON",
-        "PW" -> "PALAU",
-        "PA" -> "PENNSYLVANIA",
-        "PR" -> "PUERTO RICO",
-        "RI" -> "RHODE ISLAND",
-        "SC" -> "SOUTH CAROLINA",
-        "SD" -> "SOUTH DAKOTA",
-        "TN" -> "TENNESSEE",
-        "TX" -> "TEXAS",
-        "UT" -> "UTAH",
-        "VT" -> "VERMONT",
-        "VI" -> "VIRGIN ISLANDS",
-        "VA" -> "VIRGINIA",
-        "WA" -> "WASHINGTON",
-        "WV" -> "WEST VIRGINIA",
-        "WI" -> "WISCONSIN",
-        "WY" -> "WYOMING"
-    )
-
-    val ByDefaultTimeBuckets: ByTimeBuckets =
-        ByTimeBuckets( List(Today, Tomorrow, ThisWeek, ThisMonth) )
-
-    val DefaultPolicy: Policy =
-        new Policy(List(Discover), List(ByDefaultTimeBuckets, ByGeo))
+    val defaultTimeBins: ByTimeBins =
+        ByTimeBins( List(Today, Tomorrow, ThisWeek, ThisMonth) )
 }
 
-case object ByGeo extends OrderVal() {}
+case object ByGeo extends OrderVal() {}     // geography is continuous
+                                            // so List(ByGeo, defaultTimeBins)
+                                            // wouldn't make much sense.
 
 /**
- * Class used to specify business policy
+ * Class used to specify Search/Display policy.
+ *
+ * A provider should be able to specify a default policy which
+ * could be used to inform the user of input they can provide
+ * to influence the search.  The user's input (itself representable
+ * via a Policy) and the provider's Policy are combined to inform
+ * the search engine.
+ *
+ * When entering parameters you must enter all three but you can
+ * enter None for an empty param.  (You can wrap your params in
+ * Some() if you care to but extra constructors will handle that
+ * for you.)
+ *
  */
 
-case class Policy(
-    search: Seq[SearchQuery], order: Seq[OrderVal], showDesc: Boolean) {
+case class Policy (
+    val latLong: Option[LatLong],
+    val rsWhere: Option[RSWhere],
+    val orderPref: Option[Seq[OrderVal]]
+    ) {
 
-    def this(search: Seq[SearchQuery], order: Seq[OrderVal]) =
-        this(search, order, true)
+    // Extra constructors.
+    def this(a: Option[LatLong], b: Option[RSWhere], c: Seq[OrderVal]) =
+        this(a, b, Some(c))
+    def this(a: Option[LatLong], b: RSWhere, c: Option[Seq[OrderVal]]) =
+        this(a, Some(b), c)
+    def this(a: Option[LatLong], b: RSWhere, c: Seq[OrderVal]) =
+        this(a, Some(b), Some(c))
+    def this(a: LatLong, b: Option[RSWhere], c: Option[Seq[OrderVal]]) =
+        this(Some(a), b, c)
+    def this(a: LatLong, b: Option[RSWhere], c: Seq[OrderVal]) =
+        this(Some(a), b, Some(c))
+    def this(a: LatLong, b: RSWhere, c: Option[Seq[OrderVal]]) =
+        this(Some(a), Some(b), c)
+    def this(a: LatLong, b: RSWhere, c: Seq[OrderVal]) =
+        this(Some(a), Some(b), Some(c))
+
+    // Combine policies.  Biz always wins but user can tighten constraints.
+    def combine(bizPolicy: Policy, userPolicy: Policy): Policy = {
+        def combineLL(bLL: Option[LatLong], uLL: Option[LatLong]): Option[LatLong] = bLL match {
+                case None => uLL
+                case _ => bLL
+            }
+
+        def combineWhere(bC: Option[RSWhere], uC: Option[RSWhere]): Option[RSWhere] = bC match {
+                case None => uC
+                case Some(RSWhere(br, ba, bb, bt, bc, btxt)) => uC match {
+                    case None => bC
+                    case Some(RSWhere(ur, ua, ub, ut, uc, utxt)) =>
+                        val w = new RSWhere(
+                            if (br < ur) { br } else { ur },
+                            if (ba > ua) { ba } else { ua },
+                            if (bb < ub) { bb } else { ub },
+                            bt ++ ut,
+                            bc ++ uc,
+                            btxt ++ utxt
+                        )
+                        Some(w)
+                }
+            }
+
+        def combineOrder(bOP: Option[Seq[OrderVal]],
+            uOP: Option[Seq[OrderVal]]): Option[Seq[OrderVal]] = bOP match {
+                case None => uOP
+                case _ => bOP
+            }
+
+        new Policy(
+            combineLL(bizPolicy.latLong, userPolicy.latLong),
+            combineWhere(bizPolicy.rsWhere, userPolicy.rsWhere),
+            combineOrder(bizPolicy.orderPref, userPolicy.orderPref)
+        )
+    }
 }
 
-// vim: set ts=4 sw=4 et:
+// vim: set ts=8 sw=4 sts=4 sta et:
