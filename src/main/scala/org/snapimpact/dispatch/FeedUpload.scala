@@ -18,6 +18,7 @@ import net.liftweb.common.{Box, Empty, Full}
  * To change this template use File | Settings | File Templates.
  *
  * Almost worked: wget --post-file sampleData0.1.r1254.xml localhost:8080/api/upload
+ * Better: curl http://localhost:8080/api/upload --data-binary @sampleData0.1.r1254.xml
  * 
  */
 
@@ -26,6 +27,8 @@ object FeedUpload {
   private object theUpload extends RequestVar[Box[FileParamHolder]](Empty)
 
   def upload(r:Req): Box[LiftResponse] = {
+    var s = if (r.body.isEmpty) {"Empty"} else {r.body.get.size.toString}
+println("FeedUpload.upload: bodysize: "+s);
     r.uploadedFiles /* list [FileParamHolder] */
     r.body/* Box[Array[Byte]] */
     r.xml/* Box[Elem] */
