@@ -1,5 +1,5 @@
 package org.snapimpact.dispatch
-import _root_.scala.xml.{NodeSeq, Text, Group}
+import _root_.scala.xml.{NodeSeq, Text, Group, XML}
 import _root_.net.liftweb.http._
 import _root_.net.liftweb.http.S
 import _root_.net.liftweb.mapper._
@@ -9,6 +9,8 @@ import _root_.net.liftweb.util.Helpers._
 import _root_.net.liftweb.util._
 import _root_.java.util.Locale
 import net.liftweb.common.{Box, Empty, Full}
+import org.snapimpact.etl.model.dto.FootprintFeed
+import java.io.ByteArrayInputStream
 
 /**
  * Created by IntelliJ IDEA.
@@ -29,10 +31,21 @@ object FeedUpload {
   def upload(r:Req): Box[LiftResponse] = {
     var s = if (r.body.isEmpty) {"Empty"} else {r.body.get.size.toString}
 println("FeedUpload.upload: bodysize: "+s);
-    r.uploadedFiles /* list [FileParamHolder] */
-    r.body/* Box[Array[Byte]] */
-    r.xml/* Box[Elem] */
-    Full(new OkResponse)
+//    r.uploadedFiles /* list [FileParamHolder] */
+//    r.body/* Box[Array[Byte]] */
+//    r.xml/* Box[Elem] */
+//    "file_name" -> theUpload.is.map(v => Text(v.fileName)),
+//    "mime_type" -> theUpload.is.map(v => Box.legacyNullTest(v.mimeType).map(Text).openOr(Text("No mime type supplied"))), // Text(v.mimeType)),
+//    "length" -> theUpload.is.map(v => Text(v.file.length.toString)),
+//    "md5" -> theUpload.is.map(v => Text(hexEncode(md5(v.file))))
+    theUpload.is.map(v => {
+      val subject = XML.load(new ByteArrayInputStream(v.file))
+      val item = FootprintFeed.fromXML(subject)
+      println("FeedUpload.upload: "+item.toString)
+      v.fileName
+    })
+
+    Full(OkResponse())
   }
 }
   
