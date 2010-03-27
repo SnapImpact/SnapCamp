@@ -2,7 +2,7 @@ import sbt._
 
 class SnapCampProject(info: ProjectInfo) extends DefaultWebProject(info) {
   val mavenLocal = "Local Maven Repository" at "file://"+Path.userHome+"/.m2/repository"
-  val liftVersion = "2.0-M2"
+  val liftVersion = "2.0-scala280-SNAPSHOT"
 
   override def libraryDependencies = Set(
     "net.liftweb" % "lift-webkit" % liftVersion % "compile->default",
@@ -16,12 +16,13 @@ class SnapCampProject(info: ProjectInfo) extends DefaultWebProject(info) {
     "org.slf4j" % "slf4j-log4j12" % "1.4.1",
     "org.eclipse.persistence" % "eclipselink" % "2.0.0",
     "javax.persistence" % "persistence-api" % "1.0",
-    "org.scala-tools" % "time" % "2.7.0-0.1",
+    "joda-time" % "joda-time" % "1.6",
+    // "org.scala-tools" % "time" % "2.8.0-0.1",
     "commons-httpclient" % "commons-httpclient" % "3.1"
   ) ++ super.libraryDependencies
 
   // required because Ivy doesn't pull repositories from poms
-  val smackRepo = "m2-repository-smack" at "http://maven.reucon.com/public"
+  // val smackRepo = "m2-repository-smack" at "http://maven.reucon.com/public"
 
 
   //UGLY: Growl notifications for successful / failed tests 

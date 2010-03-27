@@ -45,7 +45,7 @@ class XmlUploadSnippet {
   /**
    * Bind the appropriate XHTML to the form
    */
-  def upload(xhtml: Group): NodeSeq =
+  def upload(xhtml: NodeSeq): NodeSeq =
     if (S.get_?) bind("ul", chooseTemplate("choose", "get", xhtml),
                     "file_upload" -> fileUpload(ul => theUpload(Full(ul))))
     else bind("ul", chooseTemplate("choose", "post", xhtml),
@@ -56,16 +56,16 @@ class XmlUploadSnippet {
   );
 
 
-  def lang(xhtml: Group): NodeSeq =
+  def lang(xhtml: NodeSeq): NodeSeq =
     bind("showLoc", xhtml,
        "lang" -> locale.getDisplayLanguage(locale),
        "select" -> selectObj(locales.map(lo => (lo, lo.getDisplayName)),
-                             definedLocale, setLocale))
+                             Full(definedLocale.is), setLocale))
 
   private def locales =
-    Locale.getAvailableLocales.toList.sort(_.getDisplayName < _.getDisplayName)
+    Locale.getAvailableLocales.toList.sortWith(_.getDisplayName < _.getDisplayName)
 
-  private def setLocale(loc: Locale) = definedLocale(Full(loc))
+  private def setLocale(loc: Locale) = definedLocale.set(loc)
 }
 
-object definedLocale extends SessionVar[Box[Locale]](Empty)
+object definedLocale extends SessionVar(S.locale)
