@@ -1,6 +1,6 @@
 package org.snapimpact.lib
 
-import org.scala_tools.time.Imports._
+import org.joda.time._
 
 /**
  * Classes related to search.
@@ -109,8 +109,8 @@ case class Policy (
                     case Some(RSWhere(ur, ua, ub, ut, uc, utxt)) =>
                         val w = new RSWhere(
                             if (br < ur) { br } else { ur },
-                            if (ba > ua) { ba } else { ua },
-                            if (bb < ub) { bb } else { ub },
+                            if (ba.getMillis > ua.getMillis) { ba } else { ua },
+                            if (bb.getMillis < ub.getMillis) { bb } else { ub },
                             bt ++ ut,
                             bc ++ uc,
                             btxt ++ utxt

@@ -1,6 +1,6 @@
 package org.snapimpact.view
 
-import org.scala_tools.time.Imports._
+import org.joda.time._
 
 case class Interest(uri: String)
 case class Location(uri: String)

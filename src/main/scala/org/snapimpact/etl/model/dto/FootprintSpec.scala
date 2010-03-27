@@ -2,7 +2,8 @@ package org.snapimpact.etl.model.dto
 
 import org.snapimpact.etl.model.DataModel
 import org.joda.time.DateTime
-import runtime.RichString
+import xml.Node
+import net.liftweb.util.Helpers
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,6 +12,28 @@ import runtime.RichString
  * Time: 4:10:27 PM
  * To change this template use File | Settings | File Templates.
  */
+
+
+/**
+ * This object contains a series of implicits that make
+ * the code a lot cleaner for parsing the XML
+ */
+object ParseHelper {
+  class ParseHelperHelper(node: Node) {
+    def %[T](name: String)(implicit cvt: Node => Option[T]): Option[T] =
+    (node \ name).headOption.flatMap(cvt)
+  }
+
+  implicit def nodeToHelp(in: Node): ParseHelperHelper = new ParseHelperHelper(in)
+
+  implicit def cvtString: Node => Option[String] = s => Some(s.text)
+  implicit def cvtFloat: Node => Option[Float] = s => Helpers.tryo(s.text.toFloat)
+  implicit def cvtInt: Node => Option[Int] = n => Helpers.asInt(n.text)
+  implicit def cvtYesNo: Node => Option[YesNoEnum] = n => Helpers.tryo(YesNoEnum.fromXML(n))
+  implicit def cvtReviews: Node => Option[Reviews] = n => Helpers.tryo(Reviews.fromXML(n))
+}
+
+import ParseHelper._
 
 case class FootprintFeed(
   feedInfo: FeedInfo,
@@ -30,10 +53,7 @@ object FootprintFeed {
         case Some(x) => Some(Organizations.fromXML(x))
       },
       VolunteerOpportunities.fromXML((node \ "VolunteerOpportunities").firstOption.get),
-      (node \ "Reviews").firstOption match {
-        case None    => None
-        case Some(x) => Some(Reviews.fromXML(x))
-      }
+      node % "Reviews"
     )
 }
 
@@ -80,24 +100,11 @@ object FeedInfo {
     FeedInfo(
       (node \ "providerID").text,
       (node \ "providerName").text,
-      (node \ "feedID").firstOption match {
-            case None    => None
-            case Some(x) => Some(x.text)
-          },
+      node % "feedID",
       new DateTime((node \ "createdDateTime").text),
-      (node \ "providerURL").firstOption match {
-            case None    => None
-            case Some(x) => Some(x.text)
-          },
-      (node \ "termsOfUse").firstOption match {
-            case None    => None
-            case Some(x) => Some(x.text)
-          },
-      (node \ "description").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      }
-    )
+      node % "providerURL",
+      node % "termsOfUse",
+      node % "description")
 }
 case class Organization(
   organizationID: String,
@@ -120,56 +127,22 @@ object Organization {
   def fromXML(node: scala.xml.Node) =
     Organization(
       (node \ "organizationID").text,
-      (node \ "nationalEIN").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node \ "guidestarID").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text.toInt)
-      },
+      node % "nationalEIN",
+      node % "guidestarID",
       (node \ "name").text,
-      (node \ "missionStatement").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node \ "description").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
+      node % "missionStatement",
+      node % "description",
       (node \ "location").firstOption match {
         case None    => None
         case Some(x) => Some(Location.fromXML(x))
       },
-      (node \ "phone").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node \ "fax").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node \ "email").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node \ "organizationURL").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node \ "donateURL").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node \ "logoURL").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node \ "detailURL").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      }
-    )
+      node % "phone",
+      node % "fax",
+      node % "email",
+      node % "organizationURL",
+      node % "donateURL",
+      node % "logoURL",
+      node % "detailURL")
 }
 
 case class Location(
@@ -190,54 +163,18 @@ case class Location(
 object Location {
   def fromXML(node: scala.xml.Node) =
     Location(
-      (node\"virtual").firstOption match {
-        case None    => None
-        case Some(x) => Some(YesNoEnum.fromXML(x))
-      },
-      (node\"name").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node\"streetAddress1").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node\"streetAddress2").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node\"streetAddress3").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node\"city").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node\"region").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node\"postalCode").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node\"country").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node\"latitude").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text.toFloat)
-      },
-      (node\"longitude").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text.toFloat)
-      },
-      (node\"directions").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      }
+      node % "virtual",
+      node % "name",
+      node % "streetAddress1",
+      node % "streetAddress2",
+      node % "streetAddress3",
+      node % "city",
+      node % "region",
+      node % "postalCode",
+      node % "country",
+      node % "latitude",
+      node % "longitude",
+      node % "directions"
     )
 }
 
@@ -284,28 +221,16 @@ object VolunteerOpportunity {
         case Some(x) => Some(x.toList.map(_.text))
     }
     vo.title = (node \ "title").text
-    vo.abstractStr = (node \ "abstractStr").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-    }
-    vo.volunteersNeeded = (node\"volunteersNeeded").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text.toInt)
-    }
-    vo.rsvpCount = (node\"rsvpCount").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text.toInt)
-    }
+    vo.abstractStr = node % "abstractStr"
+    vo.volunteersNeeded = node % "volunteersNeeded"
+    vo.rsvpCount = node % "rsvpCount"
     vo.dateTimeDurations = (node \ "dateTimeDurations").toList.map(DateTimeDuration.fromXML(_))
     // TODO Locations
     vo.locations = (node \ "locations").firstOption match {
         case None    => None
         case Some(x) => Some(x.toList.map(Location.fromXML(_)))
     }
-    vo.paid = (node\"paid").firstOption match {
-        case None    => None
-        case Some(x) => Some(YesNoEnum.fromXML(x))
-    }
+    vo.paid = node % "paid"
     // TODO audienceTags
     vo.audienceTags = (node \ "audienceTags").firstOption match {
         case None    => None
@@ -316,42 +241,18 @@ object VolunteerOpportunity {
         case None    => None
         case Some(x) => Some(x.toList.map(_.text))
     }
-    vo.minimumAge = (node\"minimumAge").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text.toInt)
-    }
+    vo.minimumAge = node % "minimumAge"
     vo.sexRestrictedTo = (node\"sexRestrictedTo").firstOption match {
         case None    => None
         case Some(x) => Some(SexRestrictedEnum.fromXML(x))
     }
-    vo.skills = (node \ "skills").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-    }
-    vo.contactName = (node \ "contactName").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-    }
-    vo.contactPhone = (node \ "contactPhone").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-    }
-    vo.contactEmail = (node \ "contactEmail").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-    }
-    vo.detailURL = (node \ "detailURL").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-    }
-    vo.language = (node \ "language").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-    }
-    vo.description = (node \ "description").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-    }
+    vo.skills = node % "skills"
+    vo.contactName = node % "contactName"
+    vo.contactPhone = node % "contactPhone"
+    vo.contactEmail = node % "contactEmail"
+    vo.detailURL = node % "detailURL"
+    vo.language = node % "language"
+    vo.description = node % "description"
     vo.lastUpdated = (node \ "lastUpdated").firstOption match {
         case None    => None
         case Some(x) => Some(DateTimeOlsonDefaultPacific(x.text))
@@ -381,38 +282,14 @@ object Review {
   def fromXML(node: scala.xml.Node) =
     Review(
       (node \ "reviewID").text,
-      (node \ "organizationID").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node \ "volunteerOpportunityID").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node\"rating").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text.toFloat)
-      },
-      (node\"ratingMaximum").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text.toFloat)
-      },
-      (node \ "text").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node \ "reviewerName").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node \ "reviewerID").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
-      (node \ "reviewerRole").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
+      node % "organizationID",
+      node % "volunteerOpportunityID",
+      node % "rating",
+      node % "ratingMaximum",
+      node % "text",
+      node % "reviewerName",
+      node % "reviewerID",
+      node % "reviewerRole",
       (node \ "description").firstOption match {
         case None    => None
         case Some(x) => Some(DateTimeOlsonDefaultPacific(x.text))
@@ -437,10 +314,7 @@ case class DateTimeDuration(
 object DateTimeDuration {
   def fromXML(node: scala.xml.Node) =
     DateTimeDuration(
-      (node \ "openEnded").firstOption match {
-        case None    => None
-        case Some(x) => Some(YesNoEnum.fromXML(x))
-      },
+      node % "openEnded",
       (node \ "startDate").firstOption match {
         case None    => None
         case Some(x) => Some(new DateTime(x.text))
@@ -449,10 +323,7 @@ object DateTimeDuration {
         case None    => None
         case Some(x) => Some(new DateTime(x.text))
       },
-      (node \ "iCalRecurrence").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text)
-      },
+      node % "iCalRecurrence",
       (node\"duration").firstOption match {
         case None    => None
         case Some(x) => Some(new Duration(x.text))
@@ -473,14 +344,8 @@ object DateTimeDuration {
             case Some(y) => Some(y.text)
           }))
       },
-      (node\"timeFlexible").firstOption match {
-        case None    => None
-        case Some(x) => Some(YesNoEnum.fromXML(x))
-      },
-      (node\"commitmentHoursPerWeek").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.text.toFloat)
-      }
+      node % "timeFlexible",
+      node % "commitmentHoursPerWeek"
     )
 }
 
@@ -522,9 +387,9 @@ sealed trait YesNoEnum {
   def value: String
 }
 object YesNoEnum {
-  def fromXML(node: scala.xml.Node) = node.text match {
-    case "Yes" => Yes
-    case "No" => No
+  def fromXML(node: scala.xml.Node) = node.text.toLowerCase match {
+    case "yes" => Yes
+    case "no" => No
   }
   
 }
@@ -537,12 +402,12 @@ sealed trait SexRestrictedEnum {
 }
 
 object SexRestrictedEnum {
-  def fromXML(node: scala.xml.Node ) = node.text match {
-    case "Male" => Male
-    case "Female" => Female
-    case "Neither" => Neither
+  def fromXML(node: scala.xml.Node ) = node.text.toLowerCase match {
+    case "male" => Male
+    case "female" => Female
+    case _ /* "Neither"  don't break if it's not specified */ => Neither
   }
 }
-case object Male extends SexRestrictedEnum { val value = "Male"}
-case object Female extends SexRestrictedEnum { val value = "Female" }
-case object Neither extends SexRestrictedEnum { val value = "Neither" }
+final case object Male extends SexRestrictedEnum { val value = "Male"}
+final case object Female extends SexRestrictedEnum { val value = "Female" }
+final case object Neither extends SexRestrictedEnum { val value = "Neither" }
