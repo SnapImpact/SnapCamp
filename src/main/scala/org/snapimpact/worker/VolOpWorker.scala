@@ -33,6 +33,13 @@ final case class VolOpId(id: Long) extends WorkerId {
  */
 sealed trait VolOpMsg extends QBase
 
+final case class UserLikes(userId: UserId) extends QBase
+
+final case class UserUnlikes(userId: UserId) extends QBase
+
+final case class UserClicked(userId: UserId) extends QBase
+
+
 
 /**
  * A VolOpWorker models a Volunteer Opportunity.
