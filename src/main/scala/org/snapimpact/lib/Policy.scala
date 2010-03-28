@@ -18,7 +18,7 @@ case class RSWhere(
     tags: Seq[String],  // for this set of tags
     categories: Seq[String],    // in these categories
     texts: Seq[String]  // and oh yeah, free form text constraints
-    ) {}
+    )
 
 /**
  * Classes related to Order preference
@@ -34,26 +34,26 @@ case class RSWhere(
  *
  */
 
-abstract class OrderVal {}
+sealed trait OrderVal 
 
-abstract class TimeBin {}
+sealed trait TimeBin
 
-case object Today extends TimeBin() {}
-case object Tomorrow extends TimeBin() {}
-case object ThisWeek extends TimeBin() {}
-case object ThisMonth extends TimeBin() {}
+case object Today extends TimeBin
+case object Tomorrow extends TimeBin 
+case object ThisWeek extends TimeBin
+case object ThisMonth extends TimeBin
 
-abstract class TimeVal extends OrderVal() {}
+sealed trait TimeVal extends OrderVal
 
-case object ByTime extends TimeVal() {}
-case class ByTimeBins(bins: Seq[TimeBin]) extends TimeVal() {}
+final case object ByTime extends TimeVal
+final case class ByTimeBins(bins: Seq[TimeBin]) extends TimeVal
 
 object Constants {
     val defaultTimeBins: ByTimeBins =
         ByTimeBins( List(Today, Tomorrow, ThisWeek, ThisMonth) )
 }
 
-case object ByGeo extends OrderVal() {}     // geography is continuous
+case object ByGeo extends OrderVal          // geography is continuous
                                             // so List(ByGeo, defaultTimeBins)
                                             // wouldn't make much sense.
 

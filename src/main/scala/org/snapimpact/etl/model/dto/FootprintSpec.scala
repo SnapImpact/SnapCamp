@@ -22,6 +22,9 @@ object ParseHelper {
   class ParseHelperHelper(node: Node) {
     def %[T](name: String)(implicit cvt: Node => Option[T]): Option[T] =
     (node \ name).headOption.flatMap(cvt)
+
+    def %%[T](name: String)(implicit cvt: Node => Option[T]): T =
+      %(name)(cvt).get
   }
 
   implicit def nodeToHelp(in: Node): ParseHelperHelper = new ParseHelperHelper(in)
@@ -29,8 +32,36 @@ object ParseHelper {
   implicit def cvtString: Node => Option[String] = s => Some(s.text)
   implicit def cvtFloat: Node => Option[Float] = s => Helpers.tryo(s.text.toFloat)
   implicit def cvtInt: Node => Option[Int] = n => Helpers.asInt(n.text)
-  implicit def cvtYesNo: Node => Option[YesNoEnum] = n => Helpers.tryo(YesNoEnum.fromXML(n))
+  implicit def cvtYesNo: Node => Option[YesNoEnum] = n => YesNoEnum.fromXML(n)
   implicit def cvtReviews: Node => Option[Reviews] = n => Helpers.tryo(Reviews.fromXML(n))
+
+  implicit def cvtTimeOlson: Node => Option[TimeOlson] =
+    n => Some(new TimeOlson(n.text, 
+			    (n \ "@olsonTZ").headOption.
+			    map(_.text)))
+  implicit def cvtOrg: Node => Option[Organizations] =
+    n => Some(Organizations.fromXML(n))
+
+  implicit def cvtLocation: Node => Option[Location] =
+    n => Some(Location.fromXML(n))
+  
+  implicit def cvtVolOp: Node => Option[VolunteerOpportunities] =
+    n => Some(VolunteerOpportunities.fromXML(n))
+
+  implicit def cvtFeedInfo: Node => Option[FeedInfo] =
+    n => Some(FeedInfo.fromXML(n))
+
+  implicit def cvtSexRestrictedEnum: Node => Option[SexRestrictedEnum] =
+    n => SexRestrictedEnum.fromXML(n)
+
+  implicit def cvtDTOlson: Node => Option[DateTimeOlsonDefaultPacific] =
+    n => Some(DateTimeOlsonDefaultPacific(n.text))
+
+  implicit def cvtDateTime: Node => Option[DateTime] = 
+    n => Some(new DateTime(n.text))
+
+  implicit def cvtDuration: Node => Option[Duration] =
+    n => Some(new Duration(n.text))
 }
 
 import ParseHelper._
@@ -41,18 +72,14 @@ case class FootprintFeed(
   organizations: Option[Organizations],
   opportunities: VolunteerOpportunities,
   // Reviews is optional
-  reviews: Option[Reviews]) extends DataModel {
-}
+  reviews: Option[Reviews]) extends DataModel
 
 object FootprintFeed {
   def fromXML(node: scala.xml.Node) =
     FootprintFeed(
-      FeedInfo.fromXML((node \ "FeedInfo").firstOption.get),
-      (node \ "Organizations").firstOption match {
-        case None    => None
-        case Some(x) => Some(Organizations.fromXML(x))
-      },
-      VolunteerOpportunities.fromXML((node \ "VolunteerOpportunities").firstOption.get),
+      node %% "FeedInfo",
+      node % "Organizations",
+      node %% "VolunteerOpportunities",
       node % "Reviews"
     )
 }
@@ -66,9 +93,7 @@ object Organizations {
     Organizations((node \ "Organization").toList.map(Organization.fromXML(_)))
 }
 
-case class VolunteerOpportunities(
-  opps: List[VolunteerOpportunity]) extends DataModel {
-}
+case class VolunteerOpportunities(opps: List[VolunteerOpportunity]) extends DataModel 
 
 object VolunteerOpportunities {
   def fromXML(node: scala.xml.Node) =
@@ -132,10 +157,7 @@ object Organization {
       (node \ "name").text,
       node % "missionStatement",
       node % "description",
-      (node \ "location").firstOption match {
-        case None    => None
-        case Some(x) => Some(Location.fromXML(x))
-      },
+      node % "location",
       node % "phone",
       node % "fax",
       node % "email",
@@ -182,86 +204,69 @@ object Location {
  * Turns out Scala uses Tuple as the parameter and tuples have only
  * been defined up through 22 :(
  */
-case class VolunteerOpportunity() extends DataModel {
-  var volunteerOpportunityID:String = null
-  var sponsoringOrganizationsIDs:Option[List[String/*sponsoringOrganizationID*/]] = _
-  var volunteerHubOrganizationsIDs:Option[List[String/*volunteerHubOrganizationID*/]] = _
-  var title:String = _
-  var abstractStr:Option[String] = _ /* * is abstract in schema ** */
-  var volunteersNeeded:Option[Int] = _
-  var rsvpCount:Option[Int] = _
-  var dateTimeDurations:List[DateTimeDuration] = null
-  var locations:Option[List[Location]] = _
-  var paid:Option[YesNoEnum] = _
-  var audienceTags:Option[List[String]] = _
-  var categoryTags:Option[List[String]] = _
-  var minimumAge:Option[Int] = _
-  var sexRestrictedTo:Option[SexRestrictedEnum] = _
-  var skills:Option[String] = _
-  var contactName:Option[String] = _
-  var contactPhone:Option[String] = _
-  var contactEmail:Option[String] = _
-  var detailURL:Option[String] = _
-  var language:Option[String] = _
-  var description:Option[String] = _
-  var lastUpdated:Option[DateTimeOlsonDefaultPacific] = _
-  var expires:Option[DateTimeOlsonDefaultPacific] = _
+case class VolunteerOpportunity(
+  volunteerOpportunityID:String,
+  sponsoringOrganizationsIDs:List[String/*sponsoringOrganizationID*/],
+  volunteerHubOrganizationsIDs:List[String/*volunteerHubOrganizationID*/],
+  title:String,
+  abstractStr:Option[String], /* * is abstract in schema ** */
+  volunteersNeeded:Option[Int],
+  rsvpCount:Option[Int],
+  dateTimeDurations:List[DateTimeDuration],
+  locations: List[Location],
+  paid:Option[YesNoEnum],
+  audienceTags: List[String],
+  categoryTags: List[String],
+  minimumAge:Option[Int],
+  sexRestrictedTo:Option[SexRestrictedEnum],
+  skills:Option[String],
+  contactInfo: ContactInfo,
+  detailURL:Option[String],
+  language:Option[String],
+  description:Option[String],
+  lastUpdated:Option[DateTimeOlsonDefaultPacific],
+  expires:Option[DateTimeOlsonDefaultPacific]
+) extends DataModel
+
+case class ContactInfo(contactName:Option[String],
+		       contactPhone:Option[String],
+		       contactEmail:Option[String]) extends DataModel
+
+object ContactInfo {
+  def fromXML(node: Node) = new ContactInfo(
+    contactName = node % "contactName",
+    contactPhone = node % "contactPhone",
+    contactEmail = node % "contactEmail")
 }
+
 
 object VolunteerOpportunity {
   def fromXML(node: scala.xml.Node) = {
-    val vo = new VolunteerOpportunity()
-    vo.volunteerOpportunityID = (node \ "volunteerOpportunityID").text
-    vo.sponsoringOrganizationsIDs = (node \ "sponsoringOrganizationsIDs").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.toList.map(_.text))
-    }
-    vo.volunteerHubOrganizationsIDs = (node \ "volunteerHubOrganizationsIDs").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.toList.map(_.text))
-    }
-    vo.title = (node \ "title").text
-    vo.abstractStr = node % "abstractStr"
-    vo.volunteersNeeded = node % "volunteersNeeded"
-    vo.rsvpCount = node % "rsvpCount"
-    vo.dateTimeDurations = (node \ "dateTimeDurations").toList.map(DateTimeDuration.fromXML(_))
-    // TODO Locations
-    vo.locations = (node \ "locations").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.toList.map(Location.fromXML(_)))
-    }
-    vo.paid = node % "paid"
-    // TODO audienceTags
-    vo.audienceTags = (node \ "audienceTags").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.toList.map(_.text))
-    }
-    // TODO categoryTags
-    vo.categoryTags = (node \ "categoryTags").firstOption match {
-        case None    => None
-        case Some(x) => Some(x.toList.map(_.text))
-    }
-    vo.minimumAge = node % "minimumAge"
-    vo.sexRestrictedTo = (node\"sexRestrictedTo").firstOption match {
-        case None    => None
-        case Some(x) => Some(SexRestrictedEnum.fromXML(x))
-    }
-    vo.skills = node % "skills"
-    vo.contactName = node % "contactName"
-    vo.contactPhone = node % "contactPhone"
-    vo.contactEmail = node % "contactEmail"
-    vo.detailURL = node % "detailURL"
-    vo.language = node % "language"
-    vo.description = node % "description"
-    vo.lastUpdated = (node \ "lastUpdated").firstOption match {
-        case None    => None
-        case Some(x) => Some(DateTimeOlsonDefaultPacific(x.text))
-    }
-    vo.expires = (node \ "expires").firstOption match {
-        case None    => None
-        case Some(x) => Some(DateTimeOlsonDefaultPacific(x.text))
-    }
-    vo
+    new VolunteerOpportunity(
+    volunteerOpportunityID = (node \ "volunteerOpportunityID").text,
+    sponsoringOrganizationsIDs = 
+      (node \ "sponsoringOrganizationsIDs").toList.map(_.text),
+      volunteerHubOrganizationsIDs = 
+	(node \ "volunteerHubOrganizationsIDs").toList.map(_.text),
+      title = (node \ "title").text,
+      abstractStr = node % "abstractStr",
+      volunteersNeeded = node % "volunteersNeeded",
+      rsvpCount = node % "rsvpCount",
+      dateTimeDurations = 
+	(node \ "dateTimeDurations").toList.map(DateTimeDuration.fromXML(_)),
+      locations = (node \ "locations").toList.map(Location.fromXML(_)),
+      paid = node % "paid",
+      audienceTags = (node \ "audienceTags").toList.map(_.text),
+      categoryTags = (node \ "categoryTags").toList.map(_.text),
+      minimumAge = node % "minimumAge",
+      sexRestrictedTo = node % "sexRestrictedTo",
+      skills = node % "skills",
+      contactInfo = ContactInfo.fromXML(node),
+      detailURL = node % "detailURL",
+      language = node % "language",
+      description = node % "description",
+      lastUpdated = node % "lastUpdated",
+      expires = node % "expires")
   }
 }
 
@@ -290,11 +295,7 @@ object Review {
       node % "reviewerName",
       node % "reviewerID",
       node % "reviewerRole",
-      (node \ "description").firstOption match {
-        case None    => None
-        case Some(x) => Some(DateTimeOlsonDefaultPacific(x.text))
-      }
-    )
+      node % "description")
 }
 
 case class DateTimeDuration(
@@ -315,35 +316,12 @@ object DateTimeDuration {
   def fromXML(node: scala.xml.Node) =
     DateTimeDuration(
       node % "openEnded",
-      (node \ "startDate").firstOption match {
-        case None    => None
-        case Some(x) => Some(new DateTime(x.text))
-      },
-      (node \ "endDate").firstOption match {
-        case None    => None
-        case Some(x) => Some(new DateTime(x.text))
-      },
+      node % "startDate",
+      node % "endDate",
       node % "iCalRecurrence",
-      (node\"duration").firstOption match {
-        case None    => None
-        case Some(x) => Some(new Duration(x.text))
-      },
-      (node\"startTime").firstOption match {
-        case None    => None
-        case Some(x) => Some(
-          new TimeOlson(x.text,(x\"@olsonTZ").firstOption match {
-            case None    => None
-            case Some(y) => Some(y.text)
-          }))
-      },
-      (node\"endTime").firstOption match {
-        case None    => None
-        case Some(x) => Some(
-          new TimeOlson(x.text,(x\"@olsonTZ").firstOption match {
-            case None    => None
-            case Some(y) => Some(y.text)
-          }))
-      },
+      node % "duration",
+      node % "startTime",
+      node % "endTime",
       node % "timeFlexible",
       node % "commitmentHoursPerWeek"
     )
@@ -361,35 +339,26 @@ object DateTimeDuration {
  * The T indicates that the values following are granular
  * units of time less than one day.
  */
-case class Duration(
-  duration:String
-  ) {
-}
+case class Duration(duration:String)
 
 object Duration {
   def fromXML(node: scala.xml.Node) =
     Duration(node.text)
 }
 
-case class DateTimeOlsonDefaultPacific(
-  dateTimeNoTZ:String
-) {
+case class DateTimeOlsonDefaultPacific(dateTimeNoTZ:String)
 
-}
 
-case class TimeOlson(
-  time:String,
-  olsonTZ:Option[String]
-) {
-}
+case class TimeOlson(time:String, olsonTZ:Option[String])
 
 sealed trait YesNoEnum {
   def value: String
 }
 object YesNoEnum {
   def fromXML(node: scala.xml.Node) = node.text.toLowerCase match {
-    case "yes" => Yes
-    case "no" => No
+    case "yes" => Some(Yes)
+    case "no" => Some(No)
+    case _ => None
   }
   
 }
@@ -403,9 +372,10 @@ sealed trait SexRestrictedEnum {
 
 object SexRestrictedEnum {
   def fromXML(node: scala.xml.Node ) = node.text.toLowerCase match {
-    case "male" => Male
-    case "female" => Female
-    case _ /* "Neither"  don't break if it's not specified */ => Neither
+    case "male" => Some(Male)
+    case "female" => Some(Female)
+    case "neither" => Some(Neither)
+    case _ => None
   }
 }
 final case object Male extends SexRestrictedEnum { val value = "Male"}

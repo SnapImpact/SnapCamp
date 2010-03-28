@@ -8,4 +8,4 @@ package org.snapimpact.etl.model
  * To change this template use File | Settings | File Templates.
  */
 
-class DataModel
+trait DataModel
