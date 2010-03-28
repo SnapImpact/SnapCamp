@@ -11,8 +11,8 @@
     <name>all_for_good Project</name>
     <inceptionYear>2010</inceptionYear>
     <properties>
-        <scala.version>2.7.7</scala.version>
-        <lift.version>2.0-M3</lift.version>
+        <scala.version>2.8.0.Beta1</scala.version>
+        <lift.version>2.0-scala280-SNAPSHOT</lift.version>
     </properties>
 
     <repositories>
@@ -63,12 +63,18 @@
             <version>4.5</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.scala-tools.testing</groupId>
-            <artifactId>specs</artifactId>
-            <version>1.6.1</version>
-            <scope>test</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.scala-tools.testing</groupId>
+      <artifactId>specs_2.8.0.Beta1</artifactId>
+      <version>1.6.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scalacheck</groupId>
+      <artifactId>scalacheck</artifactId>
+      <version>1.5</version>
+      <scope>test</scope>
+    </dependency>
         <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty</artifactId>

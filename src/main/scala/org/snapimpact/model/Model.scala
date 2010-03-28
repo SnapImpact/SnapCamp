@@ -5,7 +5,8 @@ import net.liftweb.jpa.RequestVarEM
 
 object Model extends LocalEMF("pgunit") with RequestVarEM {
     
-    implicit def symbolAnyTuple2StringAnyTuple(tup: Tuple2[Symbol, Any]) : Tuple2[String, Any] = (tup._1.name, tup._2)
+  implicit def symbolAnyTuple2StringAnyTuple(tup: (Symbol, Any)): 
+  (String, Any) = (tup._1.name, tup._2)
 
     object Event {
         

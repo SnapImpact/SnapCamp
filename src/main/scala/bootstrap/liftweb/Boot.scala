@@ -63,7 +63,7 @@ class Boot {
       case r @ Req("api" :: "upload" :: Nil, _, _) =>
         () => org.snapimpact.dispatch.FeedUpload.upload(r)
       case Req("api" :: "volopps" :: Nil, _, _) =>
-        org.snapimpact.dispatch.api.volopps _
+        org.snapimpact.dispatch.Api.volopps _
     }
 
     S.addAround(DB.buildLoanWrapper)
