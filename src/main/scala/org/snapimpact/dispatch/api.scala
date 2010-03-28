@@ -9,7 +9,7 @@ import org.snapimpact.lib.Serializers.anyToRss
 
 
 object Api { 
-  def volopp() = 
+  def volopps() = 
     for {
       key <- S.param("key") ?~ missingKey ~> 401
       valKey <- validateKey(key) ?~ ("Invalid key. "+ missingKey) ~> 401
