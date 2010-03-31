@@ -11,7 +11,7 @@ import java.util.{ArrayList, UUID}
  * To change this template use File | Settings | File Templates.
  */
 
-class MockSearch
+object MockSearch
 {
 
   def getEvents() =
