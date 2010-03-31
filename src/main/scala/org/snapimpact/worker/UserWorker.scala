@@ -1,7 +1,7 @@
 package org.snapimpact
 package worker
 
-import org.goatrodeo.lib._
+import org.stambecco._
 
 import net.liftweb._
 import mapper._

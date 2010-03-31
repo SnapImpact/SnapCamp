@@ -30,7 +30,7 @@ object ParseHelper {
   implicit def nodeToHelp(in: Node): ParseHelperHelper = new ParseHelperHelper(in)
 
   implicit def cvtString: Node => Option[String] = s => Some(s.text)
-  implicit def cvtFloat: Node => Option[Float] = s => Helpers.tryo(s.text.toFloat)
+  implicit def cvtDouble: Node => Option[Double] = s => Helpers.tryo(s.text.toDouble)
   implicit def cvtInt: Node => Option[Int] = n => Helpers.asInt(n.text)
   implicit def cvtYesNo: Node => Option[YesNoEnum] = n => YesNoEnum.fromXML(n)
   implicit def cvtReviews: Node => Option[Reviews] = n => Helpers.tryo(Reviews.fromXML(n))
@@ -116,9 +116,7 @@ case class FeedInfo(
     createdDateTime: DateTime,
     providerURL: Option[String],
     termsOfUse:Option[String],
-    description:Option[String]
-  ) extends DataModel {
-}
+    description:Option[String]) extends DataModel
 
 object FeedInfo {
   def fromXML(node: scala.xml.Node) =
@@ -177,8 +175,8 @@ case class Location(
   region:Option[String],
   postalCode:Option[String],
   country:Option[String],
-  latitude:Option[Float],
-  longitude:Option[Float],
+  latitude:Option[Double],
+  longitude:Option[Double],
   directions:Option[String]
   ) {
 }
@@ -274,8 +272,8 @@ case class Review(
     reviewID:String,
     organizationID:Option[String],
     volunteerOpportunityID:Option[String],
-    rating:Option[Float],
-    ratingMaximum:Option[Float],
+    rating:Option[Double],
+    ratingMaximum:Option[Double],
     text:Option[String],
     reviewerName:Option[String],
     reviewerID:Option[String],
@@ -307,7 +305,7 @@ case class DateTimeDuration(
   startTime:Option[TimeOlson],
   endTime:Option[TimeOlson],
   timeFlexible:Option[YesNoEnum],
-  commitmentHoursPerWeek:Option[Float]
+  commitmentHoursPerWeek:Option[Double]
   ) {
 
 }
