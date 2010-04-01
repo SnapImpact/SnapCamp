@@ -5,16 +5,18 @@ import net.liftweb.jpa.RequestVarEM
 
 object Model extends LocalEMF("pgunit") with RequestVarEM {
     
-    implicit def symbolAnyTuple2StringAnyTuple(tup: Tuple2[Symbol, Any]) : Tuple2[String, Any] = (tup._1.name, tup._2)
+  implicit def symbolAnyTuple2StringAnyTuple(tup: (Symbol, Any)): 
+  (String, Any) = (tup._1.name, tup._2)
 
     object Event {
         
         def findAll = Model.findAll("Event.findAll")
 
-        def findById(id: String) = Model.findAll("Event.findById", 'id -> id) match {
+        def findById(id: String) = Model.findAll("Event.findById", 'id -> id).headOption
+        /*match {
             case list if list.size > 0 => Some(list.first)
             case _ => None
-        }
+        }*/
 
         def findByTitle(title: String) = Model.findAll("Event.findByTitle", 'title -> title)
 
@@ -41,10 +43,11 @@ object Model extends LocalEMF("pgunit") with RequestVarEM {
     object InterestArea {
         def findAll = Model.findAll("InterestArea.findAll")
 
-        def findById(id: String) = Model.findAll("InterestArea.findById", 'id -> id) match {
+        def findById(id: String) = Model.findAll("InterestArea.findById", 'id -> id).headOption
+        /*match {
             case list if list.size > 0 => Some(list.first)
             case _ => None
-        }
+        }*/
 
         def findByName(name: String) = Model.findAll("InterestArea.findByName", 'name -> name)
     }

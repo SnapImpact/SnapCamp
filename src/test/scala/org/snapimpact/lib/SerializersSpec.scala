@@ -3,7 +3,11 @@ package org.snapimpact.lib
 import org.specs.Specification
 import org.snapimpact.lib.Serializers._
 import org.snapimpact.etl.model.dto._
-import scala.{Option}
+
+import org.specs._
+import org.specs.runner._
+
+class SerializationTest extends Runner(SerializersSpec) with JUnit with Console
 
 object SerializersSpec extends Specification {
   "anyToRss" should {
