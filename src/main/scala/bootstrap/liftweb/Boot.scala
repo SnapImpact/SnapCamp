@@ -35,15 +35,13 @@ class Boot {
     
 
     // Build SiteMap
-    val entries = Menu(Loc("Home", List("index"), "Home")) ::
+    def entries = Menu(Loc("Home", List("index"), "Home")) ::
     Menu(Loc("docs.api", List("docs", "api"), "API Docs")) ::
-    Menu(Loc("Static", Link(List("static"), true, "/static/index"), "Static Content")) ::
-    Menu(Loc("api", Link(List("api"), true, "/api"), "API", Hidden)) ::
     Menu(Loc("xmlupload", List("xml_upload"), "Xml Upload")) ::
     Menu(Loc("test", Link(List("test"), true, "/test/hello"), "TestOrn")) ::
     Nil
 
-    LiftRules.setSiteMap(SiteMap(entries:_*))
+    LiftRules.setSiteMapFunc(() => SiteMap(entries:_*))
 
     /*
      * Show the spinny image when an Ajax call starts
@@ -59,11 +57,12 @@ class Boot {
 
     LiftRules.early.append(makeUtf8)
 
-    LiftRules.dispatch.append { 
+    LiftRules.statelessDispatchTable.append {
       case r @ Req("api" :: "upload" :: Nil, _, _) =>
         () => org.snapimpact.dispatch.FeedUpload.upload(r)
-      case Req("api" :: "volopps" :: Nil, _, _) =>
-        org.snapimpact.dispatch.Api.volopps _
+      case r @ Req("api" :: "volopps" :: Nil, _, _) =>
+        println("volops")
+        () => Full(org.snapimpact.dispatch.Api.volopps(r))
     }
 
     S.addAround(DB.buildLoanWrapper)
