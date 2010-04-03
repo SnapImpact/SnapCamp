@@ -1,0 +1,136 @@
+	
+All for Good API Reference Guide
+Introduction
+
+The All for Good application programming interface (API) allows client applications to retrieve and view the content of http://www.allforgood.org/, which collects and presents volunteer opportunities posted to numerous, disparate sites. Your client application can use the All for Good API to request a list of volunteer opportunities using a number of parameters documented here.
+
+Please note that your use of the API is subject to the API Terms of Service.
+
+Contents
+
+Audience
+
+Licenses
+
+Access
+
+Query parameters
+
+Output formats
+
+Output fields
+
+Examples
+
+Elements
+
+Developer notes and requests
+
+Audience
+
+This document is intended for programmers who want to write client applications that can interact with All for Good, an open source aggregator of volunteer opportunities. It provides reference documentation for using the All for Good API.
+
+This document doesn't contain information about the programming-language client libraries. For client-library reference information, see related programming-language-specific guides.
+
+Licenses
+
+It should be noted that the use of particular subsets of All for Good data may be subject to restrictions and third party licenses. For example, VolunteerMatch supplies listings data under a Creative Commons license, specifically Attribution-Noncommercial-Share Alike 3.0. Partners are expected to observe such compliance requirements.
+
+Access
+
+First, request a key to use the All for Good API by completing the API Key form. Once that request has been fulfilled, you may then use the API available at:
+http://www.allforgood.org/api/volopps
+
+As a REST-based API, All for Good provides all output over HTTP at distinct URIs, which makes it easy to test applications with browsers and command-line web clients. All for Good contains listings of volunteer opportunities, which today are defined as events (offline or online), optionally containing locations and start-end times.
+
+In their simplest form, listings have just a title, description and basic contact, time and location information. In their fullest form, listings can contain dozens of detailed fields, as described in the Elements section and associated specification. Because of the short lifespan of these posts, there is little point in storing results.
+
+Query parameters
+
+All for Good uses Google conventions on query parameters, , e.g. q=... is used for keyword search, num= specifies the number of results and start= sets offset for pagination.
+
+The syntax for API calls requires following the aforementioned All for Good API URL (http://www.allforgood.org/api/volopps) with a question mark (?) and then a parameter name, equal sign (=), and value. Here's the syntax for constructing API calls:
+http://www.allforgood.org/api/volopps?parameter_name=value
+
+For instance, a query for location would use the vol_loc parameter and resemble:
+http://www.allforgood.org/api/volopps?vol_loc=City+Name,STATEABBREV
+
+Multiple parameter and value combinations may be included in a single call by joining them with an ampersand(&), like so:
+http://www.allforgood.org/api/volopps?parameter_name1=value&parameter_name2=value
+
+The All for Good Data API supports the following query parameters:
+Parameter	Meaning	Values
+num	The number of results to return.	
+Default value: 10
+
+Expected values: any integer
+
+output	
+The output format for presenting the results.
+
+Important: This parameter is required for all uses other than debugging. Append the All for Good API URI with &output=rss to receive the output in a machine-readable format. See the Output formats section for additional details.
+
+Default value: html (This should be used only for debugging and otherwise overridden with another format, such as RSS, for production use.)
+
+Expected values: rss, json
+
+provider	The provider of the volunteer opportunity, meaning the site or organization posting the event description.	
+Default value: all providers
+
+Expected values: the codename for any of the current providers, such as usaservice.org, craigslist.org, networkforgood, idealist.org, HandsOn Network, and volunteermatch.org
+
+q	The keyword search string, which offers support for most Google features.	
+Default value: none
+
+Expected values: any string, including quoted phrases ("some terms") , and exclusions (-excluded_term)
+
+start	The starting page offset for search results.	
+Default value: 1
+
+Expected value: any integer between 1 and 999
+
+timeperiod	Provides period-based date filtering and populates vol_startdate and vol_enddate. Important: This overwrites values already set in vol_startdate and vol_enddate.	Expected values: today, this_month, this_weekend, or this_week
+vol_dist	Maximum distance from center point, in miles. Important: Requires vol_loc to be set.	
+Default value: null
+
+Expected value: any integer between 1 and 99
+
+vol_loc	The center point for geographic-based searches.	
+Default value: null
+
+Expected values: comma-separated string of the location consisting of address (or intersection), city and state, just city and state, a landmark, or numeric coordinates, expressed as either City+Name,STATEABBREV or latitude,longitude.
+
+vol_enddate	The last or final date of volunteer opportunities returned.	
+Default value: the numeric equivalent of 1000 days from today
+
+Expected values: Any (future) date in the form: YYYY-MM-DD
+
+vol_startdate	The first or earliest date of volunteer opportunities returned.	
+Default value: the numeric equivalent of tomorrow
+
+Expected values: Any (future) date in the form: YYYY-MM-DD
+
+Output formats
+
+The All for Good API provides its output in the following formats:
+
+JSON - A machine-readable format that is currently recommended for all uses other than debugging. You can specify this setting by appending the API call with: &output=json
+RSS - A machine-readable format that is currently recommended for all uses other than debugging. You can specify this setting by appending the API call with: &output=rss
+HTML - A human-readable format that's currently dedicated to debugging. This is the default and will appear whenever you load the API without the output parameter and can be manually set with: &output=html
+In addition, many more output formats are planned, including XML (FPXML), xSV (comma, tab, etc. separated values) and more. Ask us and we'll quickly provide them. Return to this page or visit the All for Good project site for updates.
+
+Output fields
+
+Generally, the output fields correspond to the input fields found in FPXML (see the Elements section), with a few extra fields:
+
+categories - We run a system of classifiers against each listing to sort it into relevant categories. They appear in this field as a comma-separated last.
+quality_score - Internally, we score each record using heuristics to predict what will be popular with users, then use this for ranking. This field contains that value, between 0.0 and 1.0
+pageviews - Whenever possible, trusted clients report to All for Good the number of pageviews from each listing. This value is the total lifetime pageviews for this listing.
+Examples
+
+Here are some example queries made against the All for Good API to help you see how the API works. We've appended &output=rss to each query to get machine-readable output.
+
+Listings near San Francisco:
+http://www.allforgood.org/api/volopps?vol_loc=San+Francisco,CA&output=rss
+Listings within 10 miles of 94703:
+http://www.allforgood.org/api/volopps?q=park&vol_loc=94703&vol_dist=10&output=rss
