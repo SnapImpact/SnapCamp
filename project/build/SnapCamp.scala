@@ -11,6 +11,7 @@ class SnapCampProject(info: ProjectInfo) extends DefaultWebProject(info) {
     "net.liftweb" % "lift-webkit" % liftVersion % "compile->default",
     "net.liftweb" % "lift-mapper" % liftVersion % "compile->default",
     "net.liftweb" % "lift-testkit" % liftVersion % "compile->default",
+    "net.liftweb" % "lift-wizard" % liftVersion % "compile->default",
     "net.liftweb" % "lift-jpa" % liftVersion % "compile->default",
     // "org.stambecco" % "stambecco-core" % "0.1-SNAPSHOT", //  % "compile->default",
     "org.mortbay.jetty" % "jetty" % "6.1.22" % "test->default",

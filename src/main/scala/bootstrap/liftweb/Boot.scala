@@ -7,6 +7,7 @@ import net.liftweb.http.provider._
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
 import Helpers._
+
 import net.liftweb.mapper.{DB, 
 			   ConnectionManager, 
 			   Schemifier, 
@@ -14,6 +15,7 @@ import net.liftweb.mapper.{DB,
 			   StandardDBVendor}
 import java.sql.{Connection, DriverManager}
 import scala.xml.NodeSeq
+
 import org.snapimpact.model._
 import org.snapimpact.snippet._
 
@@ -50,7 +52,8 @@ class Boot {
     Menu(Loc("search", List("search"), "Search", Hidden,
 	   Snippet("search", ProcessSearch))) ::    
     Menu(Loc("test", Link(List("test"), true, "/test/hello"), "TestOrn")) ::
-    Nil
+    Menu(Loc("Cats", List("cats"), "Cat Wizard")) ::
+   Nil
 
     LiftRules.setSiteMapFunc(() => SiteMap(entries:_*))
 
@@ -75,6 +78,11 @@ class Boot {
         println("volops")
         () => Full(org.snapimpact.dispatch.Api.volopps(r))
     }
+
+    LiftRules.snippetDispatch.append {
+      case "DoYouLikeCats" => DoYouLikeCats
+    }
+
 
     S.addAround(DB.buildLoanWrapper)
   }
