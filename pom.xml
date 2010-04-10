@@ -17,6 +17,11 @@
 
     <repositories>
         <repository>
+            <id>scala-tools.snapshots</id>
+            <name>Scala-Tools Dependencies Repository for Snapshots</name>
+            <url>http://scala-tools.org/repo-snapshots</url>
+        </repository>
+        <repository>
             <id>scala-tools.releases</id>
             <name>Scala-Tools Dependencies Repository for Releases</name>
             <url>http://scala-tools.org/repo-releases</url>
@@ -39,11 +44,6 @@
         <dependency>
             <groupId>net.liftweb</groupId>
             <artifactId>lift-mapper</artifactId>
-            <version>${lift.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.liftweb</groupId>
-            <artifactId>lift-jpa</artifactId>
             <version>${lift.version}</version>
         </dependency>
         <dependency>
