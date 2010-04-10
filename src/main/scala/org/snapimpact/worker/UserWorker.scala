@@ -1,6 +1,7 @@
 package org.snapimpact
 package worker
 
+/*
 import org.stambecco._
 
 import net.liftweb._
@@ -73,3 +74,4 @@ WorkerImpl[UserId, UserMsg](id, calcFunc) {
 						i.value.is)) :_*))
 }
 
+*/
