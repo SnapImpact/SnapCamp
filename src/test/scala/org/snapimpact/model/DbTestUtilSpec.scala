@@ -1,5 +1,6 @@
 package org.snapimpact.model
 
+/*
 import org.specs.Specification
 import helpers.{DbTestDataGenerator, DbTestUtil}
 
@@ -24,4 +25,4 @@ object DbTestUtilSpec extends Specification {
             Model.Event.findById(ev.getId) must be equalTo(None)
         }
     }
-}
+}*/

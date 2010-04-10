@@ -1,5 +1,6 @@
 package org.snapimpact.model
 
+/*
 import org.specs.Specification
 import helpers.{DbTestDataGenerator, DbTestUtil}
 
@@ -47,4 +48,4 @@ object InterestAreaSpec extends Specification {
         }
 
     }
-}
+}*/

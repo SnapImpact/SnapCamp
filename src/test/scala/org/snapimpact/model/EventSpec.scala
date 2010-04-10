@@ -1,5 +1,6 @@
 package org.snapimpact.model
 
+/*
 import org.specs.Specification
 import org.slf4j.LoggerFactory
 import helpers.{DbTestDataGenerator, DbTestUtil}
@@ -82,4 +83,4 @@ object EventSpec extends Specification {
             Model.Event.findBySourceUrl(ev1.getSourceUrl).size must be equalTo (1)
         }
     }
-}
+}*/
