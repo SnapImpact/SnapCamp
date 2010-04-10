@@ -118,6 +118,11 @@
             <version>${scala.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.stambecco</groupId>
+            <artifactId>stambecco-core</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
