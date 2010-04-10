@@ -16,7 +16,7 @@ class SnapCampProject(info: ProjectInfo) extends DefaultWebProject(info) {
     "org.scalacheck" % "scalacheck" % "1.5" % "test->default",
     "postgresql" % "postgresql" % "8.4-701.jdbc4",
     "org.slf4j" % "slf4j-log4j12" % "1.4.1",
-    "org.eclipse.persistence" % "eclipselink" % "2.0.0",
+    // "org.eclipse.persistence" % "eclipselink" % "2.0.0",
     "javax.persistence" % "persistence-api" % "1.0",
     "joda-time" % "joda-time" % "1.6",
     "commons-httpclient" % "commons-httpclient" % "3.1"
