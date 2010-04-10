@@ -17,25 +17,26 @@ import _root_.org.specs.Sugar._
 
 import net.liftweb.http.testing._
 
+/*
 class APITest extends Runner(new APISpec) with JUnit with Console
 
 class APISpec extends Specification with TestKit {
- def baseUrl = "http://localhost:8989"
-    RunWebApp.start
+  def baseUrl = "http://localhost:8989"
+  RunWebApp.start
 
   "api" should {
-     "Give a 401 without a key" in {
+    "Give a 401 without a key" in {
 
-get("/api/volopp") match {
-  case r: HttpResponse => 
-println("Got response "+r.code)
-r.code must_== 401
-  case x =>
-println("Got a "+x.getClass)
-true must_== false
-}
-}
-}
+      get("/api/volopp") match {
+	case r: HttpResponse => 
+	  println("Got response "+r.code)
+	r.code must_== 401
+	case x =>
+	  println("Got a "+x.getClass)
+	true must_== false
+      }
+    }
+  }
 }
 
 object ApiTest {
@@ -56,11 +57,11 @@ class ApiTest extends TestCase("app")
 {
 
   def testSearch() =
-  {
-    val lEvents = MockSearch.getEvents()
-    println( "Event Count=" + lEvents.length );
-    assert( lEvents.length > 0  )
-  }
+    {
+      val lEvents = MockSearch.getEvents()
+      println( "Event Count=" + lEvents.length );
+      assert( lEvents.length > 0  )
+    }
 
 }
 
@@ -85,8 +86,9 @@ object RunWebApp extends Application {
   lazy val start = server.start()
 
   def end() = {
-server.stop()
+    server.stop()
     server.join()
-}
+  }
 
 }
+*/
