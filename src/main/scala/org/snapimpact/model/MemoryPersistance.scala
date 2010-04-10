@@ -12,7 +12,9 @@ import util.Helpers
  * @author dpp
  */
 
-object MemoryFeedStore extends FeedStore {
+object MemoryFeedStore extends MemoryFeedStore
+
+class MemoryFeedStore extends FeedStore {
   private var data: Map[GUID, FootprintFeed] = Map()
 
   /**
@@ -60,7 +62,9 @@ object MemoryFeedStore extends FeedStore {
 /**
  * The interface to the Geocoded search
  */
-object MemoryGeoStore extends GeoStore {
+object MemoryGeoStore extends MemoryGeoStore
+
+class MemoryGeoStore extends GeoStore {
   import scala.collection.immutable.{TreeMap, TreeSet}
   private var locs: TreeMap[GUID, GeoLocation] = TreeMap()
   private var nonLocSet: TreeSet[GUID] = TreeSet()
@@ -115,7 +119,9 @@ object MemoryGeoStore extends GeoStore {
 /**
  * The in-memory implementation of the tag store
  */
-object MemoryTagStore extends TagStore {
+object MemoryTagStore extends MemoryTagStore 
+
+class MemoryTagStore extends TagStore {
   import scala.collection.immutable.{TreeMap, TreeSet, SortedSet}
 
   private var tags: TreeMap[Tag, TreeSet[GUID]] = TreeMap()

@@ -1,6 +1,5 @@
 package org.snapimpact.model
 
-/*
 import org.specs.Specification
 import helpers.{DbTestDataGenerator, DbTestUtil}
 
@@ -11,8 +10,14 @@ import helpers.{DbTestDataGenerator, DbTestUtil}
  * Time: 9:55:46 AM
  * To change this template use File | Settings | File Templates.
  */
+/*
+import _root_.org.specs._
+import _root_.org.specs.runner._
+import _root_.org.specs.Sugar._
 
-object InterestAreaSpec extends Specification {
+class InterestAreaTest extends Runner(new InterestAreaSpec) with JUnit with Console
+
+class InterestAreaSpec extends Specification {
     import DbTestUtil.{withTx, clearDatabase}
 
     "InterestAreas" should {
@@ -48,4 +53,5 @@ object InterestAreaSpec extends Specification {
         }
 
     }
-}*/
+}
+*/

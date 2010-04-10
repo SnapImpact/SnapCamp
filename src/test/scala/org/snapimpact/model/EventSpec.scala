@@ -5,7 +5,14 @@ import org.specs.Specification
 import org.slf4j.LoggerFactory
 import helpers.{DbTestDataGenerator, DbTestUtil}
 
-object EventSpec extends Specification {
+import _root_.org.specs._
+import _root_.org.specs.runner._
+import _root_.org.specs.Sugar._
+
+/*
+class EventSpecTest extends Runner(try {new EventSpec} catch {case e => e.printStackTrace; throw e}) with JUnit with Console
+
+class EventSpec extends Specification {
     import DbTestUtil.{withTx, clearDatabase}
 
     val log = LoggerFactory.getLogger("EventSpec")
@@ -35,7 +42,7 @@ object EventSpec extends Specification {
         }
 
         "Be created successfully" in {
-            val eventFromDb = Model.findAll[Event]("Event.findById", "id" -> ev1.getId).first
+            val eventFromDb = Model.findAll[Event]("Event.findById", "id" -> ev1.getId).head
             eventFromDb.getId must be(ev1.getId)            
         }
 

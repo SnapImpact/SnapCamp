@@ -3,6 +3,8 @@ package model
 
 import org.snapimpact.etl.model.dto.FootprintFeed
 
+import net.liftweb.util.Helpers
+
 /**
  * This file defines interfaces for the storage mechanism.  It
  * does not specific the actual storage mechansim.
@@ -12,6 +14,10 @@ import org.snapimpact.etl.model.dto.FootprintFeed
 
 final case class GUID(guid: String) extends Ordered[GUID] {
   def compare(that: GUID) = guid compare that.guid
+}
+
+object GUID {
+  def create(): GUID = new GUID(Helpers.nextFuncName)
 }
 
 trait FeedStore {

@@ -13,36 +13,39 @@ final case object RssOutputType extends OutputType
 final case object HtmlOutputType extends OutputType
 
 object Api { 
-  private class BoxString(in: Box[String]) {
-    def asInt = in.flatMap(Helpers.asInt)
-  }
-  private implicit def bsify(in: Box[String]): BoxString = new BoxString(in)
-
   def volopps(r: Req): LiftResponse = {
-    def find(query: Option[String] = r.param("q"),
-    start: Int = r.param("start").asInt openOr 1,
-    num: Int = r.param("num").asInt openOr 10,
-    output: OutputType = r.param("output").map(_.toLowerCase) match {
-       case Full("rss") => RssOutputType
-       case Full("json") => JsonOutputType
-       case _ => HtmlOutputType
-    }
-
-): Unit = {}
-
-    val params = List("timeperiod" -> List("today", "this_month", "this_weekend", "this_week"),
-    "vol_startdate", "vol_enddate", "vol_distance", "vol_loc")
-
     for {
-      key <- r.param("key") ?~ missingKey ~> 401
-      valKey <- validateKey(key) ?~ ("Invalid key. "+ missingKey) ~> 401
+    key <- r.param("key") ?~ missingKey ~> 401
+    valKey <- validateKey(key) ?~ ("Invalid key. "+ missingKey) ~> 401
     } yield
       r.param("output") match {
 	case Full("json") => JsonResponse(sampleJson)
 	case Full("rss") => XmlResponse(sampleRss, "application/rss+xml")
-	case _ => XmlResponse(sampleHtml) // , "application/xhtml+xml; charset=utf-8")
-    }
+	case _ => XmlResponse(sampleHtml)
+      }
   }
+
+  /*
+   private class BoxString(in: Box[String]) {
+   def asInt = in.flatMap(Helpers.asInt)
+   }
+   private implicit def bsify(in: Box[String]): BoxString = new BoxString(in)
+
+
+def find(query: Option[String] = r.param("q"),
+start: Int = r.param("start").asInt openOr 1,
+num: Int = r.param("num").asInt openOr 10,
+output: OutputType = r.param("output").map(_.toLowerCase) match {
+case Full("rss") => RssOutputType
+case Full("json") => JsonOutputType
+case _ => HtmlOutputType
+}): Unit = {}
+
+val params = List("timeperiod" -> List("today", "this_month", "this_weekend", "this_week"),
+"vol_startdate", "vol_enddate", "vol_distance", "vol_loc")
+*/
+
+
 
 
 
@@ -62,9 +65,9 @@ object Api {
   def validateKey(key: String): Box[String] = Full(key)
 
   val missingKey =
- """You seem to be missing the API key parameter ('key') in your query.
-Please see the for how to get an API key at 
-http://www.allforgood.org/docs/api.html for directions."""
+    """You seem to be missing the API key parameter ('key') in your query.
+  Please see the for how to get an API key at 
+  http://www.allforgood.org/docs/api.html for directions."""
 
   case class Sample(categories: List[String], quality_score: Double, pageviews: Int)
   val sample = Sample(List("category1", "category2"), .5, 2312)
