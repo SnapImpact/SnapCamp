@@ -15,6 +15,7 @@ import _root_.org.specs._
 import _root_.org.specs.runner._
 import _root_.org.specs.Sugar._
 
+/*
 class DbTestUtilTest extends Runner(new DbTestUtilSpec) with JUnit with Console
 
 class DbTestUtilSpec extends Specification {
@@ -31,3 +32,4 @@ class DbTestUtilSpec extends Specification {
         }
     }
 }
+*/

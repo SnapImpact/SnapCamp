@@ -17,78 +17,84 @@ import _root_.org.specs.Sugar._
 
 import net.liftweb.http.testing._
 
-/*
 class APITest extends Runner(new APISpec) with JUnit with Console
 
 class APISpec extends Specification with TestKit {
   def baseUrl = "http://localhost:8989"
-  RunWebApp.start
 
   "api" should {
-    "Give a 401 without a key" in {
+    doFirst {
+      RunWebApp.start()
+    }
 
-      get("/api/volopp") match {
+    doLast {
+      RunWebApp.stop()
+    }
+
+    "Give a 401 without a key" in {
+      get("/api/volopps") match {
 	case r: HttpResponse => 
-	  println("Got response "+r.code)
-	r.code must_== 401
+	  r.code must_== 401
 	case x =>
-	  println("Got a "+x.getClass)
-	true must_== false
+	  true must_== false
+      }
+    }
+
+    "Give a 200 with a key" in {
+      get("/api/volopps", "key" -> "test") match {
+	case r: HttpResponse => 
+	  r.code must_== 200
+	case x =>
+	  true must_== false
       }
     }
   }
 }
 
-object ApiTest {
-  def suite: Test = {
-    val suite = new TestSuite(classOf[ApiTest])
-    suite
-  }
-
-  def main(args : Array[String]) {
-    _root_.junit.textui.TestRunner.run(suite)
-  }
-}
-
-/**
- * Read the sample file
- */
-class ApiTest extends TestCase("app")
-{
-
-  def testSearch() =
-    {
-      val lEvents = MockSearch.getEvents()
-      println( "Event Count=" + lEvents.length );
-      assert( lEvents.length > 0  )
-    }
-
-}
-
-import _root_.org.mortbay.jetty.Connector
-import _root_.org.mortbay.jetty.Server
-import _root_.org.mortbay.jetty.webapp.WebAppContext
+import org.mortbay.jetty.Connector
+import org.mortbay.jetty.Server
+import org.mortbay.jetty.webapp.WebAppContext
 import org.mortbay.jetty.nio._
 
-object RunWebApp extends Application {
-  val server = new Server
-  val scc = new SelectChannelConnector
+object RunWebApp {
+  {
+    org.mortbay.log.Log.setLog(new org.mortbay.log.Logger {
+      def debug(msg: String,a1: Object,a2: Object) {}
+           
+      def debug(msg: String,th: Throwable) {}
+           
+      def getLogger(name: String) = this
+           
+      def info(msg: String,a1: Object,a2: Object) {}
+           
+      def isDebugEnabled() = false
+           
+      def setDebugEnabled(e: Boolean) {} 
+      
+      def warn(msg: String,a1: Object,a2: Object) {}
+           
+      def warn(msg: String,th: Throwable) {}
+    })
+  }
+
+  private val server = new Server
+  private val scc = new SelectChannelConnector
   scc.setPort(8989)
   server.setConnectors(Array(scc))
 
-  val context = new WebAppContext()
+  private val context = new WebAppContext()
   context.setServer(server)
   context.setContextPath("/")
   context.setWar("src/main/webapp")
 
   server.addHandler(context)
 
-  lazy val start = server.start()
+  def start() = server.start()
 
-  def end() = {
+  def stop() = {
     server.stop()
     server.join()
   }
 
 }
-*/
+

@@ -8,6 +8,7 @@ import _root_.org.specs._
 import _root_.org.specs.runner._
 import _root_.org.specs.Sugar._
 
+/*
 class EventSpecTest extends Runner(try {new EventSpec} catch {case e => e.printStackTrace; throw e}) with JUnit with Console
 
 class EventSpec extends Specification {
@@ -88,4 +89,4 @@ class EventSpec extends Specification {
             Model.Event.findBySourceUrl(ev1.getSourceUrl).size must be equalTo (1)
         }
     }
-}
+}*/

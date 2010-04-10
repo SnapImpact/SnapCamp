@@ -10,7 +10,7 @@ import helpers.{DbTestDataGenerator, DbTestUtil}
  * Time: 9:55:46 AM
  * To change this template use File | Settings | File Templates.
  */
-
+/*
 import _root_.org.specs._
 import _root_.org.specs.runner._
 import _root_.org.specs.Sugar._
@@ -54,3 +54,4 @@ class InterestAreaSpec extends Specification {
 
     }
 }
+*/
