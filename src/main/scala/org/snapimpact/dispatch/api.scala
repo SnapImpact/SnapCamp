@@ -26,9 +26,7 @@ object Api {
        case Full("rss") => RssOutputType
        case Full("json") => JsonOutputType
        case _ => HtmlOutputType
-    }
-
-): Unit = {}
+    }): Unit = {}
 
     val params = List("timeperiod" -> List("today", "this_month", "this_weekend", "this_week"),
     "vol_startdate", "vol_enddate", "vol_distance", "vol_loc")

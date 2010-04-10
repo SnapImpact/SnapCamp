@@ -11,7 +11,13 @@ import helpers.{DbTestDataGenerator, DbTestUtil}
  * To change this template use File | Settings | File Templates.
  */
 
-object DbTestUtilSpec extends Specification {
+import _root_.org.specs._
+import _root_.org.specs.runner._
+import _root_.org.specs.Sugar._
+
+class DbTestUtilTest extends Runner(new DbTestUtilSpec) with JUnit with Console
+
+class DbTestUtilSpec extends Specification {
     import DbTestUtil.{withTx, clearDatabase}
 
     "DbTestUtil" should {

@@ -11,7 +11,13 @@ import helpers.{DbTestDataGenerator, DbTestUtil}
  * To change this template use File | Settings | File Templates.
  */
 
-object InterestAreaSpec extends Specification {
+import _root_.org.specs._
+import _root_.org.specs.runner._
+import _root_.org.specs.Sugar._
+
+class InterestAreaTest extends Runner(new InterestAreaSpec) with JUnit with Console
+
+class InterestAreaSpec extends Specification {
     import DbTestUtil.{withTx, clearDatabase}
 
     "InterestAreas" should {
