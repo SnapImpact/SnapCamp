@@ -10,7 +10,6 @@ import net.liftweb.util.Helpers
  * User: mark
  * Date: Feb 20, 2010
  * Time: 4:10:27 PM
- * To change this template use File | Settings | File Templates.
  */
 
 
@@ -20,11 +19,17 @@ import net.liftweb.util.Helpers
  */
 object ParseHelper {
   class ParseHelperHelper(node: Node) {
+    // The optional elements
     def %[T](name: String)(implicit cvt: Node => Option[T]): Option[T] =
     (node \ name).headOption.flatMap(cvt)
 
-    def %%[T](name: String)(implicit cvt: Node => Option[T]): T =
-      %(name)(cvt).get
+    // The required elements
+    def %%[T](name: String)(implicit cvt: Node => Option[T]): T = {
+      %(name)(cvt) match {
+        case None => throw new RuntimeException("Required tag not found: "+name)
+        case a @ _ => a.get
+      }
+    }
   }
 
   implicit def nodeToHelp(in: Node): ParseHelperHelper = new ParseHelperHelper(in)
