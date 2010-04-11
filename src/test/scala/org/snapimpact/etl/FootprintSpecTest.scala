@@ -101,6 +101,38 @@ class FootprintSpecTest extends TestCase("app") {
     assertEquals(None, item.country)
   }
 
+  def testSexRestrict() = {
+    def parseSex(sexstr:String) = {
+      VolunteerOpportunity.fromXML(
+      <VolunteerOpportunity>
+        <volunteerOpportunityID>2002</volunteerOpportunityID>
+        <sponsoringOrganizationIDs><sponsoringOrganizationID>2</sponsoringOrganizationID></sponsoringOrganizationIDs>
+        <title>YOUNG ADULT TO HELP GUIDE MERCER COUNTY TEEN VOLUNTEER CLUB</title>
+        <sexRestrictedTo>{sexstr}</sexRestrictedTo>
+      </VolunteerOpportunity>).sexRestrictedTo
+    }
+    assertEquals(Some(Male), parseSex("m"))
+    assertEquals(Some(Male), parseSex("male"))
+    assertEquals(Some(Male), parseSex("M"))
+    assertEquals(Some(Male), parseSex("Male"))
+    assertEquals(Some(Male), parseSex("man"))
+
+    assertEquals(Some(Neither), parseSex("neither"))
+    assertEquals(Some(Neither), parseSex("N"))
+    assertEquals(Some(Neither), parseSex("nEiThEr"))
+
+    assertEquals(Some(Female), parseSex("f"))
+    assertEquals(Some(Female), parseSex("female"))
+    assertEquals(Some(Female), parseSex("F"))
+    assertEquals(Some(Female), parseSex("FEMALE"))
+    assertEquals(Some(Female), parseSex("w"))
+    assertEquals(Some(Female), parseSex("woman"))
+
+    assertEquals(None, parseSex("FEMAIL"))
+    assertEquals(None, parseSex("malefactor"))
+    assertEquals(None, parseSex("mandroid"))
+  }
+
   def testVolunteerOpportunity() = {
     val subject =   <VolunteerOpportunity>
    <volunteerOpportunityID>2002</volunteerOpportunityID>
