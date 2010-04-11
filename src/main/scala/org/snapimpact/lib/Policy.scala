@@ -1,6 +1,5 @@
 package org.snapimpact.lib
 
-import _root_.java.util.{Calendar,Date,GregorianCalendar}
 import _root_.org.joda.time._
 
 /**
@@ -13,14 +12,14 @@ case class LatLong(lat: Double = 0.0, long: Double = 0.0) {}
 
 // What do we care/not-care about?
 case class RSWhere(
-    radius: Double            = 50.0,   // how far to search from latLong
-                                        // only events after
-    after: GregorianCalendar  = new GregorianCalendar(1970, 1, 1, 00, 00),
-                                        // only events before
-    before: GregorianCalendar = new GregorianCalendar(2038, 7, 1, 00, 00),
-    tags: Seq[String]         = List(), // for this set of tags
-    categories: Seq[String]   = List(), // in these categories
-    texts: Seq[String]        = List()  // and oh yeah, free form text
+    radius: Double          = 50.0,   // how far to search from latLong
+                                      // only events after
+    after: DateTime         = new DateTime(1970, 1, 1, 0, 0, 0, 0),
+                                      // only events before
+    before: DateTime        = new DateTime(2038, 7, 1, 0, 0, 0, 0),
+    tags: Seq[String]       = List(), // for this set of tags
+    categories: Seq[String] = List(), // in these categories
+    texts: Seq[String]      = List()  // and oh yeah, free form text
     ) {}
 
 /**
@@ -113,7 +112,7 @@ case class Policy (
                         val w = new RSWhere(
                             if (br < ur) { br } else { ur },
                             if (ba.getMillis > ua.getMillis) { ba } else { ua },
-                            if (bb.getMillis < ua.getMillis) { bb } else { ub },
+                            if (bb.getMillis < ub.getMillis) { bb } else { ub },
                             bt ++ ut,
                             bc ++ uc,
                             btxt ++ utxt
