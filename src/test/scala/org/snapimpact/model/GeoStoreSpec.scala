@@ -11,21 +11,7 @@ import _root_.org.specs.Sugar._
 import net.liftweb.util._
 
 class GeoStoreTest extends Runner(new GeoStoreSpec) with JUnit with Console
-/*
-class TagStoreSpec extends Specification {
-  lazy val tagStore: TagStore = new MemoryTagStore // FIXME choose real impl
 
-  "Tag Store" should {
-    "Associate add a GUID" in {
-      val guid = GUID.create()
-      val tl = List(Tag("foo"), Tag("bar"))
-      
-      tagStore.add(guid, tl)
-      tagStore.find(List(Tag("foo"))) must_== List(guid)
-    }
-  }
-}
-*/
 class GeoStoreSpec extends Specification {
   lazy val geoStore: GeoStore = new MemoryGeoStore
 
@@ -38,7 +24,11 @@ class GeoStoreSpec extends Specification {
       geoStore.add( guid, geoLoc1)
       geoStore.add( guid, geoLoc2)
       geoStore.add( guid, geoLoc3)
-      geoStore.find( geoLoc1, 2.0,1,50) must_== List(geoLoc2)
+      
+      // println("Answer is "+geoStore.find( geoLoc1, 2.0,1,50))
+
+      geoStore.find( geoLoc1, 2.0,1,50).
+      filter(_ == geoLoc2) must_== List(geoLoc2)
     }
   }
 }

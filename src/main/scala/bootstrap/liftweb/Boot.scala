@@ -1,15 +1,21 @@
 package bootstrap.liftweb
 
-import _root_.net.liftweb.util._
-import _root_.net.liftweb.common._
-import _root_.net.liftweb.http._
-import _root_.net.liftweb.http.provider._
-import _root_.net.liftweb.sitemap._
-import _root_.net.liftweb.sitemap.Loc._
+import net.liftweb.util._
+import net.liftweb.common._
+import net.liftweb.http._
+import net.liftweb.http.provider._
+import net.liftweb.sitemap._
+import net.liftweb.sitemap.Loc._
 import Helpers._
-import _root_.net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, StandardDBVendor}
-import _root_.java.sql.{Connection, DriverManager}
-import _root_.org.snapimpact.model._
+import net.liftweb.mapper.{DB, 
+			   ConnectionManager, 
+			   Schemifier, 
+			   DefaultConnectionIdentifier, 
+			   StandardDBVendor}
+import java.sql.{Connection, DriverManager}
+import scala.xml.NodeSeq
+import org.snapimpact.model._
+import org.snapimpact.snippet._
 
 
 /**
@@ -17,6 +23,9 @@ import _root_.org.snapimpact.model._
  * to modify lift's environment
  */
 class Boot {
+  implicit def toFunc(in: {def render(in: NodeSeq): NodeSeq}):
+  NodeSeq => NodeSeq = param => in.render(param)
+    
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
       val vendor = 
@@ -38,6 +47,8 @@ class Boot {
     def entries = Menu(Loc("Home", List("index"), "Home")) ::
     Menu(Loc("docs.api", List("docs", "api"), "API Docs")) ::
     Menu(Loc("xmlupload", List("xml_upload"), "Xml Upload")) ::
+    Menu(Loc("search", List("search"), "Search", Hidden,
+	   Snippet("search", ProcessSearch))) ::    
     Menu(Loc("test", Link(List("test"), true, "/test/hello"), "TestOrn")) ::
     Nil
 
