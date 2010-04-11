@@ -1,9 +1,12 @@
 <lift:surround with="default" at="content">
   <h2>Welcome to the Snap Impact All for Good project</h2>
   <p>
-    <lift:helloWorld.howdy>
-      <span>Welcome to all_for_good at <b:time/></span>
-    </lift:helloWorld.howdy>
+    <form action="/search">
+      Phrase <input name="q"/>
+      Lat: <input name="lat"/>
+      Long: <input name="long"/>
+      <input type="submit" value="search"/>
+    </form>
   </p>
 </lift:surround>
 
