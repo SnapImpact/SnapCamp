@@ -1,0 +1,25 @@
+<lift:surround with="default" at="content">
+  <h2>Search Results</h2>
+  <p>
+    <table>
+      <tr>
+	<td>
+	  Sponsor
+	</td>
+	<td>
+	  Description
+	</td>
+      </tr>
+      <lift:results>
+	<tr>
+	  <td>
+	    <results:sponsor/>
+	  </td>
+	  <td>
+	    <results:description/>
+	  </td>
+	</tr>
+      </lift:results>
+    </table>
+  </p>
+</lift:surround>
