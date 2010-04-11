@@ -96,13 +96,16 @@ class MemoryGeoStore extends GeoStore {
   /**
    * Find a series of locations that are within a range of the
    * specified location
+   * @param location location around which we are looking
+   * @param radius radius, in miles
    */
-  def find(location: GeoLocation, distance: Double,
+  def find(location: GeoLocation,
+           radius: Double,
            first: Int,
            max: Int): List[GUID] =
   {
     val set = synchronized{locs}
-    set.view.filter{ case (_, loc) => loc.within(distance, of = location)}.
+    set.view.filter{ case (_, loc) => loc.withinMiles(radius, location)}.
     drop(first).take(max).map(_._1).toList
   }
 

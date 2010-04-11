@@ -4,6 +4,7 @@ package model
 import org.snapimpact.etl.model.dto.FootprintFeed
 
 import net.liftweb.util.Helpers
+import geocode.Earth
 
 /**
  * This file defines interfaces for the storage mechanism.  It
@@ -49,15 +50,29 @@ trait FeedStore {
   def delete(guid: GUID): Unit
 }
 
+/**
+ * (Optional) location data
+ * @param longitude location longitude in degrees, -180.0..180.0
+ * @param latitude location latitude in degrees, -90.0..90.0
+ * @param hasLocation if false, there's no latitude or longitude here
+ */
 final case class GeoLocation(longitude: Double,
-                             lattitude: Double,
+                             latitude: Double,
                              hasLocation: Boolean = true)
 {
-  // FIXME how do we calcualte distance?
-  def within(distance: Double, of: GeoLocation): Boolean = {
-    val a = longitude - of.longitude
-    val b = lattitude - of.lattitude
-    (distance * distance) <= (a * a + b * b)
+  import org.snapimpact.geocode.Earth
+
+  /**
+   * Checks if another point is within given number of miles from this point
+   * @param distance max distance (miles)
+   * @param of the point relative to which the distance is checked; if the point
+   *        does not have the location, the answer is 'false'
+   */
+  def withinMiles(distance: Double, of: GeoLocation): Boolean = {
+    hasLocation &&
+    of.hasLocation &&
+    Earth.distanceInMiles((latitude,       longitude),
+                          (of.latitude, of.longitude)) <= distance
   }
 }
 
