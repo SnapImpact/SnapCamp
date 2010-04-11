@@ -2,7 +2,7 @@ package org.snapimpact.model
 
 import org.specs.Specification
 import org.slf4j.LoggerFactory
-import helpers.{DbTestDataGenerator, DbTestUtil}
+//import helpers.{DbTestDataGenerator, DbTestUtil}
 
 import _root_.org.specs._
 import _root_.org.specs.runner._
@@ -42,7 +42,7 @@ class EventSpec extends Specification {
 
         "Be created successfully" in {
             val eventFromDb = Model.findAll[Event]("Event.findById", "id" -> ev1.getId).head
-            eventFromDb.getId must be(ev1.getId)            
+            eventFromDb.getId must be(ev1.getId)
         }
 
         "findAll should find 3 Event records" in {

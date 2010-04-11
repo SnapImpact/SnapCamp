@@ -1,7 +1,7 @@
 package org.snapimpact.model
 
 import org.specs.Specification
-import helpers.{DbTestDataGenerator, DbTestUtil}
+//import helpers.{DbTestDataGenerator, DbTestUtil}
 
 /**
  * Created by IntelliJ IDEA.
@@ -49,7 +49,7 @@ class InterestAreaSpec extends Specification {
         }
 
         "Find by title should find the first interest area" in {
-            Model.InterestArea.findByName(ia1.getName).size must be equalTo(1)    
+            Model.InterestArea.findByName(ia1.getName).size must be equalTo(1)
         }
 
     }

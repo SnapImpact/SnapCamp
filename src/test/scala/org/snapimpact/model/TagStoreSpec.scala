@@ -2,7 +2,7 @@ package org.snapimpact.model
 
 import org.specs.Specification
 import org.slf4j.LoggerFactory
-import helpers.{DbTestDataGenerator, DbTestUtil}
+//import helpers.{DbTestDataGenerator, DbTestUtil}
 
 import _root_.org.specs._
 import _root_.org.specs.runner._
@@ -19,7 +19,7 @@ class TagStoreSpec extends Specification {
     "Associate add a GUID" in {
       val guid = GUID.create()
       val tl = List(Tag("foo"), Tag("bar"))
-      
+
       tagStore.add(guid, tl)
       tagStore.find(List(Tag("foo"))) must_== List(guid)
     }

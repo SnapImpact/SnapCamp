@@ -1,7 +1,7 @@
 package org.snapimpact.model
 
 import org.specs.Specification
-import helpers.{DbTestDataGenerator, DbTestUtil}
+//import helpers.{DbTestDataGenerator, DbTestUtil}
 
 /**
  * Created by IntelliJ IDEA.
