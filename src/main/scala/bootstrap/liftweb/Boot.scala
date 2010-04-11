@@ -7,7 +7,6 @@ import net.liftweb.http.provider._
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
 import Helpers._
-
 import net.liftweb.mapper.{DB, 
 			   ConnectionManager, 
 			   Schemifier, 
@@ -15,7 +14,6 @@ import net.liftweb.mapper.{DB,
 			   StandardDBVendor}
 import java.sql.{Connection, DriverManager}
 import scala.xml.NodeSeq
-
 import org.snapimpact.model._
 import org.snapimpact.snippet._
 
