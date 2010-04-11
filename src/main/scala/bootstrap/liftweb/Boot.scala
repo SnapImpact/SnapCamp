@@ -50,7 +50,8 @@ class Boot {
     Menu(Loc("search", List("search"), "Search", Hidden,
 	   Snippet("search", ProcessSearch))) ::    
     Menu(Loc("test", Link(List("test"), true, "/test/hello"), "TestOrn")) ::
-    Nil
+    Menu(Loc("Cats", List("cats"), "Cat Wizard")) ::
+   Nil
 
     LiftRules.setSiteMapFunc(() => SiteMap(entries:_*))
 
@@ -75,6 +76,11 @@ class Boot {
         println("volops")
         () => Full(org.snapimpact.dispatch.Api.volopps(r))
     }
+
+    LiftRules.snippetDispatch.append {
+      case "DoYouLikeCats" => DoYouLikeCats
+    }
+
 
     S.addAround(DB.buildLoanWrapper)
   }
