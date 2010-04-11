@@ -1,6 +1,6 @@
 package org.snapimpact.lib
 
-import org.joda.time._
+import _root_.java.util.{Calendar,Date,GregorianCalendar}
 
 /**
  * Classes related to search.
@@ -8,17 +8,19 @@ import org.joda.time._
  */
 
 // Where in the world are the events of San Diego?
-case class LatLong(lat: Double, long: Double) {}
+case class LatLong(lat: Double = 0.0, long: Double = 0.0) {}
 
 // What do we care/not-care about?
 case class RSWhere(
-    radius: Double,     // how far to search from latLong
-    after: DateTime,    // only events after
-    before: DateTime,   // only events before
-    tags: Seq[String],  // for this set of tags
-    categories: Seq[String],    // in these categories
-    texts: Seq[String]  // and oh yeah, free form text constraints
-    )
+    radius: Double            = 50.0,   // how far to search from latLong
+                                        // only events after
+    after: GregorianCalendar  = new GregorianCalendar(1970, 1, 1, 00, 00),
+                                        // only events before
+    before: GregorianCalendar = new GregorianCalendar(2038, 7, 1, 00, 00),
+    tags: Seq[String]         = List(), // for this set of tags
+    categories: Seq[String]   = List(), // in these categories
+    texts: Seq[String]        = List()  // and oh yeah, free form text
+    ) {}
 
 /**
  * Classes related to Order preference
@@ -39,14 +41,14 @@ sealed trait OrderVal
 sealed trait TimeBin
 
 case object Today extends TimeBin
-case object Tomorrow extends TimeBin 
+case object Tomorrow extends TimeBin
 case object ThisWeek extends TimeBin
 case object ThisMonth extends TimeBin
 
 sealed trait TimeVal extends OrderVal
 
 final case object ByTime extends TimeVal
-final case class ByTimeBins(bins: Seq[TimeBin]) extends TimeVal
+final case class ByTimeBins(bins: Seq[TimeBin] = List()) extends TimeVal
 
 object Constants {
     val defaultTimeBins: ByTimeBins =
@@ -74,9 +76,9 @@ case object ByGeo extends OrderVal          // geography is continuous
  */
 
 case class Policy (
-    val latLong: Option[LatLong],
-    val rsWhere: Option[RSWhere],
-    val orderPref: Option[Seq[OrderVal]]
+    val latLong: Option[LatLong]         = None,
+    val rsWhere: Option[RSWhere]         = None,
+    val orderPref: Option[Seq[OrderVal]] = None
     ) {
 
     // Extra constructors.
@@ -109,8 +111,8 @@ case class Policy (
                     case Some(RSWhere(ur, ua, ub, ut, uc, utxt)) =>
                         val w = new RSWhere(
                             if (br < ur) { br } else { ur },
-                            if (ba.getMillis > ua.getMillis) { ba } else { ua },
-                            if (bb.getMillis < ub.getMillis) { bb } else { ub },
+                            if (ba.compareTo(ua) > 0) { ba } else { ua },
+                            if (bb.compareTo(ub) < 0) { bb } else { ub },
                             bt ++ ut,
                             bc ++ uc,
                             btxt ++ utxt
