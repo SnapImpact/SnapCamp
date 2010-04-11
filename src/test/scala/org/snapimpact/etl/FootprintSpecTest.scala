@@ -56,6 +56,52 @@ class FootprintSpecTest extends TestCase("app") {
     assertEquals(None, item.endTime.get.olsonTZ)
   }
 
+  def testNoFeedInfo() = {
+    val subject = <FootprintFeed schemaVersion="0.1">
+  <VolunteerOpportunities>
+  <VolunteerOpportunity>
+   <volunteerOpportunityID>2002</volunteerOpportunityID>
+   <sponsoringOrganizationIDs><sponsoringOrganizationID>2</sponsoringOrganizationID></sponsoringOrganizationIDs>
+   <title>YOUNG ADULT TO HELP GUIDE MERCER COUNTY TEEN VOLUNTEER CLUB</title>
+   <volunteersNeeded>3</volunteersNeeded>
+   <dateTimeDurations>
+    <dateTimeDuration>
+     <openEnded>No</openEnded>
+     <startDate>2009-01-01</startDate>
+     <endDate>2009-05-31</endDate>
+     <iCalRecurrence>FREQ=WEEKLY;INTERVAL=2</iCalRecurrence>
+     <commitmentHoursPerWeek>2</commitmentHoursPerWeek>
+    </dateTimeDuration>
+   </dateTimeDurations>
+   <locations>
+    <location>
+     <city>Mercer County</city>
+     <region>NJ</region>
+    <postalCode>08610</postalCode>
+    </location>
+   </locations>
+   <audienceTags>
+    <audienceTag>Teens</audienceTag>
+   </audienceTags>
+   <categoryTags>
+    <categoryTag>Community</categoryTag>
+    <categoryTag>Children &amp; Youth</categoryTag>
+   </categoryTags>
+   <skills>Be interested in promoting youth volunteerism. Be available two Tuesday evenings per month.</skills>
+   <detailURL>http://www.volunteermatch.org/search/opp200517.jsp</detailURL>
+   <description>Quixote Quest is a volunteer club for teens who have a passion for community service. The teens each volunteer for their own specific cause. Twice monthly, the club meets. At the club meetings the teens from different high schools come together for two hours to talk about their volunteer experiences and spend some hang-out time together that helps them bond as fraternity...family. Quixote Quest is seeking young adults roughly between 20 and 30 years of age who would be interested in being a guide and advisor to the teens during these two evening meetings a month.</description>
+   <lastUpdated olsonTZ="America/Denver">2008-12-02T19:02:01</lastUpdated>
+   </VolunteerOpportunity>
+   </VolunteerOpportunities>
+  </FootprintFeed>
+    try {
+      val item = FootprintFeed.fromXML(subject)
+      fail("Should have thrown missing tag exception")
+    } catch {
+      case e: RuntimeException => // life is good
+    }
+  }
+
   def testFeedInfo() = {
     val subject =  <FeedInfo>
       <providerID>1</providerID>
