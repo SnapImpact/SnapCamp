@@ -369,11 +369,18 @@ sealed trait SexRestrictedEnum {
 }
 
 object SexRestrictedEnum {
-  def fromXML(node: scala.xml.Node ) = node.text.toLowerCase match {
-    case "male" => Some(Male)
-    case "female" => Some(Female)
-    case "neither" => Some(Neither)
+  val male_rx = "m(ale|an)?".r
+  val female_rx = """(f(emale)?|w(oman)?)""".r
+/*  val female_rx = "f(emale)?".r */
+/*  val female_rx = """(f|female|w|woman)""".r */
+  val neither_rx = "n(either)?".r
+  def fromXML(node: scala.xml.Node ) = {
+       node.text.toLowerCase match {
+    case male_rx(capgroup) => Some(Male)
+    case female_rx(capgroup,_,_) => Some(Female)
+    case neither_rx(capgroup) => Some(Neither)
     case _ => None
+    }
   }
 }
 final case object Male extends SexRestrictedEnum { val value = "Male"}
