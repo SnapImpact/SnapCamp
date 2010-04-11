@@ -1,6 +1,5 @@
 package org.snapimpact.model
 
-/*
 import org.specs.Specification
 import org.slf4j.LoggerFactory
 import helpers.{DbTestDataGenerator, DbTestUtil}
