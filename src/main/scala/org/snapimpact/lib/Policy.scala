@@ -1,6 +1,7 @@
 package org.snapimpact.lib
 
 import _root_.java.util.{Calendar,Date,GregorianCalendar}
+import _root_.org.joda.time._
 
 /**
  * Classes related to search.
@@ -111,8 +112,8 @@ case class Policy (
                     case Some(RSWhere(ur, ua, ub, ut, uc, utxt)) =>
                         val w = new RSWhere(
                             if (br < ur) { br } else { ur },
-                            if (ba.compareTo(ua) > 0) { ba } else { ua },
-                            if (bb.compareTo(ub) < 0) { bb } else { ub },
+                            if (ba.getMillis > ua.getMillis) { ba } else { ua },
+                            if (bb.getMillis < ua.getMillis) { bb } else { ub },
                             bt ++ ut,
                             bc ++ uc,
                             btxt ++ utxt
