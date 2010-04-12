@@ -23,9 +23,6 @@ import org.snapimpact.snippet._
  * to modify lift's environment
  */
 class Boot {
-  implicit def toFunc(in: {def render(in: NodeSeq): NodeSeq}):
-  NodeSeq => NodeSeq = param => in.render(param)
-    
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
       val vendor = 
@@ -48,7 +45,7 @@ class Boot {
     Menu(Loc("docs.api", List("docs", "api"), "API Docs")) ::
     Menu(Loc("xmlupload", List("xml_upload"), "Xml Upload")) ::
     Menu(Loc("search", List("search"), "Search", Hidden,
-	   Snippet("search", ProcessSearch))) ::    
+	   Snippet("search", a => ProcessSearch.render(a)))) ::
     Menu(Loc("test", Link(List("test"), true, "/test/hello"), "TestOrn")) ::
     Menu(Loc("Cats", List("cats"), "Cat Wizard")) ::
    Nil

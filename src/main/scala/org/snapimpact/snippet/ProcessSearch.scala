@@ -9,27 +9,58 @@ import org.snapimpact.lib._
 import Helpers._
 import net.liftweb.json._
 import JsonAST._
+import net.liftweb.http.testing._
 
-object ProcessSearch {
+object ProcessSearch extends TestKit {
+  def baseUrl = "http://www.allforgood.org"
+
   def render(in: NodeSeq): NodeSeq = 
     for {
       apiKey <- Props.get("afg.api.key") ?~ "No API Keys Defined"
       q <- S.param("q") ?~ "Search Term Node Defined"
-      longLat = S.param("long").
-      flatMap(long => S.param("lat").map(lat => (long, lat)))
-      results <- askFor(q, longLat) ?~ "request failed"
-      // items <- results \ "items"
-    } yield <b>Ignore Me</b>
+      longLat = boxPair(S.param("long"), S.param("lat"))
+      results <- askFor(q, apiKey, longLat) ?~ "request on AFG failed"
+    } yield (for {
+        JArray(items) <- results \ "items"
+        item <- items
+        JString(sponsor) <- item \ "sponsoringOrganizationName"
+        JString(description) <- item \ "description"
+        node <- bind("results", in,
+                     "sponsor" -> sponsor, "description" -> description)
+      } yield node) : NodeSeq
 
   implicit def bnsToNS(in: Box[NodeSeq]): NodeSeq = in match {
     case Full(i) => i
     case Failure(msg, _, _) => S.error(msg); 
-    S.redirectTo(S.referer openOr "/")
+      S.redirectTo(S.referer openOr "/")
     case _ =>
-    S.redirectTo(S.referer openOr "/")
+      S.redirectTo(S.referer openOr "/")
   }
-	 
-  private def askFor(query: String, longLat: Box[(String,String)]):
-  Box[JValue] = Empty
-}
 
+  def boxPair[A,B](ab: Box[A], bb: Box[B]): Box[(A, B)] =
+    for {
+      a <- ab
+      b <- bb
+    } yield (a, b)
+	 
+  private def askFor(query: String, key: String, longLat: Box[(String,String)]):
+  Box[JValue] = {
+    val params = ("key", key) :: ("q", query) :: ("output", "json") :: 
+    longLat.toList.map{case (long, lat) => ("vol_loc", long+","+lat)}
+
+    import net.liftweb.json._
+
+    get("/api/volopps", params :_*) match {
+      case r: HttpResponse if r.code != 200 =>
+        Failure("AFG site returned code "+r.code, Empty, Empty)
+        
+      case r: HttpResponse =>
+        for {
+          body <- tryo{r.bodyAsString}
+          json <- tryo(JsonParser.parse(body))
+        } yield json
+
+      case _ => Empty
+    }
+  }
+}
