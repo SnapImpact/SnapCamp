@@ -23,6 +23,9 @@ import org.snapimpact.snippet._
  * to modify lift's environment
  */
 class Boot {
+  implicit def toFunc(in: {def render(in: NodeSeq): NodeSeq}):
+  NodeSeq => NodeSeq = param => in.render(param)
+    
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
       val vendor = 
