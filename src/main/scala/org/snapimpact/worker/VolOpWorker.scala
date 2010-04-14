@@ -1,6 +1,7 @@
 package org.snapimpact
 package worker
 
+/*
 import org.stambecco._
 
 import net.liftweb._
@@ -49,3 +50,4 @@ class VolOpWorker(id: VolOpId,
 WorkerImpl[VolOpId, VolOpMsg](id, calcFunc) {
 }
 
+*/
