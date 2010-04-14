@@ -52,6 +52,11 @@
     </dependency>
     <dependency>
       <groupId>net.liftweb</groupId>
+      <artifactId>lift-wizard</artifactId>
+      <version>${lift.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.liftweb</groupId>
       <artifactId>lift-testkit</artifactId>
       <version>${lift.version}</version>
     </dependency>

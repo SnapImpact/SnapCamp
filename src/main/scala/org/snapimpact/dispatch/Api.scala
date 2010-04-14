@@ -15,8 +15,8 @@ final case object HtmlOutputType extends OutputType
 object Api { 
   def volopps(r: Req): LiftResponse = {
     for {
-    key <- r.param("key") ?~ missingKey ~> 401
-    valKey <- validateKey(key) ?~ ("Invalid key. "+ missingKey) ~> 401
+      key <- r.param("key") ?~ missingKey ~> 401
+      valKey <- validateKey(key) ?~ ("Invalid key. "+ missingKey) ~> 401
     } yield
       r.param("output") match {
 	case Full("json") => JsonResponse(sampleJson)
@@ -32,21 +32,18 @@ object Api {
    private implicit def bsify(in: Box[String]): BoxString = new BoxString(in)
 
 
-def find(query: Option[String] = r.param("q"),
-start: Int = r.param("start").asInt openOr 1,
-num: Int = r.param("num").asInt openOr 10,
-output: OutputType = r.param("output").map(_.toLowerCase) match {
-case Full("rss") => RssOutputType
-case Full("json") => JsonOutputType
-case _ => HtmlOutputType
-}): Unit = {}
+   def find(query: Option[String] = r.param("q"),
+   start: Int = r.param("start").asInt openOr 1,
+   num: Int = r.param("num").asInt openOr 10,
+   output: OutputType = r.param("output").map(_.toLowerCase) match {
+   case Full("rss") => RssOutputType
+   case Full("json") => JsonOutputType
+   case _ => HtmlOutputType
+   }): Unit = {}
 
-val params = List("timeperiod" -> List("today", "this_month", "this_weekend", "this_week"),
-"vol_startdate", "vol_enddate", "vol_distance", "vol_loc")
-*/
-
-
-
+   val params = List("timeperiod" -> List("today", "this_month", "this_weekend", "this_week"),
+   "vol_startdate", "vol_enddate", "vol_distance", "vol_loc")
+   */
 
 
   private implicit def respToBox(in: Box[LiftResponse]): LiftResponse = {
