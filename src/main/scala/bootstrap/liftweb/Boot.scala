@@ -8,9 +8,8 @@ import _root_.net.liftweb.sitemap._
 import _root_.net.liftweb.sitemap.Loc._
 import Helpers._
 import _root_.net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, StandardDBVendor}
-import _root_.java.sql.{Connection, DriverManager}
+//import _root_.java.sql.{Connection, DriverManager}
 import _root_.org.snapimpact.model._
-
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -30,6 +29,10 @@ class Boot {
       DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
     }
 
+    LiftRules.passNotFoundToChain = true
+    LiftRules.liftRequest.append {
+      case Req("static" :: _, _, _) => false
+    }
     // where to search snippet
     LiftRules.addToPackages("org.snapimpact")
     
