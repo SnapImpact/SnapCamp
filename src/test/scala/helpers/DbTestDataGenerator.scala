@@ -1,7 +1,9 @@
 package helpers
 
-import java.util.{ArrayList, UUID}
+import _root_.java.util.{ArrayList, UUID}
 import org.snapimpact.model.{InterestArea, Event}
+import org.snapimpact.etl.model.dto.FootprintFeed
+import xml.XML
 
 /**
  * Created by IntelliJ IDEA.
@@ -42,5 +44,9 @@ object DbTestDataGenerator {
 
     def rndStr = UUID.randomUUID.toString
     def rndLong = (Math.random * 1000).asInstanceOf[Long]
-    
+
+    def genFootprintFeed = {
+      val subject = XML.loadFile("src/test/resources/sampleData0.1.r1254.xml")
+      FootprintFeed.fromXML(subject)
+    }
 }

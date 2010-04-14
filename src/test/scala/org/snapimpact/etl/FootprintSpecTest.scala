@@ -10,6 +10,7 @@ import _root_.junit.framework._
 import Assert._
 import _root_.scala.xml.XML
 import model.dto._
+import org.snapimpact.model.MemoryFeedStore
 
 object FootprintSpecTest {
   def suite: Test = {
@@ -227,5 +228,16 @@ class FootprintSpecTest extends TestCase("app") {
     assertEquals(3, item.opportunities.opps.size)
     assertEquals(None, item.reviews)
     assertEquals("1", item.feedInfo.providerID)
+  }
+
+  def testStoreAndRetrieve() = {
+    val subject = XML.loadFile("src/test/resources/sampleData0.1.r1254.xml")
+    val item = FootprintFeed.fromXML(subject)
+    assertNotNull(item)
+    val db = new MemoryFeedStore
+    val guid = db.create(item)
+    val memitem = db.read(guid)
+    assertFalse(memitem == None)
+    assertEquals(item, memitem.get)
   }
 }
