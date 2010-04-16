@@ -4,6 +4,7 @@ import org.snapimpact.etl.model.DataModel
 import org.joda.time.DateTime
 import xml.Node
 import net.liftweb.util.Helpers
+import net.liftweb.common._
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,6 +31,14 @@ object ParseHelper {
         case a @ _ => a.get
       }
     }
+
+        // The required elements
+    def %>[T](name: String)(implicit cvt: Node => Option[List[T]]): List[T] = {
+      %(name)(cvt) match {
+        case None => List()
+        case a @ _ => a.get
+      }
+    }
   }
 
   implicit def nodeToHelp(in: Node): ParseHelperHelper = new ParseHelperHelper(in)
@@ -38,19 +47,19 @@ object ParseHelper {
   implicit def cvtDouble: Node => Option[Double] = s => Helpers.tryo(s.text.toDouble)
   implicit def cvtInt: Node => Option[Int] = n => Helpers.asInt(n.text)
   implicit def cvtYesNo: Node => Option[YesNoEnum] = n => YesNoEnum.fromXML(n)
-  implicit def cvtReviews: Node => Option[Reviews] = n => Helpers.tryo(Reviews.fromXML(n))
+  implicit def cvtReviews: Node => Option[List[Review]] = n => Helpers.tryo(Reviews.fromXML(n))
 
   implicit def cvtTimeOlson: Node => Option[TimeOlson] =
     n => Some(new TimeOlson(n.text, 
 			    (n \ "@olsonTZ").headOption.
 			    map(_.text)))
-  implicit def cvtOrg: Node => Option[Organizations] =
+  implicit def cvtOrg: Node => Option[List[Organization]] =
     n => Some(Organizations.fromXML(n))
 
   implicit def cvtLocation: Node => Option[Location] =
     n => Some(Location.fromXML(n))
   
-  implicit def cvtVolOp: Node => Option[VolunteerOpportunities] =
+  implicit def cvtVolOp: Node => Option[List[VolunteerOpportunity]] =
     n => Some(VolunteerOpportunities.fromXML(n))
 
   implicit def cvtFeedInfo: Node => Option[FeedInfo] =
@@ -74,44 +83,44 @@ import ParseHelper._
 case class FootprintFeed(
   feedInfo: FeedInfo,
   // Organizations is optional
-  organizations: Option[Organizations],
-  opportunities: VolunteerOpportunities,
+  organizations: List[Organization],
+  opportunities: List[VolunteerOpportunity],
   // Reviews is optional
-  reviews: Option[Reviews]) extends DataModel
+  reviews: List[Review]) extends DataModel
 
 object FootprintFeed {
   def fromXML(node: scala.xml.Node) =
     FootprintFeed(
       node %% "FeedInfo",
-      node % "Organizations",
+      node %% "Organizations",
       node %% "VolunteerOpportunities",
-      node % "Reviews"
+      node %> "Reviews"
     )
 }
 
-case class Organizations(
+/*case class Organizations(
   orgs: List[Organization]) extends DataModel {
-}
+}*/
 
 object Organizations {
-  def fromXML(node: scala.xml.Node) =
-    Organizations((node \ "Organization").toList.map(Organization.fromXML(_)))
+  def fromXML(node: scala.xml.Node): List[Organization] =
+    (node \ "Organization").toList.flatMap(Organization.fromXML(_))
 }
-
-case class VolunteerOpportunities(opps: List[VolunteerOpportunity]) extends DataModel 
 
 object VolunteerOpportunities {
-  def fromXML(node: scala.xml.Node) =
-    VolunteerOpportunities((node \ "VolunteerOpportunity").toList.map(VolunteerOpportunity.fromXML(_)))
+  def fromXML(node: scala.xml.Node): List[VolunteerOpportunity] =
+    (node \ "VolunteerOpportunity").toList.map(VolunteerOpportunity.fromXML(_))
 }
 
+/*
 case class Reviews(
   reviews: List[Review]) extends DataModel {
 }
+*/
 
 object Reviews {
-  def fromXML(node: scala.xml.Node) =
-    Reviews((node \ "Review").toList.map(Review.fromXML(_)))
+  def fromXML(node: scala.xml.Node): List[Review] =
+    (node \ "Review").toList.map(Review.fromXML(_))
 }
 
 case class FeedInfo(
@@ -151,23 +160,26 @@ case class Organization(
   detailURL:Option[String]
   ) extends DataModel {
 }
+
 object Organization {
-  def fromXML(node: scala.xml.Node) =
-    Organization(
-      (node \ "organizationID").text,
-      node % "nationalEIN",
-      node % "guidestarID",
-      (node \ "name").text,
-      node % "missionStatement",
-      node % "description",
-      node % "location",
-      node % "phone",
-      node % "fax",
-      node % "email",
-      node % "organizationURL",
-      node % "donateURL",
-      node % "logoURL",
-      node % "detailURL")
+  def fromXML(node: scala.xml.Node): Box[Organization] =
+    Helpers.tryo{
+      Organization(
+	(node \ "organizationID").text,
+	node % "nationalEIN",
+	node % "guidestarID",
+	(node \ "name").text,
+	node % "missionStatement",
+	node % "description",
+	node % "location",
+	node % "phone",
+	node % "fax",
+	node % "email",
+	node % "organizationURL",
+	node % "donateURL",
+	  node % "logoURL",
+	node % "detailURL")
+    }
 }
 
 case class Location(

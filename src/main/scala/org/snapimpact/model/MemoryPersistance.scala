@@ -1,7 +1,7 @@
 package org.snapimpact
 package model
 
-import org.snapimpact.etl.model.dto.FootprintFeed
+import org.snapimpact.etl.model.dto.VolunteerOpportunity
 
 import net.liftweb._
 import util.Helpers
@@ -12,16 +12,16 @@ import util.Helpers
  * @author dpp
  */
 
-object MemoryFeedStore extends MemoryFeedStore
+private object MemoryOpportunityStore extends MemoryOpportunityStore
 
-class MemoryFeedStore extends FeedStore {
-  private var data: Map[GUID, FootprintFeed] = Map()
+private class MemoryOpportunityStore extends OpportunityStore {
+  private var data: Map[GUID, VolunteerOpportunity] = Map()
 
   /**
    * Add a record to the backing store and get a GUID
    * the represents the record
    */
-  def create(record: FootprintFeed): GUID = synchronized {
+  def create(record: VolunteerOpportunity): GUID = synchronized {
     val guid = GUID(Helpers.nextFuncName)
 
     data += guid -> record
@@ -32,21 +32,21 @@ class MemoryFeedStore extends FeedStore {
   /**
    * read the GUID from the backing store
    */
-  def read(guid: GUID): Option[FootprintFeed] = synchronized {
+  def read(guid: GUID): Option[VolunteerOpportunity] = synchronized {
     data.get(guid)
   }
 
   /**
    * Read a set of GUIDs from the backing store
    */
-  def read(guids: List[GUID]): List[(GUID, FootprintFeed)] = synchronized {
+  def read(guids: List[GUID]): List[(GUID, VolunteerOpportunity)] = synchronized {
     guids.flatMap(g => data.get(g).map(f => (g, f)))
   }
 
   /**
    * Update the record
    */
-  def update(guid: GUID, record: FootprintFeed) = synchronized {
+  def update(guid: GUID, record: VolunteerOpportunity) = synchronized {
     data += guid -> record
   }
 
@@ -62,9 +62,9 @@ class MemoryFeedStore extends FeedStore {
 /**
  * The interface to the Geocoded search
  */
-object MemoryGeoStore extends MemoryGeoStore
+private object MemoryGeoStore extends MemoryGeoStore
 
-class MemoryGeoStore extends GeoStore {
+private class MemoryGeoStore extends GeoStore {
   import scala.collection.immutable.{TreeMap, TreeSet}
   private var locs: TreeMap[GUID, GeoLocation] = TreeMap()
   private var nonLocSet: TreeSet[GUID] = TreeSet()
@@ -122,9 +122,9 @@ class MemoryGeoStore extends GeoStore {
 /**
  * The in-memory implementation of the tag store
  */
-object MemoryTagStore extends MemoryTagStore 
+private object MemoryTagStore extends MemoryTagStore
 
-class MemoryTagStore extends TagStore {
+private class MemoryTagStore extends TagStore {
   import scala.collection.immutable.{TreeMap, TreeSet, SortedSet}
 
   private var tags: TreeMap[Tag, TreeSet[GUID]] = TreeMap()
@@ -177,4 +177,75 @@ class MemoryTagStore extends TagStore {
 
     ret.drop(first).take(max).toList
   }
+}
+
+private object MemoryLuceneStore extends MemoryLuceneStore
+
+/**
+ * THe interface for storing stuff in a search engine
+ */
+private class MemoryLuceneStore extends SearchStore {
+  import java.io.IOException;
+import java.io.StringReader;
+
+import org.apache.lucene.search._
+import org.apache.lucene.document._
+import org.apache.lucene.search._
+import org.apache.lucene.store._
+import org.apache.lucene.index._
+import org.apache.lucene.analysis.standard._
+import org.apache.lucene.util.Version
+
+/*
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+*/
+
+  private val idx = new RAMDirectory()
+
+  /**
+   * Assocate the GUID and an item.
+   * @param guid the GUID to associate
+   * @param item the item to associate with the GUID
+   * @splitter a function that returns the Strings and types of String (e.g., description,
+   */
+  def add[T](guid: GUID, item: T)(implicit splitter: T => Seq[(String, Option[String])]): Unit = {
+    val doc = new Document()
+    doc.add(new Field("guid", guid.guid, Field.Store.YES, Field.Index.ANALYZED))
+
+    splitter(item).foreach {
+      case (value, name) => doc.add(new Field(name getOrElse "body", value,
+          Field.Store.YES, Field.Index.ANALYZED))
+    }
+
+    val writer = new IndexWriter(idx, new StandardAnalyzer(Version.LUCENE_30), true, IndexWriter.MaxFieldLength.UNLIMITED);
+    
+  }
+
+  /**
+   * Unassocate the GUID and words
+   */
+  def remove(guid: GUID): Unit = {
+
+  }
+
+  /**
+   * Assocate the GUID and a set of words
+   */
+  def update[T](guid: GUID, item: T)(implicit splitter: T => Seq[(String, Option[String])]): Unit = {
+
+  }
+
+
+  /**
+   * Find a set of GUIDs assocaiated with a search string, optionally
+   * specifing the subset of GUIDs to search and the number of results to
+   * return
+   */
+  def find(search: String,
+           first: Int = 0, max: Int = 200,
+           inSet: Option[Seq[GUID]] = None): List[GUID] = {
+    Nil
+           }
 }
