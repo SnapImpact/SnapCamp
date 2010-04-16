@@ -46,6 +46,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>3.0.1</version>
+    </dependency>
+    <dependency>
       <groupId>net.liftweb</groupId>
       <artifactId>lift-mapper</artifactId>
       <version>${lift.version}</version>
@@ -120,11 +125,13 @@
       <artifactId>persistence-api</artifactId>
       <version>1.0</version>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.scala-tools</groupId>
       <artifactId>time</artifactId>
       <version>2.7.0-0.1</version>
     </dependency>
+    -->
     <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
@@ -166,7 +173,7 @@
           <args>
             <arg>-unchecked</arg>
             <arg>-deprecation</arg>
-            <arg>-Xno-varargs-conversion</arg>
+            <!-- <arg>-Xno-varargs-conversion</arg> -->
           </args>
         </configuration>
         <executions>

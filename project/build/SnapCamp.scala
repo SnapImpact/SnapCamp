@@ -1,9 +1,9 @@
 import sbt._
 
 class SnapCampProject(info: ProjectInfo) extends DefaultWebProject(info) {
-  // val mavenLocal = "Local Maven Repository" at "file://"+Path.userHome+"/.m2/repository"
-  val scalatools_snapshot = "Scala Tools Snapshot" at "http://scala-tools.org/repo-snapshots/"
-  val scalatools_release = "Scala Tools Snapshot" at "http://scala-tools.org/repo-releases/"
+  val mavenLocal = "Local Maven Repository" at "file://"+Path.userHome+"/.m2/repository"
+  // val scalatools_snapshot = "Scala Tools Snapshot" at "http://scala-tools.org/repo-snapshots/"
+  val scalatools_release = "Scala Tools Release" at "http://scala-tools.org/repo-releases/"
 
   val liftVersion = "2.0-scala280-SNAPSHOT"
 
@@ -12,7 +12,7 @@ class SnapCampProject(info: ProjectInfo) extends DefaultWebProject(info) {
     "net.liftweb" % "lift-mapper" % liftVersion % "compile->default",
     "net.liftweb" % "lift-testkit" % liftVersion % "compile->default",
     "net.liftweb" % "lift-wizard" % liftVersion % "compile->default",
-    "net.liftweb" % "lift-jpa" % liftVersion % "compile->default",
+    // "net.liftweb" % "lift-jpa" % liftVersion % "compile->default",
     // "org.stambecco" % "stambecco-core" % "0.1-SNAPSHOT", //  % "compile->default",
     "org.mortbay.jetty" % "jetty" % "6.1.22" % "test->default",
     "com.h2database" % "h2" % "1.2.121",

@@ -10,7 +10,7 @@ import _root_.junit.framework._
 import Assert._
 import _root_.scala.xml.XML
 import model.dto._
-import org.snapimpact.model.MemoryFeedStore
+import org.snapimpact.model.PersistenceFactory
 
 object FootprintSpecTest {
   def suite: Test = {
@@ -133,7 +133,7 @@ class FootprintSpecTest extends TestCase("app") {
        <detailURL>http://www.volunteermatch.org/search/org28450.jsp</detailURL>
        <description>MicroMentor, a Mercy Corps initiative, helps entrepreneurs grow their businesses through mentoring relationships with experienced business professionals. Our mentors volunteer their time to meaningfully impact the lives of those new to the world of small business.</description>
       </Organization>
-    val item = Organization.fromXML(subject)
+    val item = Organization.fromXML(subject).open_!
     assertEquals("1", item.organizationID)
   }
 
@@ -224,20 +224,21 @@ class FootprintSpecTest extends TestCase("app") {
     val subject = XML.loadFile("src/test/resources/sampleData0.1.r1254.xml")
     val item = FootprintFeed.fromXML(subject)
     assertNotNull(item)
-    assertEquals(3, item.organizations.get.orgs.size)
-    assertEquals(3, item.opportunities.opps.size)
-    assertEquals(None, item.reviews)
+    assertEquals(3, item.organizations.size)
+    assertEquals(3, item.opportunities.size)
+    assertEquals(List(), item.reviews)
     assertEquals("1", item.feedInfo.providerID)
   }
 
   def testStoreAndRetrieve() = {
     val subject = XML.loadFile("src/test/resources/sampleData0.1.r1254.xml")
     val item = FootprintFeed.fromXML(subject)
+
     assertNotNull(item)
-    val db = new MemoryFeedStore
-    val guid = db.create(item)
+    val db = PersistenceFactory.opportunityStore.vend
+    val guid = db.create(item.opportunities.head)
     val memitem = db.read(guid)
     assertFalse(memitem == None)
-    assertEquals(item, memitem.get)
+    assertEquals(item.opportunities.head, memitem.get)
   }
 }

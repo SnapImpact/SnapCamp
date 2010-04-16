@@ -1,10 +1,18 @@
 package org.snapimpact
 package model
 
-import org.snapimpact.etl.model.dto.FootprintFeed
+import org.snapimpact.etl.model.dto._
 
-import net.liftweb.util.Helpers
+import net.liftweb.util._
+import net.liftweb.http._
 import geocode.Earth
+
+object PersistenceFactory extends Factory {
+  val opportunityStore = new FactoryMaker[OpportunityStore](() => MemoryOpportunityStore) {}
+  val geoStore = new FactoryMaker[GeoStore](() => MemoryGeoStore){}
+  val tagStore = new FactoryMaker[TagStore](() => MemoryTagStore){}
+  val searchStore = new FactoryMaker[SearchStore](() => MemoryLuceneStore){} // FIXME -- insert search store
+}
 
 /**
  * This file defines interfaces for the storage mechanism.  It
@@ -21,27 +29,27 @@ object GUID {
   def create(): GUID = new GUID(Helpers.nextFuncName)
 }
 
-trait FeedStore {
+trait OpportunityStore {
   /**
    * Add a record to the backing store and get a GUID
    * the represents the record
    */
-  def create(record: FootprintFeed): GUID
+  def create(record: VolunteerOpportunity): GUID
 
   /**
    * read the GUID from the backing store
    */
-  def read(guid: GUID): Option[FootprintFeed]
+  def read(guid: GUID): Option[VolunteerOpportunity]
 
   /**
    * Read a set of GUIDs from the backing store
    */
-  def read(guids: List[GUID]): List[(GUID, FootprintFeed)]
+  def read(guids: List[GUID]): List[(GUID, VolunteerOpportunity)]
 
   /**
    * Update the record
    */
-  def update(guid: GUID, record: FootprintFeed)
+  def update(guid: GUID, record: VolunteerOpportunity)
 
 
   /**
