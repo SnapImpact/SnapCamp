@@ -22,6 +22,7 @@ object PersistenceFactory extends Factory {
  */
 
 final case class GUID(guid: String) extends Ordered[GUID] {
+      val moo = guid.len
   def compare(that: GUID) = guid compare that.guid
 }
 

@@ -219,7 +219,12 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
           Field.Store.YES, Field.Index.ANALYZED))
     }
 
-    val writer = new IndexWriter(idx, new StandardAnalyzer(Version.LUCENE_30), true, IndexWriter.MaxFieldLength.UNLIMITED);
+    val writer = new IndexWriter(idx, new StandardAnalyzer(Version.LUCENE_30),
+                                 true, IndexWriter.MaxFieldLength.UNLIMITED)
+
+    writer.addDocument(doc)
+    writer.commit
+    writer.close
     
   }
 
