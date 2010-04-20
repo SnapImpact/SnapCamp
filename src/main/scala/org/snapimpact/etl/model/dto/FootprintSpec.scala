@@ -264,6 +264,7 @@ object VolunteerOpportunity {
   in.audienceTags.map(t => (t -> Some("tag"))) :::
   in.categoryTags.map(t => (t -> Some("tag"))) :::
   in.skills.map(s => (s -> Some("skill"))).toList :::
+  in.language.map(s => (s -> Some("language"))).toList
   
   
 
