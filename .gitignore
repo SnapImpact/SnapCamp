@@ -3,6 +3,8 @@ syntax: glob
 *.ser
 *.class
 *~
+*#
+.#*
 *.bak
 *.off
 *.old

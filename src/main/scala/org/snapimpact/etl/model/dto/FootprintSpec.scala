@@ -267,6 +267,17 @@ object ContactInfo {
 
 
 object VolunteerOpportunity {
+  implicit def voToSearch(in: VolunteerOpportunity):
+  Seq[(String, Option[String])] =
+    (in.title -> Some("title")) ::
+    in.description.map(d => (d -> None)).toList :::
+  in.abstractStr.map(d => (d -> Some("abstract"))).toList :::
+  in.audienceTags.map(t => (t -> Some("tag"))) :::
+  in.categoryTags.map(t => (t -> Some("tag"))) :::
+  in.skills.map(s => (s -> Some("skill"))).toList // :::
+  
+  
+
   def fromXML(node: scala.xml.Node) = {
     new VolunteerOpportunity(
     volunteerOpportunityID = (node \ "volunteerOpportunityID").text,
