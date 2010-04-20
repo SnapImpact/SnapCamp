@@ -274,8 +274,8 @@ object VolunteerOpportunity {
   in.abstractStr.map(d => (d -> Some("abstract"))).toList :::
   in.audienceTags.map(t => (t -> Some("tag"))) :::
   in.categoryTags.map(t => (t -> Some("tag"))) :::
-  in.skills.map(s => (s -> Some("skill"))).toList // :::
-  
+  in.skills.map(s => (s -> Some("skill"))).toList :::
+  in.language.map(s => (s -> Some("language"))).toList
   
 
   def fromXML(node: scala.xml.Node) = {

@@ -11,8 +11,17 @@ object PersistenceFactory extends Factory {
   val opportunityStore = new FactoryMaker[OpportunityStore](() => MemoryOpportunityStore) {}
   val geoStore = new FactoryMaker[GeoStore](() => MemoryGeoStore){}
   val tagStore = new FactoryMaker[TagStore](() => MemoryTagStore){}
-  val searchStore = new FactoryMaker[SearchStore](() => MemoryLuceneStore){} // FIXME -- insert search store
+  val searchStore = new FactoryMaker[SearchStore](() => MemoryLuceneStore){} 
+
+  val store = new FactoryMaker[Store](DefaultStore){}
 }
+
+trait Store {
+  
+}
+
+private object DefaultStore extends Store
+
 
 /**
  * This file defines interfaces for the storage mechanism.  It
