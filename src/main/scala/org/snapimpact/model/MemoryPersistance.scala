@@ -186,6 +186,10 @@ private object MemoryLuceneStore extends MemoryLuceneStore
  * THe interface for storing stuff in a search engine
  */
 private class MemoryLuceneStore extends SearchStore {
+  private val guid = GUID.create
+
+  override def toString = "MemoryLuceneStore "+guid
+
   import java.io.IOException;
   import java.io.StringReader;
 
@@ -206,8 +210,14 @@ private class MemoryLuceneStore extends SearchStore {
    */
 
   private lazy val idx = {
-    println("Creating a new RamDir")
-    new RAMDirectory()
+    val rd = new RAMDirectory()
+    val writer = new IndexWriter(rd, new StandardAnalyzer(Version.LUCENE_30),
+                                 true, IndexWriter.MaxFieldLength.UNLIMITED)
+    writer.optimize
+    writer.commit
+    writer.close
+
+    rd
   }
 
   /**
@@ -217,7 +227,6 @@ private class MemoryLuceneStore extends SearchStore {
    * @splitter a function that returns the Strings and types of String (e.g., description,
    */
   def add[T](guid: GUID, item: T)(implicit splitter: T => Seq[(String, Option[String])]): Unit = {
-    println("Adding "+item)
     val doc = new Document()
     doc.add(new Field("guid", guid.guid, Field.Store.YES, Field.Index.ANALYZED))
 
@@ -227,7 +236,7 @@ private class MemoryLuceneStore extends SearchStore {
     }
 
     val writer = new IndexWriter(idx, new StandardAnalyzer(Version.LUCENE_30),
-                                 true, IndexWriter.MaxFieldLength.UNLIMITED)
+                                 false, IndexWriter.MaxFieldLength.UNLIMITED)
 
     writer.addDocument(doc)
     writer.optimize
@@ -276,8 +285,6 @@ private class MemoryLuceneStore extends SearchStore {
       
       val hits = collector.topDocs().scoreDocs.drop(first)
 
-      println("Got hits: "+hits.toList)
-
       for {
 	h <- hits.toList
 	doc <- Box !! searcher.doc(h.doc, new MapFieldSelector("guid"))
@@ -290,73 +297,3 @@ private class MemoryLuceneStore extends SearchStore {
   }
 }
 
-private object MemoryLuceneStore extends MemoryLuceneStore
-
-/**
- * THe interface for storing stuff in a search engine
- */
-private class MemoryLuceneStore extends SearchStore {
-  import java.io.IOException;
-import java.io.StringReader;
-
-import org.apache.lucene.search._
-import org.apache.lucene.document._
-import org.apache.lucene.search._
-import org.apache.lucene.store._
-import org.apache.lucene.index._
-import org.apache.lucene.analysis.standard._
-import org.apache.lucene.util.Version
-
-/*
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-*/
-
-  private val idx = new RAMDirectory()
-
-  /**
-   * Assocate the GUID and an item.
-   * @param guid the GUID to associate
-   * @param item the item to associate with the GUID
-   * @splitter a function that returns the Strings and types of String (e.g., description,
-   */
-  def add[T](guid: GUID, item: T)(implicit splitter: T => Seq[(String, Option[String])]): Unit = {
-    val doc = new Document()
-    doc.add(new Field("guid", guid.guid, Field.Store.YES, Field.Index.ANALYZED))
-
-    splitter(item).foreach {
-      case (value, name) => doc.add(new Field(name getOrElse "body", value,
-          Field.Store.YES, Field.Index.ANALYZED))
-    }
-
-    val writer = new IndexWriter(idx, new StandardAnalyzer(Version.LUCENE_30), true, IndexWriter.MaxFieldLength.UNLIMITED);
-    
-  }
-
-  /**
-   * Unassocate the GUID and words
-   */
-  def remove(guid: GUID): Unit = {
-
-  }
-
-  /**
-   * Assocate the GUID and a set of words
-   */
-  def update[T](guid: GUID, item: T)(implicit splitter: T => Seq[(String, Option[String])]): Unit = {
-
-  }
-
-
-  /**
-   * Find a set of GUIDs assocaiated with a search string, optionally
-   * specifing the subset of GUIDs to search and the number of results to
-   * return
-   */
-  def find(search: String,
-           first: Int = 0, max: Int = 200,
-           inSet: Option[Seq[GUID]] = None): List[GUID] = {
-    Nil
-           }
-}
