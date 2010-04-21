@@ -16,8 +16,44 @@ object PersistenceFactory extends Factory {
   val store = new FactoryMaker[Store](DefaultStore){}
 }
 
+object Timeperiod extends Enumeration {
+  val Today = Value(1, "Today")
+  val ThisMonth = Value(2, "This Month")
+  val ThisWeekend = Value(3, "This Weekend")
+  val ThisWeek = Value(4, "This Week")
+}
+
 trait Store {
-  
+  private lazy val store = PersistenceFactory.opportunityStore.vend
+  private lazy val geo = PersistenceFactory.geoStore.vend
+  private lazy val tag = PersistenceFactory.tagStore.vend
+  private lazy val search = PersistenceFactory.searchStore.vend
+
+  def add(op: VolunteerOpportunity): GUID = {
+    val guid = store.create(op)
+    geo.add(guid, op)
+    tag.add(guid, op)
+    search.add(guid, op)
+    
+    guid
+  }
+
+  def search(query: String,
+             start: Int = 0,
+             num: Int = 100,
+             provider: Option[String] = None,
+             timeperiod: Option[Timeperiod.Value] = None,
+             loc: Option[(GeoLocation, Double)] = None): List[GUID] 
+  = {
+    search.find(query, start, num)
+  }
+               
+
+  /**
+   * Read a set of GUIDs from the backing store
+   */
+  def read(guids: List[GUID]): List[(GUID, VolunteerOpportunity)] =
+    store.read(guids)
 }
 
 private object DefaultStore extends Store
@@ -90,6 +126,15 @@ final case class GeoLocation(longitude: Double,
     of.hasLocation &&
     Earth.distanceInMiles((latitude,       longitude),
                           (of.latitude, of.longitude)) <= distance
+  }
+}
+
+object GeoLocation {
+  val Nums = """^(0|(?:[1-9]\d*(?:\.\d*)?)|(?:-\d+(?:\.\d*)?))\,(0|(?:[1-9]\d*(?:\.\d*)?)|(?:-\d+(?:\.\d*)?))$""".r
+  def fromString(str: String): Option[GeoLocation] = str match {
+    case null => None
+    case Nums(lat, long) => Some(GeoLocation(lat.toDouble, long.toDouble))
+    case _ => None // FIXME look up city
   }
 }
 
