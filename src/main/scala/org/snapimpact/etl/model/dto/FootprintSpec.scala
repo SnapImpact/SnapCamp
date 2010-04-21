@@ -380,7 +380,7 @@ object SexRestrictedEnum {
 /*  val female_rx = """(f|female|w|woman)""".r */
   val neither_rx = "n(either)?".r
   def fromXML(node: scala.xml.Node ) = {
-       node.text.toLowerCase match {
+       node.text.toLowerCase.trim match {
     case male_rx(capgroup) => Some(Male)
     case female_rx(capgroup,_,_) => Some(Female)
     case neither_rx(capgroup) => Some(Neither)

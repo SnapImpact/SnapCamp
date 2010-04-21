@@ -156,7 +156,7 @@ class FootprintSpecs extends Specification
                       item.lastUpdated must beSomething
                     }
 
-/* Fixme Something bad here.
+
            "Parse Sex Restrictions in Volunteer Opportunities" in
                     {
                       def parseSex(sexstr: String) =
@@ -189,9 +189,8 @@ class FootprintSpecs extends Specification
                       parseSex("TentacleMonster") must beNone
                       parseSex("Cthulhu") must beNone
                     }
-                    */
 
-/* Fixme Loggin error, seriously??
+
            "Parse XML from a file, store and retrieve a guid" in
                     {
                       implicit def strToStore(in: FootprintFeed): Seq[(String, Option[String])] =
@@ -206,6 +205,5 @@ class FootprintSpecs extends Specification
                       memitem must notBeNull
                       memitem.head must beEqual(guid)
                     }
-                    */
           }
 }
