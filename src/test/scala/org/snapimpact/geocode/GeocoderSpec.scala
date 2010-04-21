@@ -16,10 +16,9 @@ import org.snapimpact.model.GeoLocation
  */
 
 class GeocoderSpecTest extends Runner(new GeocoderSpec) with
-JUnit with Console
+        JUnit with Console
 
 class GeocoderSpec extends Specification {
-
   "Geocoder" should {
     "take a String and return a GeoLocation" in {
       val goog = "1600 Amphitheatre Parkway, Mountain View, CA"
@@ -29,6 +28,8 @@ class GeocoderSpec extends Specification {
       val glFubar = Geocoder(fubar)
 
       gl.get must haveClass[GeoLocation]
+      gl.get.latitude must beEqual(37.422782)
+      gl.get.longitude must beEqual(-122.085099)
       glFubar must beNone
     }
   }

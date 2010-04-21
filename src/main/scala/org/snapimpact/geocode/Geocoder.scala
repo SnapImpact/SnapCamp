@@ -17,6 +17,9 @@ import org.snapimpact.model.GeoLocation
  * To change this template use File | Settings | File Templates.
  */
 
+/**
+ * @param in String Takes the String and returns an Option[GeoLocation]
+ */
 object Geocoder {
   def apply(in: String): Option[GeoLocation] = {
     val encoder = new Geocoder
@@ -34,30 +37,67 @@ class Geocoder extends HttpClient {
 
     getStringFromUrl(url) match {
       case Some(response) => {
-        val (lat,lng) = parse(response)
-        Some(new GeoLocation(lng, lat, true))
+        parseResponse(response) match {
+          case Some(loc) => Some(new GeoLocation(loc.lng, loc.lat, true))
+          case _ => None
+        }
       }
       case _ => None
     }
   }
 
-  private def parse(in: String): (Double, Double) = {
+  private def parseResponse(in: String): Option[GoogGeoLoc] = {
     val json = parse(in)
+    implicit val formats = DefaultFormats
 
-    val status = (json \ "status").extract[JString]
-
-/*    status match {
-      case "OK" => {
-        val location = (json \ "result")(0) \\ "location" \\ "*"
-
-        Log.info("loc: " + location)
-        (1.0,1.0)
+    val ret = try {json.extract[GoogGeoRet]} catch {
+      case e: Exception => {
+        e.printStackTrace
+        new GoogGeoRet("", Nil)
       }
-      case _ => (1.0,1.0)
-    }*/
-    (1.0,1.0)
+    }
+
+    ret.status match {
+      case "OK" => {
+        val first = ret.results.head
+        val loc = first.geometry.location
+
+        Some(loc)
+      }
+      case _ => None
+    }
   }
 }
+
+case class GoogGeoRet(
+        status: String,
+        results: List[GoogGeoResults]
+        )
+case class GoogGeoResults(
+        types: List[String],
+        formatted_address: String,
+        address_components: List[GoogGeoAddrComp],
+        geometry: GoogGeoGeom
+        )
+case class GoogGeoAddrComp(
+        long_name: String,
+        short_name: String,
+        types: List[String]
+        )
+case class GoogGeoGeom(
+        location: GoogGeoLoc,
+        location_type: String,
+        viewport: GoogGeoViewport,
+        bounds: Option[GoogGeoViewport]
+        )
+case class GoogGeoLoc(
+        lat: Double,
+        lng: Double
+        )
+case class GoogGeoViewport(
+        southwest: GoogGeoLoc,
+        northeast: GoogGeoLoc
+        )
 
 /*                                     ""
 Example Return:
