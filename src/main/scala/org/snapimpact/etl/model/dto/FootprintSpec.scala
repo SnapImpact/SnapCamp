@@ -5,6 +5,7 @@ import org.joda.time.DateTime
 import xml.Node
 import net.liftweb.util.Helpers
 import net.liftweb.common._
+import org.snapimpact.model._
 
 /**
  * Created by IntelliJ IDEA.
@@ -266,7 +267,13 @@ object VolunteerOpportunity {
   in.skills.map(s => (s -> Some("skill"))).toList :::
   in.language.map(s => (s -> Some("language"))).toList
   
-  
+  implicit def voToGeo(in: VolunteerOpportunity): GeoLocation =
+    null
+
+  implicit def voToTags(in: VolunteerOpportunity): List[Tag] =
+    (in.audienceTags.map(Tag.apply) :::
+     in.categoryTags.map(Tag.apply)).removeDuplicates
+
 
   def fromXML(node: scala.xml.Node) = {
     new VolunteerOpportunity(
