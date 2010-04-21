@@ -41,7 +41,7 @@ object ParseHelper {
   implicit def cvtReviews: Node => Option[Reviews] = n => Helpers.tryo(Reviews.fromXML(n))
 
   implicit def cvtTimeOlson: Node => Option[TimeOlson] =
-    n => Some(new TimeOlson(n.text, 
+    n => Some(new TimeOlson(n.text,
 			    (n \ "@olsonTZ").headOption.
 			    map(_.text)))
   implicit def cvtOrg: Node => Option[Organizations] =
@@ -49,7 +49,7 @@ object ParseHelper {
 
   implicit def cvtLocation: Node => Option[Location] =
     n => Some(Location.fromXML(n))
-  
+
   implicit def cvtVolOp: Node => Option[VolunteerOpportunities] =
     n => Some(VolunteerOpportunities.fromXML(n))
 
@@ -62,7 +62,7 @@ object ParseHelper {
   implicit def cvtDTOlson: Node => Option[DateTimeOlsonDefaultPacific] =
     n => Some(DateTimeOlsonDefaultPacific(n.text))
 
-  implicit def cvtDateTime: Node => Option[DateTime] = 
+  implicit def cvtDateTime: Node => Option[DateTime] =
     n => Some(new DateTime(n.text))
 
   implicit def cvtDuration: Node => Option[Duration] =
@@ -98,7 +98,7 @@ object Organizations {
     Organizations((node \ "Organization").toList.map(Organization.fromXML(_)))
 }
 
-case class VolunteerOpportunities(opps: List[VolunteerOpportunity]) extends DataModel 
+case class VolunteerOpportunities(opps: List[VolunteerOpportunity]) extends DataModel
 
 object VolunteerOpportunities {
   def fromXML(node: scala.xml.Node) =
@@ -247,15 +247,15 @@ object VolunteerOpportunity {
   def fromXML(node: scala.xml.Node) = {
     new VolunteerOpportunity(
     volunteerOpportunityID = (node \ "volunteerOpportunityID").text,
-    sponsoringOrganizationsIDs = 
-      (node \ "sponsoringOrganizationsIDs").toList.map(_.text),
-      volunteerHubOrganizationsIDs = 
+    sponsoringOrganizationsIDs =
+      (node \ "sponsoringOrganizationsIDs").toList.map(_.text.trim),
+      volunteerHubOrganizationsIDs =
 	(node \ "volunteerHubOrganizationsIDs").toList.map(_.text),
       title = (node \ "title").text,
       abstractStr = node % "abstractStr",
       volunteersNeeded = node % "volunteersNeeded",
       rsvpCount = node % "rsvpCount",
-      dateTimeDurations = 
+      dateTimeDurations =
 	(node \ "dateTimeDurations").toList.map(DateTimeDuration.fromXML(_)),
       locations = (node \ "locations").toList.map(Location.fromXML(_)),
       paid = node % "paid",
@@ -333,7 +333,7 @@ object DateTimeDuration {
 /**
  * From:
  * http://www.w3.org/TR/xmlschema-2/#duration
- * 
+ *
  * Similarly, the duration element "PT3H" gives a period
  * ("P") of 2 hours ("H"). Periods are given in descending
  * value of time. Thus a period of two days, six hours and
@@ -363,7 +363,7 @@ object YesNoEnum {
     case "no" => Some(No)
     case _ => None
   }
-  
+
 }
 
 case object Yes extends YesNoEnum { val value = "Yes" }
