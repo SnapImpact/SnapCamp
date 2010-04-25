@@ -1,22 +1,30 @@
 package bootstrap.liftweb
 
-import _root_.net.liftweb.util._
-import _root_.net.liftweb.common._
-import _root_.net.liftweb.http._
-import _root_.net.liftweb.http.provider._
-import _root_.net.liftweb.sitemap._
-import _root_.net.liftweb.sitemap.Loc._
+import net.liftweb.util._
+import net.liftweb.common._
+import net.liftweb.http._
+import net.liftweb.http.provider._
+import net.liftweb.sitemap._
+import net.liftweb.sitemap.Loc._
 import Helpers._
-import _root_.net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, StandardDBVendor}
-import _root_.java.sql.{Connection, DriverManager}
-import _root_.org.snapimpact.model._
-
+import net.liftweb.mapper.{DB, 
+			   ConnectionManager, 
+			   Schemifier, 
+			   DefaultConnectionIdentifier, 
+			   StandardDBVendor}
+import java.sql.{Connection, DriverManager}
+import scala.xml.NodeSeq
+import org.snapimpact.model._
+import org.snapimpact.snippet._
 
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
 class Boot {
+  implicit def toFunc(in: {def render(in: NodeSeq): NodeSeq}):
+  NodeSeq => NodeSeq = param => in.render(param)
+    
   def boot {
     if (!DB.jndiJdbcConnAvailable_?) {
       val vendor = 
@@ -30,20 +38,25 @@ class Boot {
       DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
     }
 
+    LiftRules.passNotFoundToChain = true
+    LiftRules.liftRequest.append {
+      case Req("static" :: _, _, _) => false
+    }
     // where to search snippet
     LiftRules.addToPackages("org.snapimpact")
     
 
     // Build SiteMap
-    val entries = Menu(Loc("Home", List("index"), "Home")) ::
+    def entries = Menu(Loc("Home", List("index"), "Home")) ::
     Menu(Loc("docs.api", List("docs", "api"), "API Docs")) ::
-    Menu(Loc("Static", Link(List("static"), true, "/static/index"), "Static Content")) ::
-    Menu(Loc("api", Link(List("api"), true, "/api"), "API", Hidden)) ::
     Menu(Loc("xmlupload", List("xml_upload"), "Xml Upload")) ::
+    Menu(Loc("search", List("search"), "Search", Hidden,
+	   Snippet("search", a => ProcessSearch.render(a)))) ::
     Menu(Loc("test", Link(List("test"), true, "/test/hello"), "TestOrn")) ::
-    Nil
+    Menu(Loc("Cats", List("cats"), "Cat Wizard")) ::
+   Nil
 
-    LiftRules.setSiteMap(SiteMap(entries:_*))
+    LiftRules.setSiteMapFunc(() => SiteMap(entries:_*))
 
     /*
      * Show the spinny image when an Ajax call starts
@@ -59,12 +72,18 @@ class Boot {
 
     LiftRules.early.append(makeUtf8)
 
-    LiftRules.dispatch.append { 
+    LiftRules.statelessDispatchTable.append {
       case r @ Req("api" :: "upload" :: Nil, _, _) =>
         () => org.snapimpact.dispatch.FeedUpload.upload(r)
-      case Req("api" :: "volopps" :: Nil, _, _) =>
-        org.snapimpact.dispatch.api.volopps _
+      case r @ Req("api" :: "volopps" :: Nil, _, _) =>
+        println("volops")
+        () => Full(org.snapimpact.dispatch.Api.volopps(r))
     }
+
+    LiftRules.snippetDispatch.append {
+      case "DoYouLikeCats" => DoYouLikeCats
+    }
+
 
     S.addAround(DB.buildLoanWrapper)
   }

@@ -3,9 +3,13 @@ package org.snapimpact.lib
 import org.specs.Specification
 import org.snapimpact.lib.Serializers._
 import org.snapimpact.etl.model.dto._
-import scala.{Option}
 
-object SerializersSpec extends Specification {
+import org.specs._
+import org.specs.runner._
+
+class SerializationTest extends Runner(new SerializersSpec) with JUnit with Console
+
+class SerializersSpec extends Specification {
   "anyToRss" should {
 
      "serialize a Location" in { 

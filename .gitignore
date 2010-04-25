@@ -48,3 +48,6 @@ test-output
 *.ipr
 *.iws
 .idea
+
+# properties files
+dpp.props

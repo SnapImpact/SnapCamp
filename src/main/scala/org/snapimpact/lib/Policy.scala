@@ -1,6 +1,6 @@
 package org.snapimpact.lib
 
-import org.scala_tools.time.Imports._
+import _root_.org.joda.time._
 
 /**
  * Classes related to search.
@@ -8,16 +8,18 @@ import org.scala_tools.time.Imports._
  */
 
 // Where in the world are the events of San Diego?
-case class LatLong(lat: Double, long: Double) {}
+case class LatLong(lat: Double = 0.0, long: Double = 0.0) {}
 
 // What do we care/not-care about?
 case class RSWhere(
-    radius: Double,     // how far to search from latLong
-    after: DateTime,    // only events after
-    before: DateTime,   // only events before
-    tags: Seq[String],  // for this set of tags
-    categories: Seq[String],    // in these categories
-    texts: Seq[String]  // and oh yeah, free form text constraints
+    radius: Double          = 50.0,   // how far to search from latLong
+                                      // only events after
+    after: DateTime         = new DateTime(1970, 1, 1, 0, 0, 0, 0),
+                                      // only events before
+    before: DateTime        = new DateTime(2038, 7, 1, 0, 0, 0, 0),
+    tags: Seq[String]       = List(), // for this set of tags
+    categories: Seq[String] = List(), // in these categories
+    texts: Seq[String]      = List()  // and oh yeah, free form text
     ) {}
 
 /**
@@ -34,26 +36,26 @@ case class RSWhere(
  *
  */
 
-abstract class OrderVal {}
+sealed trait OrderVal 
 
-abstract class TimeBin {}
+sealed trait TimeBin
 
-case object Today extends TimeBin() {}
-case object Tomorrow extends TimeBin() {}
-case object ThisWeek extends TimeBin() {}
-case object ThisMonth extends TimeBin() {}
+case object Today extends TimeBin
+case object Tomorrow extends TimeBin
+case object ThisWeek extends TimeBin
+case object ThisMonth extends TimeBin
 
-abstract class TimeVal extends OrderVal() {}
+sealed trait TimeVal extends OrderVal
 
-case object ByTime extends TimeVal() {}
-case class ByTimeBins(bins: Seq[TimeBin]) extends TimeVal() {}
+final case object ByTime extends TimeVal
+final case class ByTimeBins(bins: Seq[TimeBin] = List()) extends TimeVal
 
 object Constants {
     val defaultTimeBins: ByTimeBins =
         ByTimeBins( List(Today, Tomorrow, ThisWeek, ThisMonth) )
 }
 
-case object ByGeo extends OrderVal() {}     // geography is continuous
+case object ByGeo extends OrderVal          // geography is continuous
                                             // so List(ByGeo, defaultTimeBins)
                                             // wouldn't make much sense.
 
@@ -74,9 +76,9 @@ case object ByGeo extends OrderVal() {}     // geography is continuous
  */
 
 case class Policy (
-    val latLong: Option[LatLong],
-    val rsWhere: Option[RSWhere],
-    val orderPref: Option[Seq[OrderVal]]
+    val latLong: Option[LatLong]         = None,
+    val rsWhere: Option[RSWhere]         = None,
+    val orderPref: Option[Seq[OrderVal]] = None
     ) {
 
     // Extra constructors.
@@ -109,8 +111,8 @@ case class Policy (
                     case Some(RSWhere(ur, ua, ub, ut, uc, utxt)) =>
                         val w = new RSWhere(
                             if (br < ur) { br } else { ur },
-                            if (ba > ua) { ba } else { ua },
-                            if (bb < ub) { bb } else { ub },
+                            if (ba.getMillis > ua.getMillis) { ba } else { ua },
+                            if (bb.getMillis < ub.getMillis) { bb } else { ub },
                             bt ++ ut,
                             bc ++ uc,
                             btxt ++ utxt

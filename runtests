@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# TODO: implement equivalent for windows users/etc.
+
+./third_party/sbt/sbt "clean" "reload" "update" "test"
+
