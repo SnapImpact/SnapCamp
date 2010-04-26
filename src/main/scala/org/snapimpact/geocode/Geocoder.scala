@@ -6,6 +6,7 @@ import Helpers._
 import _root_.net.liftweb.json._
 import JsonParser._
 import JsonAST._
+import net.liftweb.http.testing._
 
 import org.snapimpact.model.GeoLocation
 
@@ -21,58 +22,43 @@ import org.snapimpact.model.GeoLocation
  * @param in String Takes the String and returns an Option[GeoLocation]
  */
 object Geocoder {
-  def apply(in: String): Option[GeoLocation] = {
+  def apply(in: String): Box[GeoLocation] = {
     val encoder = new Geocoder
     encoder.getGeoLocation(in)
   }
 }
-class Geocoder extends HttpClient {
-  val GOOGLE_GEO_URL = "http://maps.google.com/maps/api/geocode/json?"
-  val GOOGLE_MAPS_API_KEY = "ABQIAAAA8HXiU_-E98nF20YvZ37zAxQ3KXTeRMsCydUtpdwIbkIA5o2l6BSDT71ZHbxEWhRhZfsByNDyDiEtKA"
+class Geocoder extends TestKit {
+  def baseUrl = "http://maps.google.com"
 
-  private def getGeoLocation(in: String): Option[GeoLocation] = {
+  protected def getString(url: String, params: (String, Any)*): Box[String] =
+    get(url, params :_*) match {
+      case hr: HttpResponse if hr.code == 200 => tryo(new String(hr.body, "UTF-8"))
+      case r => None
+    }
+
+  private def getGeoLocation(in: String): Box[GeoLocation] = {
     val encodedString = urlEncode(in.trim)
 
-    val url = GOOGLE_GEO_URL + "address=" + encodedString + "&sensor=false"
+    // val url = GOOGLE_GEO_URL + "address=" + encodedString + "&sensor=false"
 
-    getStringFromUrl(url) match {
-      case Some(response) => {
-        parseResponse(response) match {
-          case Some(loc) => Some(new GeoLocation(loc.lng, loc.lat, true))
-          case _ => None
-        }
-      }
-      case _ => None
-    }
+    for {
+      response <- getString("/maps/api/geocode/json", "address" -> in, "sensor" -> false)
+      loc <- parseResponse(response)
+    } yield new GeoLocation(loc.lng, loc.lat, true)
   }
 
-  private def parseResponse(in: String): Option[GoogGeoLoc] = {
-    val json = parse(in)
+  private def parseResponse(in: String): Box[GoogGeoLoc] = {
     implicit val formats = DefaultFormats
 
-    val ret = try {json.extract[GoogGeoRet]} catch {
-      case e: Exception => {
-        e.printStackTrace
-        new GoogGeoRet("", Nil)
-      }
-    }
-
-    ret.status match {
-      case "OK" => {
-        val first = ret.results.head
-        val loc = first.geometry.location
-
-        Some(loc)
-      }
-      case _ => None
-    }
+    for {
+      json <- tryo(parse(in))
+      geoRet <- tryo(json.extract[GoogGeoRet]).filter(_.status == "OK")
+      first <- geoRet.results.headOption
+    } yield first.geometry.location
   }
 }
 
-case class GoogGeoRet(
-        status: String,
-        results: List[GoogGeoResults]
-        )
+case class GoogGeoRet(status: String, results: List[GoogGeoResults])
 case class GoogGeoResults(
         types: List[String],
         formatted_address: String,

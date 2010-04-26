@@ -12,7 +12,7 @@ final case object JsonOutputType extends OutputType
 final case object RssOutputType extends OutputType
 final case object HtmlOutputType extends OutputType
 
-object Api { 
+object Api  { 
   def volopps(r: Req): LiftResponse = {
     for {
       key <- r.param("key") ?~ missingKey ~> 401
