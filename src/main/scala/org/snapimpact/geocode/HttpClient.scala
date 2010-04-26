@@ -1,4 +1,4 @@
-package org.snapimpact.geocode
+/*package org.snapimpact.geocode
 
 import _root_.org.apache.commons.httpclient.methods.GetMethod
 import _root_.java.io._
@@ -95,4 +95,4 @@ trait HttpClient {
       }
     }
   }
-}
+}*/

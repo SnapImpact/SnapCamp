@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory
 import org.specs._
 import org.specs.runner._
 import org.snapimpact.model.GeoLocation
-
+import net.liftweb.common._
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,7 +43,7 @@ class GeocoderSpec extends Specification {
       //
       System.out.println( "* Expected val=None, was=" + glFubar )
       //
-      glFubar must beNone
+      glFubar must_== Empty // beNone
     }
   }
 
