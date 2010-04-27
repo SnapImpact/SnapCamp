@@ -20,8 +20,13 @@ import net.liftweb.util.Helpers
 object ParseHelper {
   class ParseHelperHelper(node: Node) {
     // The optional elements
-    def %[T](name: String)(implicit cvt: Node => Option[T]): Option[T] =
-    (node \ name).headOption.flatMap(cvt)
+    def %[T](name: String)(implicit cvt: Node => Option[T]): Option[T] = { 
+      //FIXME This does the wrong thing with repeatable optional elements, but at least the failure is explicit
+      val ns = (node \ name)
+      if (ns.length > 1)
+        throw new RuntimeException("Can't handle repeated elements: "+ns)
+      else ns.headOption.flatMap(cvt)
+    }
 
     // The required elements
     def %%[T](name: String)(implicit cvt: Node => Option[T]): T = {
@@ -75,13 +80,16 @@ case class FootprintFeed(
   feedInfo: FeedInfo,
   // Organizations is optional
   organizations: Option[Organizations],
+  // Spec lists VolunteerOpportunities as optional, why required here?
   opportunities: VolunteerOpportunities,
   // Reviews is optional
   reviews: Option[Reviews]) extends DataModel
 
 object FootprintFeed {
   def fromXML(node: scala.xml.Node) =
-    FootprintFeed(
+    if (node \ "@schemaVersion" != "0.1")
+      throw new RuntimeException("""missing required attribute schemaVersion="0.1" in FootprintFeed""")
+    else FootprintFeed(
       node %% "FeedInfo",
       node % "Organizations",
       node %% "VolunteerOpportunities",
@@ -209,8 +217,8 @@ object Location {
  */
 case class VolunteerOpportunity(
   volunteerOpportunityID:String,
-  sponsoringOrganizationsIDs:List[String/*sponsoringOrganizationID*/],
-  volunteerHubOrganizationsIDs:List[String/*volunteerHubOrganizationID*/],
+  sponsoringOrganizationIDs:List[String/*sponsoringOrganizationID*/],
+  volunteerHubOrganizationIDs:List[String/*volunteerHubOrganizationID*/],
   title:String,
   abstractStr:Option[String], /* * is abstract in schema ** */
   volunteersNeeded:Option[Int],
@@ -247,10 +255,10 @@ object VolunteerOpportunity {
   def fromXML(node: scala.xml.Node) = {
     new VolunteerOpportunity(
     volunteerOpportunityID = (node \ "volunteerOpportunityID").text,
-    sponsoringOrganizationsIDs =
-      (node \ "sponsoringOrganizationsIDs").toList.map(_.text.trim),
-      volunteerHubOrganizationsIDs =
-	(node \ "volunteerHubOrganizationsIDs").toList.map(_.text),
+    sponsoringOrganizationIDs =
+      (node \ "sponsoringOrganizationIDs").toList.map(_.text.trim),
+      volunteerHubOrganizationIDs =
+	(node \ "volunteerHubOrganizationIDs").toList.map(_.text),
       title = (node \ "title").text,
       abstractStr = node % "abstractStr",
       volunteersNeeded = node % "volunteersNeeded",

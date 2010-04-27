@@ -45,11 +45,7 @@ class FootprintSpecs extends Specification
                       dur.endDate.get.monthOfYear.get mustEqual 3
                     }
 
-            "Throw an exception when attempting parse XML with a missing tag" in
-                    {
-                      val subject = <FootprintFeed schemaVersion="0.1">
-                        <VolunteerOpportunities>
-                          <VolunteerOpportunity>
+            val volunteerOpportunity = <VolunteerOpportunity>
                             <volunteerOpportunityID>2002</volunteerOpportunityID> <sponsoringOrganizationIDs>
                             <sponsoringOrganizationID>2</sponsoringOrganizationID>
                           </sponsoringOrganizationIDs> <title>YOUNG ADULT TO HELP GUIDE MERCER COUNTY TEEN VOLUNTEER CLUB</title> <volunteersNeeded>3</volunteersNeeded> <dateTimeDurations>
@@ -68,16 +64,48 @@ class FootprintSpecs extends Specification
                               Youth</categoryTag>
                           </categoryTags> <skills>Be interested in promoting youth volunteerism.Be available two Tuesday evenings per month.</skills> <detailURL>http://www.volunteermatch.org/search/opp200517.jsp</detailURL> <description>Quixote Quest is a volunteer club for teens who have a passion for community service.The teens each volunteer for their own specific cause.Twice monthly, the club meets.At the club meetings the teens from different high schools come together for two hours to talk about their volunteer experiences and spend some hang-out time together that helps them bond as fraternity...family.Quixote Quest is seeking young adults roughly between 20 and 30 years of age who would be interested in being a guide and advisor to the teens during these two evening meetings a month.</description> <lastUpdated olsonTZ="America/Denver">2008-12-02T19:02:01</lastUpdated>
                           </VolunteerOpportunity>
+
+            "Throw an exception when attempting to parse XML with a missing required element" in
+                    {
+                      val subject = <FootprintFeed schemaVersion="0.1">
+                        <VolunteerOpportunities>
+                          {volunteerOpportunity}
                         </VolunteerOpportunities>
                       </FootprintFeed>
                       FootprintFeed.fromXML(subject) must throwA[RuntimeException] // Missing Tag Exception
                     }
 
+            val feedInfo = <FeedInfo>
+                        <providerID>1</providerID> <providerName>Volunteer Match</providerName> <createdDateTime olsonTZ="America/Denver">2008-12-30T14:30:10.5</createdDateTime> <providerURL>http://www.volunteermatch.org</providerURL>
+                      </FeedInfo>
+
+            "Throw an exception when attempting to parse XML with an extra required element" in
+                    {
+                      val subject = <FootprintFeed schemaVersion="0.1">
+                        {feedInfo}
+                        {feedInfo}
+                        <VolunteerOpportunities>
+                          {volunteerOpportunity}
+                        </VolunteerOpportunities>
+                      </FootprintFeed>
+                      FootprintFeed.fromXML(subject) must throwA[RuntimeException]
+                    }
+
+            "Throw an exception when attempting to parse XML without a schemaVersion" in
+                    {
+                      val subject = <FootprintFeed>
+                        {feedInfo}
+                        <VolunteerOpportunities>
+                          {volunteerOpportunity}
+                        </VolunteerOpportunities>
+                      </FootprintFeed>
+                      FootprintFeed.fromXML(subject) must throwA[RuntimeException]
+                    }
+
+
             "Parse FeedInfo XML" in
                     {
-                      val item = FeedInfo.fromXML(<FeedInfo>
-                        <providerID>1</providerID> <providerName>Volunteer Match</providerName> <createdDateTime olsonTZ="America/Denver">2008-12-30T14:30:10.5</createdDateTime> <providerURL>http://www.volunteermatch.org</providerURL>
-                      </FeedInfo>)
+                      val item = FeedInfo.fromXML(feedInfo)
                       item.providerID mustEqual "1"
                       item.providerName must equalIgnoreCase("Volunteer Match")
                       item.createdDateTime.getDayOfMonth mustEqual 30
@@ -120,34 +148,17 @@ class FootprintSpecs extends Specification
                       val item = FootprintFeed.fromXML(XML.loadFile("src/test/resources/sampleData0.1.r1254.xml"))
                       item.organizations.get.orgs.size mustEqual 3
                       item.opportunities.opps.size mustEqual 3
+                      item.opportunities.opps(0).volunteerHubOrganizationIDs(0) mustEqual "3011"
                       item.reviews must beNone
                       item.feedInfo.providerID mustEqual "1"
                     }
 
             "Parse Volunteer Opportunities from XML" in
                     {
-                      val item = VolunteerOpportunity.fromXML(<VolunteerOpportunity>
-                        <volunteerOpportunityID>2002</volunteerOpportunityID> <sponsoringOrganizationsIDs>
-                          <sponsoringOrganizationID>2</sponsoringOrganizationID>
-                        </sponsoringOrganizationsIDs> <title>YOUNG ADULT TO HELP GUIDE MERCER COUNTY TEEN VOLUNTEER CLUB</title> <volunteersNeeded>3</volunteersNeeded> <dateTimeDurations>
-                          <dateTimeDuration>
-                            <openEnded>No</openEnded> <startDate>2009-01-01</startDate> <endDate>2009-05-31</endDate> <iCalRecurrence>FREQ=WEEKLY;INTERVAL=2</iCalRecurrence> <commitmentHoursPerWeek>2</commitmentHoursPerWeek>
-                          </dateTimeDuration>
-                        </dateTimeDurations> <locations>
-                          <location>
-                            <city>Mercer County</city> <region>NJ</region> <postalCode>08610</postalCode>
-                          </location>
-                        </locations> <audienceTags>
-                          <audienceTag>Teens</audienceTag>
-                        </audienceTags> <categoryTags>
-                          <categoryTag>Community</categoryTag> <categoryTag>Children
-                            &amp;
-                            Youth</categoryTag>
-                        </categoryTags> <skills>Be interested in promoting youth volunteerism.Be available two Tuesday evenings per month.</skills> <detailURL>http://www.volunteermatch.org/search/opp200517.jsp</detailURL> <description>Quixote Quest is a volunteer club for teens who have a passion for community service.The teens each volunteer for their own specific cause.Twice monthly, the club meets.At the club meetings the teens from different high schools come together for two hours to talk about their volunteer experiences and spend some hang-out time together that helps them bond as fraternity...family.Quixote Quest is seeking young adults roughly between 20 and 30 years of age who would be interested in being a guide and advisor to the teens during these two evening meetings a month.</description> <lastUpdated olsonTZ="America/Denver">2008-12-02T19:02:01</lastUpdated>
-                      </VolunteerOpportunity>)
+                      val item = VolunteerOpportunity.fromXML(volunteerOpportunity)
                       item.volunteerOpportunityID mustEqual "2002"
-                      item.sponsoringOrganizationsIDs.size mustEqual 1
-                      item.sponsoringOrganizationsIDs.head mustEqual "2"
+                      item.sponsoringOrganizationIDs.size mustEqual 1
+                      item.sponsoringOrganizationIDs.head mustEqual "2"
                       item.title must find(".*MERCER")
                       item.volunteersNeeded must beSome(3)
                       item.skills must beSomething
