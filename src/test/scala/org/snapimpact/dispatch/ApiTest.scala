@@ -7,8 +7,12 @@ package org.snapimpact.dispatch
  * Time: 8:38:30 PM
  * To change this template use File | Settings | File Templates.
  */
-
+import java.io.Serializable
+import net.liftweb.json._
 import _root_.junit.framework._
+import net.liftweb.util.JSONParser
+import org.snapimpact.model.Event
+
 
 
 import _root_.org.specs._
@@ -95,6 +99,32 @@ object RunWebApp {
     server.stop()
     server.join()
   }
+
+
+  def testSerializeEvents() =
+  {
+    // Init serializer
+    implicit val formats = Serialization.formats(NoTypeHints)
+
+
+    // First make a simple test class
+    case class Sample(categories: List[String], quality_score: Long, pageviews: Int, Other1: String, Other2: String)
+    //val sample2 = Sample(List("category1", "category2"), 535, 2312, "Other1TestData", "Other2TestData")
+    val sample = Serialization.write( Sample(List("category1", "category2"), 535, 2312, "Other1TestData", null) )
+    //
+    println( "Sample=" + sample );
+
+
+
+    // Serialize event
+    val lEvents = MockSearch.getEvents
+    val myEvent = lEvents{0};
+    val sampleJson = Serialization.write(myEvent)
+    //
+    println( "Event=" + sampleJson );
+
+  }
+
 
 }
 
