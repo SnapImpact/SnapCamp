@@ -11,7 +11,6 @@ import java.io.Serializable
 import net.liftweb.json._
 import _root_.junit.framework._
 import net.liftweb.util.JSONParser
-import org.snapimpact.model.Event
 
 
 
@@ -29,7 +28,7 @@ import specification.Expectable
 
 class APITest extends Runner(new APISpec) with JUnit with Console
 
-class APISpec extends Specification with TestKit {
+class APISpec extends APITester {
   def baseUrl = "http://localhost:8989"
   RunWebApp.start()
 
@@ -54,12 +53,7 @@ class APISpec extends Specification with TestKit {
     }
 
     skip("To be implemented")
-    "Return a list of opportunities for query" in {
-      get("/api/volopps", "key" -> "test", "q" -> "hunger", "output" -> "json") match {
-        case r: HttpResponse => TestResponse(r)
-        case _ => true must_== false
-      }
-    }
+    "provide common functionalities" in {sharedFunctionality}
   }
 
   //RunWebApp.stop()
@@ -67,29 +61,30 @@ class APISpec extends Specification with TestKit {
 
 class V1SysTest extends Runner(new V1SysSpec) with JUnit with Console
 
-class V1SysSpec extends Specification with TestKit {
+class V1SysSpec extends APITester {
   def baseUrl = "http://www.allforgood.org"
 
   "The API from the V1 system" should {
-
-    "be able to be extracted into v2 case classes" in {
-      get("/api/volopps", "key" -> "test", "q" -> "hunger", "output" -> "json") match {
-        case r: HttpResponse => TestResponse(r)
-        case _ => true must_== false
-      }
-    }
+    "provide common functionalities" in {sharedFunctionality}
   }
 }
 
-object TestResponse extends SpecsMatchers {
-  def apply(r: HttpResponse) = {
-    implicit val formats = DefaultFormats
-    r.code must_== 200
-    val jString = tryo(new String(r.body, "UTF-8")).open_!
-    val json = parse(jString)
-    val ret = json.extract[RetV1]
+trait APITester extends Specification with TestKit {
+  def sharedFunctionality = {
+    "be able to extract json return" in {
+      get("/api/volopps", "key" -> "test", "q" -> "hunger", "output" -> "json") match {
+        case r: HttpResponse => {
+          implicit val formats = DefaultFormats
+          r.code must_== 200
+          val jString = tryo(new String(r.body, "UTF-8")).open_!
+          val json = parse(jString)
+          val ret = json.extract[RetV1]
 
-    ret must haveClass[RetV1]
+          ret must haveClass[RetV1]
+        }
+        case _ => true must_== false
+      }
+    }
   }
 }
 
@@ -243,32 +238,5 @@ object RunWebApp {
     server.stop()
     server.join()
   }
-
-
-  def testSerializeEvents() =
-  {
-    // Init serializer
-    implicit val formats = Serialization.formats(NoTypeHints)
-
-
-    // First make a simple test class
-    case class Sample(categories: List[String], quality_score: Long, pageviews: Int, Other1: String, Other2: String)
-    //val sample2 = Sample(List("category1", "category2"), 535, 2312, "Other1TestData", "Other2TestData")
-    val sample = Serialization.write( Sample(List("category1", "category2"), 535, 2312, "Other1TestData", null) )
-    //
-    println( "Sample=" + sample );
-
-
-
-    // Serialize event
-    val lEvents = MockSearch.getEvents
-    val myEvent = lEvents{0};
-    val sampleJson = Serialization.write(myEvent)
-    //
-    println( "Event=" + sampleJson );
-
-  }
-
-
 }
 
