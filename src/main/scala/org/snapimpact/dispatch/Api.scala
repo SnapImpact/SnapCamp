@@ -12,7 +12,39 @@ final case object JsonOutputType extends OutputType
 final case object RssOutputType extends OutputType
 final case object HtmlOutputType extends OutputType
 
-object Api { 
+trait RestHelper extends LiftRules.DispatchPF {
+  object JsonGet {
+    def unapply(r: Req): Option[(List[String], Req)] = None
+  }
+
+  object JsonPost {
+    def unapply(r: Req): Option[(List[String], (JsonAST.JValue, Req))] = None
+  }
+
+  object -> {
+    def unapply[A, B](s: (A, B)): Option[(A, B)] = Some(s._1 -> s._2)
+  }
+
+  def isDefinedAt(in: Req) = false
+  def apply(in: Req): () => Box[LiftResponse] = null
+
+  protected def serve[B](handler: PartialFunction[Req, B])(implicit cvt: B => (() => Box[LiftResponse])): Unit = {}
+}
+
+object Api extends RestHelper { 
+  implicit def infoToResp(in: Info): () => Box[LiftResponse] = null
+
+  case class Info(name: String)
+  serve {
+    case "api" :: id :: _ JsonGet _ => Info(id)
+  }
+
+  def foo(req: Req): PartialFunction[Req, () => Box[LiftResponse]] = {
+    case "api" :: "cat" :: Nil JsonGet req => null
+
+    case "api" :: "cat" :: _ JsonPost json -> req => null
+  }
+  
   def volopps(r: Req): LiftResponse = {
     for {
       key <- r.param("key") ?~ missingKey ~> 401

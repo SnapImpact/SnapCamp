@@ -47,9 +47,15 @@ class Geocoder extends HttpClient {
   }
 
   private def parseResponse(in: String): Option[GoogGeoLoc] = {
-    val json = parse(in)
     implicit val formats = DefaultFormats
 
+    for {
+      json <- tryo(parse(in))
+      geoRet <- tryo(json.extract[GoogGeoRet]).filter(_.status == "OK")
+      first <- geoRet.results.headOption
+    } yield first.geometry.location
+
+/*
     val ret = try {json.extract[GoogGeoRet]} catch {
       case e: Exception => {
         e.printStackTrace
@@ -66,6 +72,7 @@ class Geocoder extends HttpClient {
       }
       case _ => None
     }
+    */
   }
 }
 
