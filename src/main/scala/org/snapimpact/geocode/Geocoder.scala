@@ -55,6 +55,25 @@ class Geocoder extends TestKit {
       geoRet <- tryo(json.extract[GoogGeoRet]).filter(_.status == "OK")
       first <- geoRet.results.headOption
     } yield first.geometry.location
+
+/*
+    val ret = try {json.extract[GoogGeoRet]} catch {
+      case e: Exception => {
+        e.printStackTrace
+        new GoogGeoRet("", Nil)
+      }
+    }
+
+    ret.status match {
+      case "OK" => {
+        val first = ret.results.head
+        val loc = first.geometry.location
+
+        Some(loc)
+      }
+      case _ => None
+    }
+    */
   }
 }
 
