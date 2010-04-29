@@ -58,7 +58,7 @@ class GeocoderSpec extends Specification {
       val expectedLong = -105.260474
       //
       System.out.println( "* Expected lat=" + expectedLat + ", was=" + gl.get.latitude )
-      System.out.println( "* Expected long=-" + expectedLong + ", was=" + gl.get.longitude )
+      System.out.println( "* Expected long=" + expectedLong + ", was=" + gl.get.longitude )
       //
       gl.get must haveClass[GeoLocation]
       gl.get.latitude must beEqual( expectedLat )
@@ -66,5 +66,32 @@ class GeocoderSpec extends Specification {
     }
   }
 
+
+  "GeocoderBoulderWithinMiles" should {
+    "make sure two Boulder location are within relative radius" in {
+
+      val goog = "2525 Arapahoe Ave, Boulder, CO 80302"
+      val goog2 = "200 Arapahoe Ave, Boulder, CO 80302"
+      val glFirst = Geocoder(goog).get
+      // the GeoLocation
+      val glSecond = Geocoder(goog2).get  // asInstanceOf[GeoLocation] 
+      val trueValue = true
+
+      // Try 5 miles
+      System.out.println( "* Expected val=" + trueValue + ", was=" + glFirst.withinMiles( 5, glSecond ) )
+      glFirst.withinMiles( 5, glSecond ) must beTrue
+
+      // Not within smaller radius
+      System.out.println( "* Expected val=" + !trueValue + ", was=" + glFirst.withinMiles( 0, glSecond ) )
+      glFirst.withinMiles( 0, glSecond ) must beFalse
+      //
+      System.out.println( "* Expected val=" + !trueValue + ", was=" + glFirst.withinMiles( 1, glSecond ) )
+      glFirst.withinMiles( 1, glSecond ) must beFalse
+
+      // Also compare in reverse, just to be sure
+      System.out.println( "* Expected val=" + trueValue + ", was=" + glSecond.withinMiles( 5,  glFirst ) )
+      glSecond.withinMiles( 5, glFirst ) must beTrue
+    }
+  }
 
 }
