@@ -1,0 +1,196 @@
+body {
+	background: #1155A0 url('../images/_s_header-bg-gradient.png') repeat-x scroll left top;
+	margin: 0;
+}
+
+/* Overall container */
+div.fixedWidthContent {
+	margin: 0 auto;
+	width: 942px;
+}
+
+/* Header */
+div.header {
+	color: white;
+	margin: 23px auto 0 auto;
+	position: relative;
+}
+div.header h1 {
+	display: inline-block;
+	margin: 0 0 0 35px;
+}
+div.header span.login {
+	float: right;
+	font-size: 18px;
+	margin-top: 17px;
+}
+div.header a {
+	color: inherit;
+	letter-spacing: 1px;
+}
+div.header em {
+	color: #9CD5F2;
+	font-size: 24px;
+	font-style: normal;
+}
+
+div.roundedCorners {
+	background: url('../images/body-bg-roundedCorners.png') no-repeat scroll center top;
+	height: 48px;	
+}
+
+div.mainContent {
+	background: #FEFEFF url('../images/body-bg-gradient.png') repeat-x scroll center bottom;
+	border-left: 1px solid #BFD4E7;
+	border-right: 1px solid #BFD4E7;
+	min-height: 894px;
+	position: relative;
+}
+div.mainContent p {
+	font-size: 20px;
+	letter-spacing: 0.5px;
+	margin: 0;
+	text-align: center;
+}
+div.mainContent p em {
+	font-size: 28px;
+	font-style: normal;
+	letter-spacing: 1px;
+}
+
+/* columns setup */
+div.columnContainer {
+	
+}
+div.leftColumn {
+	float: left;
+	margin-left: 25px;
+	width: 400px;
+}
+div.rightColumn {
+	float: right;
+}
+div.clearColumns {
+	clear: both;
+	font-size: 0;
+	line-height: 0;
+}
+
+/* search box */
+div.searchBox {
+	background: url('../images/body-fg-searchBox.png') no-repeat scroll left top;
+	height: 199px;
+}
+div.searchBox form {
+	padding: 18px 0 0 30px;
+}
+div.searchBox form #q, #find {
+	border: none;
+	background: none;
+}
+div.searchBox form #q {
+	font-size: 18pt;
+	margin-top: 3px;
+	width: 258px;
+}
+div.searchBox form #find {
+	background: url('../images/searchBox-fg-submit.png') no-repeat scroll left top;
+	height: 60px;
+	width: 60px;
+}
+
+/* post/share/develop buttons */
+div.buttons a {
+	text-decoration: none;
+}
+div.buttons a img {
+	border:none;
+}
+div.button{
+	float: left;
+	text-align: center;
+	width: 90px;
+}
+div.share, div.develop{
+	clear: left;
+}
+div.button span{
+	font-size: 1.5em;
+}
+div.text{
+	float: left;
+	padding-top: 25px;
+}
+
+/* footer */
+div.footer {
+	background: url('../images/footer-bg-gradient.png') no-repeat scroll center bottom;
+	bottom: 0;
+	height: 134px;
+	left: 3.5%;
+	margin: 0;
+	position: absolute;
+	width: 99.2%;
+}
+div.footer div.columnContainer {
+	height: 100%;
+}
+div.footer div.column {
+	background: url('../images/footer-fg-columnBorder.png') no-repeat scroll right bottom;
+	float: left;
+	height: 100%;
+	text-align: center;
+	width: 33.5%;
+}
+div.footer div.last {
+	background-image: none;
+	width: 31.2%;
+}
+div.footer h2 {
+	color: #333;
+	font-size: 23px;
+	font-weight: normal;
+	margin: 10px 0 6px 0;
+	text-align: center;
+}
+div.footer ul {
+	color: #1053A1;
+	display: inline-block;
+	font-size: 19px;
+	list-style: none;
+	margin: 0 auto;
+	padding: 0;
+}
+div.footer a {
+	color: inherit;
+	text-decoration: none;
+}
+div.footer a:hover {
+	text-decoration: underline;
+}
+div.footer li {
+	text-align: left;
+	margin: 0 0 1px 0;
+}
+div.footer div.last li {
+	text-align: center;
+}
+
+/* partners column */
+div.footer p { /* delete when you get parter logos */
+	text-align: inherit;
+}
+div.footer div.column div.columnContainer {
+	height: auto;
+	margin-bottom: 2.1%;
+}
+div.footer div.column div.leftColumn {
+	margin: 0 2.1% 0 0;
+	text-align: right;
+	width: 47.8%;
+}
+div.footer div.column div.rightColumn {
+	float: left;
+	text-align: left;
+	width: 47.8%;
+}
