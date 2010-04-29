@@ -76,7 +76,6 @@ class Boot {
       case r @ Req("api" :: "upload" :: Nil, _, _) =>
         () => org.snapimpact.dispatch.FeedUpload.upload(r)
       case r @ Req("api" :: "volopps" :: Nil, _, _) =>
-        println("volops")
         () => Full(org.snapimpact.dispatch.Api.volopps(r))
     }
 
