@@ -1,12 +1,11 @@
 package org.snapimpact.geocode
 
 import org.specs.Specification
-
 import _root_.org.specs.runner._
+import Earth._
+
 
 class EarthTest extends Runner(new EarthSpec) with JUnit with Console
-
-import Earth._
 
 class EarthSpec extends Specification {
   "Distance between" should {
@@ -35,10 +34,38 @@ class EarthSpec extends Specification {
     }
   }
 
-  // just checking if it tests anything
-//  "God" should {
-//    "love you " in {
-//      true must_== false
-//    }
-//  }
+  "Earth" should {
+    "calculate meters to miles and vice versa " in {
+
+      val miles = 1.0
+      val metersInMile = 1609.344
+
+      // meters to miles
+      System.out.println( "* Expected val=" + miles + ", was=" + Earth.metersToMiles( metersInMile ) )
+      Earth.metersToMiles( metersInMile ) mustEqual miles
+      // miles to meters
+      System.out.println( "* Expected val=" + metersInMile + ", was=" + Earth.milesToMeters( miles ) )
+      Earth.milesToMeters( miles ) mustEqual metersInMile
+    }
+  }
+
+
+  "Earth" should {
+    "calculate distance between points" in {
+
+      val distanceInMeters = 2561883.1035829214
+      val distanceInMiles = Earth.metersToMiles( distanceInMeters )
+      val pnt1 = (40.0, -120.0)
+      val pnt2 = (40.0, -150.0)
+
+      // distance in meters
+      System.out.println( "* Expected val=" + distanceInMeters + ", was=" + Earth.distance( pnt1, pnt2 ) )
+      Earth.distance( pnt1, pnt2 ) mustEqual distanceInMeters
+      // distance in miles
+      System.out.println( "* Expected val=" + distanceInMiles + ", was=" + Earth.distanceInMiles( pnt1, pnt2 ) )
+      Earth.distanceInMiles( pnt1, pnt2 ) mustEqual distanceInMiles
+
+    }
+  }
+
 }
