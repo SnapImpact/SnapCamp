@@ -48,8 +48,7 @@ class EarthSpec extends Specification {
       Earth.milesToMeters( miles ) mustEqual metersInMile
     }
   }
-
-
+  
   "Earth" should {
     "calculate distance between points" in {
 
@@ -60,10 +59,10 @@ class EarthSpec extends Specification {
 
       // distance in meters
       System.out.println( "* Expected val=" + distanceInMeters + ", was=" + Earth.distance( pnt1, pnt2 ) )
-      Earth.distance( pnt1, pnt2 ) mustEqual distanceInMeters
+      Earth.distance( pnt1, pnt2 ) must beCloseTo( distanceInMeters, 0.00000009 );
       // distance in miles
       System.out.println( "* Expected val=" + distanceInMiles + ", was=" + Earth.distanceInMiles( pnt1, pnt2 ) )
-      Earth.distanceInMiles( pnt1, pnt2 ) mustEqual distanceInMiles
+      Earth.distanceInMiles( pnt1, pnt2 ) must beCloseTo( distanceInMiles, 0.00000009 );
 
     }
   }
