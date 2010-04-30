@@ -3,6 +3,7 @@ package org.snapimpact.util
 //
 import _root_.org.specs.runner._
 import _root_.org.specs._
+import org.specs.execute.FailureException;
 //
 import java.lang._
 
@@ -12,7 +13,7 @@ class SkipHandlerTest extends Runner(new SkipHandlerSpec) with JUnit with Consol
 
 class SkipHandlerSpec extends Specification {
 
-
+    // The skipHandler makes sure pending tests are skipped
     "skipTest" should {
       "be skipped as it's pending and it's set to fail" in {
         org.snapimpact.util.SkipHandler.pendingUntilFixed{
@@ -23,21 +24,14 @@ class SkipHandlerSpec extends Specification {
       }
 
 
-   "sucessPendingTest" should {
+   // The skipHandler throws errors when skipped tests succeed
+   "sucessPendingTest" should  {
    "fail as pending tests should not succeed and it's set to succeed" in {
-      try {
-      org.snapimpact.util.SkipHandler.pendingUntilFixed{
+      org.snapimpact.util.SkipHandler.pendingUntilFixed {
           System.out.println( "* Expected val=" + true + ", was=" + true )
           true mustEqual true
-      }
-      } catch {
-        // check specifically for FailureException
-        case exc: org.specs.execute.FailureException =>{
-          System.out.println( "sucessPendingTest cought expected SkipHandler exception, in order to keep the test from failing"  )
-      }
-
-     }
-     }
+      } must throwA[FailureException]
+    }
    }
 
 
