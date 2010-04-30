@@ -192,6 +192,21 @@ case class Location(
   longitude:Option[Double],
   directions:Option[String]
   ) {
+  def toLatLngString: String = {
+    val latStr = this.latitude match {
+      case Some(n) => n.toString
+      case None => ""
+    }
+    val lngStr = this.longitude match {
+      case Some(n) => n.toString
+      case None => ""
+    }
+    if ( latStr.isEmpty || lngStr.isEmpty ) {
+      ""
+    } else {
+      latStr + " " + lngStr
+    }
+  }
 }
 object Location {
   def fromXML(node: scala.xml.Node) =
