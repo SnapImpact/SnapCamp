@@ -10,6 +10,13 @@ package org.snapimpact.dispatch
 
 import org.snapimpact.etl.model.dto.VolunteerOpportunity
 import org.joda.time.format.DateTimeFormat
+import net.liftweb.json.JsonAST._
+import net.liftweb.json.ShortTypeHints
+
+sealed class BoolOrString
+
+final case class Bool(value: Boolean) extends BoolOrString
+final case class Str(value: String) extends BoolOrString
 
 object VolOppV1 {
   def apply(
@@ -27,7 +34,7 @@ object VolOppV1 {
           id: String,
           city: String,
           location_name: String,
-          openEnded: String,
+          openEnded: BoolOrString,
           pubDate: String,
           title: String,
           base_url: String,
@@ -103,48 +110,48 @@ object VolOppV1 {
   }
 }
 class VolOppV1(
-        startDate: String,
-        minAge: String,
-        endDate: String,
-        contactPhone: String,
-        quality_score: Double,
-        detailUrl: String,
-        sponsoringOrganizationName: String,
-        latlong: String,
-        contactName: String,
-        addr1: String,
-        impressions: Int,
-        id: String,
-        city: String,
-        location_name: String,
-        openEnded: String,
-        pubDate: String,
-        title: String,
-        base_url: String,
-        virtual: String,
-        backfill_title: String,
-        provider: String,
-        postalCode: String,
-        groupid: String,
-        audienceAge: String,
-        audienceAll: String,
-        description: String,
-        street1: String,
-        street2: String,
-        interest_count: Int,
-        xml_url: String,
-        audienceSexRestricted: String,
-        startTime: Int,
-        contactNoneNeeded: String,
-        categories: List[String],
-        contactEmail: String,
-        skills: String,
-        country: String,
-        region: String,
-        url_short: String,
-        addrname1: String,
-        backfill_number: Int,
-        endTime: Int
+        val startDate: String,
+        val minAge: String,
+        val endDate: String,
+        val contactPhone: String,
+        val quality_score: Double,
+        val detailUrl: String,
+        val sponsoringOrganizationName: String,
+        val latlong: String,
+        val contactName: String,
+        val addr1: String,
+        val impressions: Int,
+        val id: String,
+        val city: String,
+        val location_name: String,
+        val openEnded: BoolOrString,
+        val pubDate: String,
+        val title: String,
+        val base_url: String,
+        val virtual: String,
+        val backfill_title: String,
+        val provider: String,
+        val postalCode: String,
+        val groupid: String,
+        val audienceAge: String,
+        val audienceAll: String,
+        val description: String,
+        val street1: String,
+        val street2: String,
+        val interest_count: Int,
+        val xml_url: String,
+        val audienceSexRestricted: String,
+        val startTime: Int,
+        val contactNoneNeeded: String,
+        val categories: List[String],
+        val contactEmail: String,
+        val skills: String,
+        val country: String,
+        val region: String,
+        val url_short: String,
+        val addrname1: String,
+        val backfill_number: Int,
+        val endTime: Int
         ) {}
 
 case class RetV1(
@@ -189,8 +196,8 @@ object mapToV1 {
       loc.city.getOrElse(""),
       loc.name.getOrElse(""),
       date.openEnded match {
-        case Some(yne) => yne.value
-        case None => ""
+        case Some(yne) => Str(yne.value)
+        case None => Str("")
       },
       "", // pub_date
       in.title,
