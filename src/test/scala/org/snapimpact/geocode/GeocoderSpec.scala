@@ -6,6 +6,8 @@ import org.specs._
 import org.specs.runner._
 import org.snapimpact.model.GeoLocation
 import net.liftweb.common._
+import org.specs.matcher._
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,6 +22,8 @@ class GeocoderSpecTest extends Runner(new GeocoderSpec) with
 
 class GeocoderSpec extends Specification {
 
+
+
   "Geocoder" should {
     "take a String and return a GeoLocation" in {
       val goog = "1600 Amphitheatre Parkway, Mountain View, CA"
@@ -31,8 +35,8 @@ class GeocoderSpec extends Specification {
       System.out.println( "* Expected long=" + expectedLong + ", was=" + gl.get.longitude )
       //
       gl.get must haveClass[GeoLocation]
-      gl.get.latitude must beEqual( expectedLat )
-      gl.get.longitude must beEqual( expectedLong )
+      gl.get.latitude must beCloseTo( expectedLat, 0.009999 )
+      gl.get.longitude must beCloseTo( expectedLong, 0.009999 )
     }
   }
 
@@ -61,8 +65,8 @@ class GeocoderSpec extends Specification {
       System.out.println( "* Expected long=" + expectedLong + ", was=" + gl.get.longitude )
       //
       gl.get must haveClass[GeoLocation]
-      gl.get.latitude must beEqual( expectedLat )
-      gl.get.longitude must beEqual( expectedLong )
+      gl.get.latitude must beCloseTo( expectedLat, 0.009999 )
+      gl.get.longitude must beCloseTo( expectedLong, 0.009999 )
     }
   }
 
