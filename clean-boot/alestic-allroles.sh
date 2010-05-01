@@ -14,8 +14,12 @@ cd /tmp
 mkdir bootstrap
 cd bootstrap
 curl -L 'http://github.com/ryanschneider/afg-bootstrap/tarball/master' | tar xvzf -
-## CD to extracted subdir (TODO: not needed for S3)
-cd *
+## tarfile may have our stuff at root, or in a subdir
+## if chef isn't here, then (hopefully) everything is in a single subdir
+if ![ -d  chef ];
+then
+  mv */* .
+fi
 ## launch bootstrap script
 ./scripts/bootstrap.sh
 

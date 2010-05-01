@@ -2,7 +2,8 @@
 ## Install chef and its dependencies
 
 ##make sure we have openssl for ruby
-apt-get install libopenssl-ruby
+echo 'Installing Chef...'
+apt-get -y install libopenssl-ruby
 ##and install ruby
 apt-get -y install ruby
 ##install ruby dev
@@ -14,4 +15,6 @@ cd rubygems* && ruby setup.rb --no-ri --no-rdoc
 ##make it our system gem executable
 ln -sfv /usr/bin/gem1.8 /usr/bin/gem
 ##install chef
-gem install rdoc chef ohai --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org
+gem install rdoc chef ohai json_pure --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org
+mkdir /tmp/chef-solo #for cache files, etc.
+echo 'Chef Installed!'

@@ -1,0 +1,9 @@
+Our roles are defined here.
+Currently we have 3 roles:
+  WEB - Nginx webserver.
+  APP - Jetty appserver.
+  DBMASTER - Postgres DB Master
+
+Eventually we'll probably also want:
+  LOADBALANCER - Nginx load balancer.
+  DBSLAVE - Postgres DB Slave.

@@ -1,0 +1,3 @@
+If we ever compile any of our own binaries from source we would put the recipes here.
+For example, if we wanted to compile the AFG Scala code from source on the deploy box we'd write a recipe to pull it from github and compile here.
+
