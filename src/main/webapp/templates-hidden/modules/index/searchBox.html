@@ -1,0 +1,22 @@
+<div class="searchBox">
+	<form method="get" action="/search">
+		<input type="text" id="q" class="faded" name="q" value="find" onfocus="
+			if (this.className == 'faded') {
+	            this.value = '';
+	            this.className = '';
+	        } else {
+				this.select();
+			}"
+	    	onblur="
+			if (! this.value) {
+	            this.value = 'find';
+	            this.className = 'faded';
+	        }"
+		/>
+		<input type="submit" id="find" name="find" value="&#8203;" />
+		<!-- temporary addition until we figure out geolocation stuff -->
+			<br /><label for="lat">Lat</label><input id="lat" name="lat" />
+			<br /><label for="long">Long</label><input name="long" />
+		<!-- end temporary addition -->
+	</form>
+</div>

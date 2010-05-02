@@ -67,12 +67,13 @@ div.columnContainer {
 }
 div.leftColumn {
 	float: left;
-	margin: 30px 0 0 35px;
-	width: 400px;
+	margin: 30px 20px 0 35px;
+	width: 410px;
 }
 div.rightColumn {
 	float: right;
-	margin: 30px 0 0 0;
+	margin: 30px 35px 0 0;
+	width: 430px;
 }
 div.clearColumns {
 	clear: both;
