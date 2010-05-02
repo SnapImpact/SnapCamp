@@ -1,104 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <link rel="stylesheet" href="/resources/style/front.css" />
-    <title>AllForGood.org</title>
-    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-  </head>
-  <body>
-    <div class="fixedWidthContent">
-      <div class="header">
-	<h1><img src="/resources/images/header-fg-logo-afg.png" alt="All for Good (beta)" /></h1>
-	<span class="login"><a href="javascript:void(0);">sign in</a> with facebook, google, or <em><a href="javascript:void(0);">more</a></em></span>
-      </div>
-      <div class="roundedCorners"></div><!--.roundedCorners-->
-      <div class="mainContent">
-	<p>
-	  <em>All for Good helps you find and share ways to do good.</em><br />
-	  Each of us has a role to play in improving our communities and our country.<br />
-	  Small actions add up to a big difference.
-	</p>
-	<div class="columnContainer">
-	  <div class="leftColumn">
-	    <div class="searchBox">
-	      <form method="get" action="/search">
-		<input type="text" id="q" name="q" />
-		<input type="submit" id="find" name="find" value=" " />
-	      </form>
-	    </div>
-	    <div class="buttons">
-	      <div class="posts">
-		<div class="button">
-		  <a href="javascript:void(0)"><img src="/resources/images/button-post.png" class="postsButton" alt="Post new volunteer opportunity"/></a>
-		  <span>post</span>
-		</div> <!-- .postsButton-->
-		<div class="text">
-		  <span>Post new ways to do good</span>
-		</div> <!--.postsText-->
-	      </div> <!--.posts-->
-	      <div class="share">
-		<div class="button">
-		  <a href="javascript:void(0)"><img src="/resources/images/button-share.png" class="shareButton" alt="Post new volunteer opportunity"/></a>
-		  <span>share</span>
-		</div> <!--.shareButton-->
-		<div class="text">
-		  <span>Include the "all for good" widget on your site</span>
-		</div> <!--.shareText-->
-	      </div> <!--.share-->
-	      <div class="develop">
-		<div class="button">
-		  <a href="javascript:void(0)"><img src="/resources/images/button-develop.png" class="developButton" alt="Post new volunteer opportunity"/></a>
-		  <span>develop</span>
-		</div> <!--.developButton-->
-		<div class="text">
-		  <span>Use our API to create cool apps</span>
-		</div> <!--.developText-->
-	      </div> <!--.develop-->
-	    </div> <!-- .buttons -->
-	    
-	  </div><!--.leftColumn-->
-	  <div class="rightColumn">
-	    <lift:bind name="content" />
-	  </div><!--.rightColumn-->
-	  <div class="clearColumns"></div><!--.clearColumns-->
-	</div><!--.columnContainer-->
+<head>
+	<link rel="stylesheet" href="/resources/style/front.css" />
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+</head>
+<body>
+	<div class="fixedWidthContent">
+		<div class="header">
+			<h1><img src="/resources/images/header-fg-logo-afg.png" alt="All for Good (beta)" /></h1>
+			<span class="login"><a href="javascript:void(0);">sign in</a> with facebook, google, or <em><a href="javascript:void(0);">more</a></em></span>
+		</div>
+		<div class="roundedCorners"></div><!--.roundedCorners-->
+		<div class="mainContent">
 
-	<div class="footer">
-	  <div class="columnContainer">
-	    <div class="column">
-	      <h2>about us</h2>
-	      <ul>
-		<li><a href="javascript:void(0);">contact us</a></li>
-		<li><a href="javascript:void(0);">faq</a></li>
-		<li><a href="javascript:void(0);">terms of service</a></li>
-	      </ul>
-	    </div>
-	    <div class="column">
-	      <h2>partners</h2>
-	      <div class="columnContainer">
-		<div class="leftColumn"><p>stuff</p></div>
-		<div class="rightColumn"><p>stuff</p></div>
-		<div class="clearColumns"></div>
-	      </div>
-	      <div class="columnContainer">
-		<div class="leftColumn"><p>stuff</p></div>
-		<div class="rightColumn"><p>stuff</p></div>
-		<div class="clearColumns"></div>
-	      </div>
-	    </div>
-	    <div class="last column">
-	      <h2>help</h2>
-	      <ul>
-		<li><a href="javascript:void(0);">video tutorials</a></li>
-		<li><a href="javascript:void(0);">blog</a></li>
-		<li><a href="javascript:void(0);">feedback</a></li>
-		<li><a href="javascript:void(0);">privacy</a></li>
-	      </ul>
-	    </div>
-	    <div class="clearColumns"></div><!--.clearColumns-->
-	  </div><!--.columnContainer-->
-	</div><!--.footer-->
-      </div><!--.mainContent-->
-     
-    </div>
-  </body>
+			<lift:bind name="content" />
+
+			<lift:embed what="modules/default/defaultFooter" />
+
+		</div><!--.mainContent-->
+	</div><!--.fixedWidthContent-->
+    <script id="jquery" src="/classpath/jquery.js" />
+    <script id="json" src="/classpath/json.js" />
+</body>
 </html>
