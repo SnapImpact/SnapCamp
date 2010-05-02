@@ -19,8 +19,11 @@ div.header {
 	position: relative;
 }
 div.header h1 {
-	display: inline-block;
+	float: left;
 	margin: 0 0 0 35px;
+}
+div.header h1 img {
+	display: block;
 }
 div.header span.login {
 	float: right;
@@ -39,6 +42,7 @@ div.header em {
 
 div.roundedCorners {
 	background: url('../images/body-bg-roundedCorners.png') no-repeat scroll center top;
+	clear: both;
 	height: 48px;	
 }
 
