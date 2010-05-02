@@ -14,8 +14,8 @@
 		</div>
 		<div class="roundedCorners"></div><!--.roundedCorners-->
 		<div class="mainContent">
-			<p>
-				<em>All for Good helps you find and share ways to do good.</em><br />
+			<p class="afgPurpose">
+				<em>Find and share ways to do good.</em><br />
 				Each of us has a role to play in improving our communities and our country.<br />
 				Small actions add up to a big difference.
 			</p>
@@ -23,38 +23,44 @@
 				<div class="leftColumn">
 					<div class="searchBox">
 						<form method="get" action="front.html">
-							<input type="text" id="q" name="q" />
+							<input type="text" id="q" name="q" class="faded" value="find" onfocus="
+								if (this.className == 'faded') {
+						            this.value = '';
+						            this.className = '';
+						        } else {
+									this.select();
+								}"
+						    	onblur="
+								if (! this.value) {
+						            this.value = 'find';
+						            this.className = 'faded';
+						        }"
+							/>
 							<input type="submit" id="find" name="find" value="&nbsp" />
 						</form>
 					</div>
 					<div class="buttons">
-						<div class="posts">
-							<div class="button">
-								<a href="javascript:void(0)"><img src="/resources/images/button-post.png" class="postsButton" alt="Post new volunteer opportunity"/></a>
-								<span>post</span>
-							</div> <!--.postsButton-->
-							<div class="text">
-								<span>Post new ways to do good</span>
-							</div> <!--.postsText-->
-						</div> <!--.posts-->
-						<div class="share">
-							<div class="button">
-								<a href="javascript:void(0)"><img src="/resources/images/button-share.png" class="shareButton" alt="Post new volunteer opportunity"/></a>
-								<span>share</span>
-							</div> <!--.shareButton-->
-							<div class="text">
-								<span>Include the "all for good" widget on your site</span>
-							</div> <!--.shareText-->
-						</div> <!--.share-->
-						<div class="develop">
-							<div class="button">
-								<a href="javascript:void(0)"><img src="/resources/images/button-develop.png" class="developButton" alt="Post new volunteer opportunity"/></a>
-								<span>develop</span>
-							</div> <!--.developButton-->
-							<div class="text">
-								<span>Use our API to create cool apps</span>
+						<a href="javascript:void(0);">
+							<img src="/resources/images/button-post.png" class="postsButton" alt="Post new volunteer opportunity"/>
+							<div>
+								<p><em>post</em></p>
+								<p>Post new ways to do good</p>
+							</div>
+						</a>
+						<a href="javascript:void(0);">
+							<img src="/resources/images/button-share.png" class="shareButton" alt="Get the official AfG widget"/>
+							<div>
+								<p><em>share</em></p>
+								<p>Get the All For Good widget for your site</p>
+							</div>
+						</a>
+						<a href="javascript:void(0);">
+							<img src="/resources/images/button-develop.png" class="developButton" alt="Develop cool apps"/>
+							<div>
+								<p><em>develop</em></p>
+								<p>Use our API to create cool apps</p>
 							</div> <!--.developText-->
-						</div> <!--.develop-->
+						</a>
 					</div> <!-- .buttons -->
 
 				</div><!--.leftColumn-->
