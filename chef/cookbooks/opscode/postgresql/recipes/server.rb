@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-include_recipe "postgresql::client" 
+include_recipe "postgresql::client"
 
-package "postgresql"
+package "postgresql-8.3"
 
 service "postgresql" do
   case node[:platform]

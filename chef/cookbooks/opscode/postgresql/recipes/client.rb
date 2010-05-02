@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-case node[:platform] 
+case node[:platform]
 when "ubuntu","debian"
-  package "postgresql-client"
+  package "postgresql-client-8.3"
 when "redhat","centos","fedora"
   package "postgresql-devel"
 end
