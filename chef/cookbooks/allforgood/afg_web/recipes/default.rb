@@ -9,8 +9,8 @@ remote_file "nginx_conf" do
 end
 
 #symlink to our config
-link "/etc/nginx/sites-available/allforgood.conf" do
-  to "/etc/nginx/sites-enabled/allforgood.conf"
+link "/etc/nginx/sites-enabled/allforgood.conf" do
+  to "/etc/nginx/sites-available/allforgood.conf"
 end
 
 #delete the default link if there
