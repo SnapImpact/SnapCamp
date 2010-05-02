@@ -18,12 +18,15 @@ then
   exit 1
 fi
 
+#strip quotes out of roles
+ROLES=`echo ${ROLES} | sed "s/\"//g"`
+
 ## STEP 1: Setup Chef
 ./scripts/setup/chef.sh
 
 ## STEP 2: Run Chef for our roles (TODO: use chef server instead of solo)
-echo "Starting chef with roles: ${ROLES[*]}"
-./chef/run-solo-roles.rb ${ROLES[*]}
+echo "Starting chef with roles: ${ROLES}"
+./chef/run-solo-roles.rb ${ROLES}
 
 
 
