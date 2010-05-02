@@ -9,6 +9,6 @@ set -e -x
 ./scripts/setup/chef.sh
 
 ## STEP 2: Run Chef for our roles (TODO: use chef server instead of solo)
-./scripts/chef/solo.sh
+./chef/solo.sh
 
 
