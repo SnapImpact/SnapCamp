@@ -22,5 +22,5 @@ then
   mv */* .
 fi
 ## launch bootstrap script
-./scripts/bootstrap.sh
+./scripts/bootstrap.sh -r "\"${ROLES[*]}\""
 
