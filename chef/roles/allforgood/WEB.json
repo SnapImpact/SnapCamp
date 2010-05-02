@@ -5,6 +5,5 @@
   "json_class": "Chef::Role",
   "description": "Role for our basic nginx web server.",
   "chef_type": "role",
-  "recipes": "nginx"
+  "recipes": "afg_web"
 }
-
