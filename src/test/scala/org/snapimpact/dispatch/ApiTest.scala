@@ -19,10 +19,16 @@ import net.liftweb.json._
 import JsonParser._
 import JsonAST._
 import specification.Expectable
+import _root_.org.specs.execute._
+import org.joda.time._
+import org.joda.time.format._
 
+
+// Tests against the local server
 class APITest extends Runner(new APISpec) with JUnit with Console
 
-class APISpec extends APITester {
+class APISpec extends ApiSubmitTester
+{
   def baseUrl = "http://localhost:8989"
   RunWebApp.start()
 
@@ -46,27 +52,71 @@ class APISpec extends APITester {
       }
     }
 
-    skip("To be implemented")
-    "provide common functionalities" in {sharedFunctionality}
-  }
 
-  //RunWebApp.stop()
-}
 
+    // SkipHandler skips tests as long as they do not pass
+    // once these pass that means somebody is making progress on the API development
+    // and the pendingUntilFixed wrapper can be excluded
+    "provide common functionalities" in
+    {
+        org.snapimpact.util.SkipHandler.pendingUntilFixed
+        { sharedFunctionality }
+    }
+
+    // Searches
+    "search for something not there" in {
+      org.snapimpact.util.SkipHandler.pendingUntilFixed
+                {searchFor_zx_NotThere_xz }
+    }
+    "search for hunger" in {
+      org.snapimpact.util.SkipHandler.pendingUntilFixed
+                {searchForHunger}
+    }
+
+
+  }  //  "api" should
+}   // ApiSpec
+
+
+
+
+
+// These tests are going against the current AllForGood live webserver
+// http://www.allforgood.org and should succeed at all times
 class V1SysTest extends Runner(new V1SysSpec) with JUnit with Console
 
-class V1SysSpec extends APITester {
+class V1SysSpec extends ApiSubmitTester
+{
   def baseUrl = "http://www.allforgood.org"
 
-  "The API from the V1 system" should {
-    "provide common functionalities" in {sharedFunctionality}
+  "The API from the old V1 system" should
+  {
+    "extracts common" in {sharedFunctionality}
   }
-}
 
-trait APITester extends Specification with TestKit {
-  def sharedFunctionality = {
-    "be able to extract json return" in {
-      get("/api/volopps", "key" -> "test", "q" -> "hunger", "output" -> "json") match {
+  // searches
+  "The API from the old V1 system" should
+  {
+    "search for something not there" in {searchFor_zx_NotThere_xz }
+  }
+  "The API from the old V1 system" should
+  {
+    "search for hunger" in {searchForHunger}
+  }
+}  // V1SysSpec
+
+
+
+
+
+// Does the actual interaction with the webserver and includes the common tests
+trait ApiSubmitTester extends Specification with TestKit
+{
+
+    // Returns RetV1 object from volopps API search
+    def submitApiRequest( pars : scala.Tuple2[scala.Predef.String, scala.Any]* ) : RetV1 =
+    {
+      get( "/api/volopps", pars :_* ) match {
         case r: HttpResponse => {
           implicit val formats = DefaultFormats
           r.code must_== 200
@@ -74,13 +124,72 @@ trait APITester extends Specification with TestKit {
           val json = parse(jString)
           val ret = json.extract[RetV1]
 
-          ret must haveClass[RetV1]
+          ret
         }
-        case _ => true must_== false
+        case ex => throw new FailureException("Something went wrong while interacting with the webserver," +  ex.toString() )
       }
     }
-  }
-}
+
+
+    // Test for root and props set
+    def sharedFunctionality = {
+
+        val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "" )
+
+        // Root of correct type
+        ret must haveClass[RetV1]
+
+        // All good prop
+        val descr = "All for Good search results"
+        System.out.println( "* Expected val=" + descr + ", was=" + ret.description )
+        ret.description mustEqual descr
+
+        // version prop
+        val ver = 1.0
+        System.out.println( "* Expected val=" + ver + ", was=" + ret.version )
+        ret.version mustEqual ver
+
+        // See if the date is good and can be parsed
+        // sample string -> Sat, 01 May 2010 16:51:10 +0000
+        System.out.println( "**** Parsing val=" + ret.lastBuildDate + ", to Date object")
+        val dateFormatter = DateTimeFormat.forPattern("E, dd MMM yyyy HH:mm:ss Z");
+        val item =  dateFormatter.parseDateTime( ret.lastBuildDate )
+        // Make sure it's a DateTime
+        item must haveClass[DateTime]
+   }
+
+
+   // Search for something not available in the database
+   def searchFor_zx_NotThere_xz = {
+          val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "zx_NotThere_xz" )
+
+          // no events will be returned on this criteria zx_NotThere_xz
+          val count = 0;
+          System.out.println( "**** Expected val=" + count + ", was=" + ret.items.length )
+          ( ret.items.length == count ) must_== true
+
+        }
+
+    // *** Note *** This test assumes that there are always hunger events available in the database
+    def searchForHunger= {
+      val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "hunger" )
+
+      val count = 0;
+      System.out.println( "**** Expected val=" + count + " >  was=" + ret.items.length + ", isTrue=" + ( ret.items.length > count ) )
+      ( ret.items.length > count ) must_== true
+
+      // Make sure they are not null
+      System.out.println( "**** About to Loop" )
+      for( item <- ret.items ){
+        System.out.println( "* Val=" + item.toString() + "notNull, isTrue=" + (item != null)  )
+        item must notBe( null )
+      }
+   }
+
+}  // trait ApiSubmitTester
+
+
+
 
 import org.mortbay.jetty.Connector
 import org.mortbay.jetty.Server
@@ -91,19 +200,19 @@ object RunWebApp {
   {
     org.mortbay.log.Log.setLog(new org.mortbay.log.Logger {
       def debug(msg: String,a1: Object,a2: Object) {}
-           
+
       def debug(msg: String,th: Throwable) {}
-           
+
       def getLogger(name: String) = this
-           
+
       def info(msg: String,a1: Object,a2: Object) {}
-           
+
       def isDebugEnabled() = false
-           
-      def setDebugEnabled(e: Boolean) {} 
-      
+
+      def setDebugEnabled(e: Boolean) {}
+
       def warn(msg: String,a1: Object,a2: Object) {}
-           
+
       def warn(msg: String,th: Throwable) {}
     })
   }
