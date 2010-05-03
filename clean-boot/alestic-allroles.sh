@@ -1,5 +1,6 @@
 #!/bin/bash
 ## For Alestic AMIs (I'm using ami-6743ae0e)
+## details on how this script works: http://alestic.com/2009/06/ec2-user-data-scripts
 ## What are our roles?
 export ROLES=( WEB APP DBMASTER )
 export BOOTSTRAP_TARBALL_URL='http://github.com/ryanschneider/afg-bootstrap/tarball/master' #TODO: use S3
