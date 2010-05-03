@@ -16,6 +16,7 @@ import java.sql.{Connection, DriverManager}
 import scala.xml.NodeSeq
 import org.snapimpact.model._
 import org.snapimpact.snippet._
+import org.snapimpact.lib.{MenuData}
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -38,25 +39,23 @@ class Boot {
       DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
     }
 
-    LiftRules.passNotFoundToChain = true
+    
+    LiftRules.passNotFoundToChain = false
+
+    /*
     LiftRules.liftRequest.append {
       case Req("static" :: _, _, _) => false
     }
+    */
+
+    LiftRules.snippetDispatch.append{case "Loc" => MenuData}
+
     // where to search snippet
     LiftRules.addToPackages("org.snapimpact")
     
 
-    // Build SiteMap
-    def entries = Menu(Loc("Home", List("index"), "Home")) ::
-    Menu(Loc("docs.api", List("docs", "api"), "API Docs")) ::
-    Menu(Loc("xmlupload", List("xml_upload"), "Xml Upload")) ::
-    Menu(Loc("search", List("search"), "Search", Hidden,
-	   Snippet("search", a => ProcessSearch.render(a)))) ::
-    Menu(Loc("test", Link(List("test"), true, "/test/hello"), "TestOrn")) ::
-    Menu(Loc("Cats", List("cats"), "Cat Wizard")) ::
-   Nil
 
-    LiftRules.setSiteMapFunc(() => SiteMap(entries:_*))
+    LiftRules.setSiteMapFunc(MenuData.siteMap) // () => SiteMap(entries:_*))
 
     /*
      * Show the spinny image when an Ajax call starts
@@ -101,3 +100,4 @@ class Boot {
     case "css" :: _ => true
   }
 }
+
