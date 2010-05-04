@@ -46,21 +46,21 @@ object FeedUpload {
     var s = if (r.body.isEmpty) {"Empty"} else {
       val subject = XML.load(new ByteArrayInputStream(r.body.open_!))
       val item = FootprintFeed.fromXML(subject)
-      println("FeedUpload.upload: "+item.toString)
+      // println("FeedUpload.upload: "+item.toString)
       r.body.get.size.toString
     }
-println("FeedUpload.upload: body: "+s);
+//println("FeedUpload.upload: body: "+s);
     s = if (r.uploadedFiles.isEmpty) {"Empty"} else {r.uploadedFiles.size.toString}
-println("FeedUpload.upload: uploadedFiles: "+s);
+//println("FeedUpload.upload: uploadedFiles: "+s);
     // This will only be set if mime-type is text/xml
     // Regardless, body will still be populated
     s = if (r.xml_?) {"xml"} else {"not xml"}
-println("FeedUpload.upload: the xml is: "+s);
+//println("FeedUpload.upload: the xml is: "+s);
     /* list [FileParamHolder] */
     r.uploadedFiles.foreach(v => {
       val subject = XML.load(new ByteArrayInputStream(v.file))
       val item = FootprintFeed.fromXML(subject)
-      println("FeedUpload.upload: "+item.toString)
+      //println("FeedUpload.upload: "+item.toString)
     })
 //    r.uploadedFiles /* list [FileParamHolder] */
 //    r.body/* Box[Array[Byte]] */

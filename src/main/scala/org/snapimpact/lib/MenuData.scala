@@ -39,7 +39,8 @@ object MenuData extends DispatchSnippet {
   def siteMap(): SiteMap = SiteMap(
     Menu.i(home) / "index",
     Menu(apiDocs, S ? "API Docs") / "docs" / "api",
-    Menu(xmlUpload, "XML Upload") / "xml_upload",
+    Menu(xmlUpload, "XML Upload") / "xml_upload" >>
+    XmlUploadSnippet.menuParams,
     Menu.i(search) / "search" >> 
       Hidden >>  Snippet("search", a => ProcessSearch.render(a)),
     Menu.i(about) / "about",

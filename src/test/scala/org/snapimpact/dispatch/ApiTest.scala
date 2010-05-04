@@ -83,6 +83,7 @@ class APISpec extends ApiSubmitTester
 
 // These tests are going against the current AllForGood live webserver
 // http://www.allforgood.org and should succeed at all times
+
 class V1SysTest extends Runner(new V1SysSpec) with JUnit with Console
 
 class V1SysSpec extends ApiSubmitTester
@@ -120,7 +121,7 @@ trait ApiSubmitTester extends Specification with TestKit
         case r: HttpResponse => {
           implicit val formats = DefaultFormats
           r.code must_== 200
-          val jString = tryo(new String(r.body, "UTF-8")).open_!
+          val jString = new String(r.body, "UTF-8")
           val json = parse(jString)
           val ret = json.extract[RetV1]
 
@@ -141,17 +142,17 @@ trait ApiSubmitTester extends Specification with TestKit
 
         // All good prop
         val descr = "All for Good search results"
-        System.out.println( "* Expected val=" + descr + ", was=" + ret.description )
+      // System.out.println( "* Expected val=" + descr + ", was=" + ret.description )
         ret.description mustEqual descr
 
         // version prop
         val ver = 1.0
-        System.out.println( "* Expected val=" + ver + ", was=" + ret.version )
+      // System.out.println( "* Expected val=" + ver + ", was=" + ret.version )
         ret.version mustEqual ver
 
         // See if the date is good and can be parsed
         // sample string -> Sat, 01 May 2010 16:51:10 +0000
-        System.out.println( "**** Parsing val=" + ret.lastBuildDate + ", to Date object")
+      //System.out.println( "**** Parsing val=" + ret.lastBuildDate + ", to Date object")
         val dateFormatter = DateTimeFormat.forPattern("E, dd MMM yyyy HH:mm:ss Z");
         val item =  dateFormatter.parseDateTime( ret.lastBuildDate )
         // Make sure it's a DateTime
@@ -165,7 +166,7 @@ trait ApiSubmitTester extends Specification with TestKit
 
           // no events will be returned on this criteria zx_NotThere_xz
           val count = 0;
-          System.out.println( "**** Expected val=" + count + ", was=" + ret.items.length )
+     //System.out.println( "**** Expected val=" + count + ", was=" + ret.items.length )
           ( ret.items.length == count ) must_== true
 
         }
@@ -175,13 +176,13 @@ trait ApiSubmitTester extends Specification with TestKit
       val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "hunger" )
 
       val count = 0;
-      System.out.println( "**** Expected val=" + count + " >  was=" + ret.items.length + ", isTrue=" + ( ret.items.length > count ) )
+      //System.out.println( "**** Expected val=" + count + " >  was=" + ret.items.length + ", isTrue=" + ( ret.items.length > count ) )
       ( ret.items.length > count ) must_== true
 
       // Make sure they are not null
-      System.out.println( "**** About to Loop" )
+      //System.out.println( "**** About to Loop" )
       for( item <- ret.items ){
-        System.out.println( "* Val=" + item.toString() + "notNull, isTrue=" + (item != null)  )
+        //System.out.println( "* Val=" + item.toString() + "notNull, isTrue=" + (item != null)  )
         item must notBe( null )
       }
    }

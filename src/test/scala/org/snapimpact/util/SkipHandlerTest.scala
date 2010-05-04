@@ -17,7 +17,7 @@ class SkipHandlerSpec extends Specification {
     "skipTest" should {
       "be skipped as it's pending and it's set to fail" in {
         org.snapimpact.util.SkipHandler.pendingUntilFixed{
-            System.out.println( "* Expected val=" + true + ", was=" + false )
+          // System.out.println( "* Expected val=" + true + ", was=" + false )
             true mustEqual false
          }
         }
@@ -28,7 +28,7 @@ class SkipHandlerSpec extends Specification {
    "sucessPendingTest" should  {
    "fail as pending tests should not succeed and it's set to succeed" in {
       org.snapimpact.util.SkipHandler.pendingUntilFixed {
-          System.out.println( "* Expected val=" + true + ", was=" + true )
+        //System.out.println( "* Expected val=" + true + ", was=" + true )
           true mustEqual true
       } must throwA[FailureException]
     }

@@ -1,4 +1,5 @@
-package org.snapimpact.geocode
+package org.snapimpact
+package geocode
 
 import _root_.net.liftweb.util._
 import _root_.net.liftweb.common._

@@ -67,16 +67,16 @@ private object MemoryGeoStore extends MemoryGeoStore
 
 private class MemoryGeoStore extends GeoStore {
   import scala.collection.immutable.{TreeMap, TreeSet}
-  private var locs: TreeMap[GUID, GeoLocation] = TreeMap()
+  private var locs: TreeMap[GUID, List[GeoLocation]] = TreeMap()
   private var nonLocSet: TreeSet[GUID] = TreeSet()
 
   /**
    * Assocate the GUID and a geo location
    */
-  def add(guid: GUID, location: GeoLocation): Unit = synchronized {
+  def add(guid: GUID, location: List[GeoLocation]): Unit = synchronized {
     remove(guid)
     locs += guid -> location
-    if (!location.hasLocation) {
+    if (location.find(!_.hasLocation).isDefined) {
       nonLocSet += guid
     }
   }
@@ -92,7 +92,8 @@ private class MemoryGeoStore extends GeoStore {
   /**
    * Update the location of a given GUID
    */
-  def update(guid: GUID, location: GeoLocation): Unit = add(guid, location)
+  def update(guid: GUID, location: List[GeoLocation]): Unit = 
+    add(guid, location)
 
   /**
    * Find a series of locations that are within a range of the
@@ -103,11 +104,18 @@ private class MemoryGeoStore extends GeoStore {
   def find(location: GeoLocation,
            radius: Double,
            first: Int,
-           max: Int): List[GUID] =
+           max: Int): List[(GUID, Double)] =
 	     {
 	       val set = synchronized{locs}
-	       set.view.filter{ case (_, loc) => loc.withinMiles(radius, location)}.
-	       drop(first).take(max).map(_._1).toList
+               
+               val view: List[(GUID, Double)] = 
+                 for {
+                   (guid, locs) <- set.toList
+                   loc <- locs
+                   distance <- loc.distanceFrom(location) if distance <= radius
+                 } yield guid -> distance
+
+               view.sortWith(_._2 < _._2).drop(first).take(max)
 	     }
 
   /**

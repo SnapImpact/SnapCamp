@@ -1,4 +1,5 @@
-package org.snapimpact.snippet
+package org.snapimpact
+package snippet
 
 import _root_.net.liftweb._
 import http._
@@ -11,7 +12,16 @@ import util._
 import Helpers._
 
 import _root_.scala.xml.{NodeSeq, Text, Group}
-import _root_.java.util.Locale
+// import _root_.java.util.Locale
+
+import sitemap._
+import Loc._
+
+import scala.xml._
+
+import etl.model.dto._
+import model._
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,31 +31,36 @@ import _root_.java.util.Locale
  * To change this template use File | Settings | File Templates.
  */
 
-class XmlUploadSnippet {
-/*
- * Copyright 2007-2010 WorldWide Conferencing, LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-
+object XmlUploadSnippet {
   // the request-local variable that hold the file parameter
-  private object theUpload extends RequestVar[Box[FileParamHolder]](Empty)
+  // private object theUpload extends RequestVar[Box[FileParamHolder]](Empty)
+
+  def menuParams: LocParam[Unit] = Snippet("upload", upload)
+
+  private def gotFile(file: FileParamHolder) {
+    (for {
+      mime <- Full(file.mimeType).filter(_ startsWith "text/xml") ?~ "It's not XML"
+      xml <- tryo(XML.load(file.fileStream)) ?~ "Unable to parse the XML"
+      info <- tryo(FootprintFeed.fromXML(xml)) ?~ "Couldn't ETL the XML"
+    } yield {
+      val store = PersistenceFactory.store.vend
+      info.opportunities.opps.foreach {store.add _}
+      S.notice("Thanks for the file")
+      S.redirectTo("/")
+    }) match {
+      case Failure(msg, _, _) => S.error(msg)
+      case _ => S.error("Unable to upload data")
+    }
+  }
+
 
   /**
    * Bind the appropriate XHTML to the form
    */
   def upload(xhtml: NodeSeq): NodeSeq =
+    bind("upload", xhtml, "file" -> fileUpload(gotFile _))
+    /*
+    
     if (S.get_?) bind("ul", chooseTemplate("choose", "get", xhtml),
                     "file_upload" -> fileUpload(ul => theUpload(Full(ul))))
     else bind("ul", chooseTemplate("choose", "post", xhtml),
@@ -54,7 +69,9 @@ class XmlUploadSnippet {
             "length" -> theUpload.is.map(v => Text(v.file.length.toString)),
             "md5" -> theUpload.is.map(v => Text(hexEncode(md5(v.file))))
   );
+  */
 
+  /*
 
   def lang(xhtml: NodeSeq): NodeSeq =
     bind("showLoc", xhtml,
@@ -66,6 +83,7 @@ class XmlUploadSnippet {
     Locale.getAvailableLocales.toList.sortWith(_.getDisplayName < _.getDisplayName)
 
   private def setLocale(loc: Locale) = definedLocale.set(loc)
+  */
 }
 
-object definedLocale extends SessionVar(S.locale)
+// object definedLocale extends SessionVar(S.locale)

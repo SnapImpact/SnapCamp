@@ -43,7 +43,7 @@ trait Store {
              num: Int = 100,
              provider: Option[String] = None,
              timeperiod: Option[Timeperiod.Value] = None,
-             loc: Option[(GeoLocation, Double)] = None): List[GUID] 
+             loc: Option[GeoLocation] = None, radius: Double = 50): List[GUID] 
   = {
     search.find(query, start, num)
   }
@@ -127,6 +127,13 @@ final case class GeoLocation(longitude: Double,
     Earth.distanceInMiles((latitude,       longitude),
                           (of.latitude, of.longitude)) <= distance
   }
+
+  def distanceFrom(other: GeoLocation): Option[Double] = {
+    if (!hasLocation || !other.hasLocation) None
+    else Some(Earth.distanceInMiles((latitude,       longitude),
+                                    (other.latitude, other.longitude))
+)
+  }
 }
 
 object GeoLocation {
@@ -145,7 +152,7 @@ trait GeoStore {
   /**
    * Assocate the GUID and a geo location
    */
-  def add(guid: GUID, location: GeoLocation): Unit
+  def add(guid: GUID, location: List[GeoLocation]): Unit
 
   /**
    * Unassocate the GUID and the geo location
@@ -155,14 +162,14 @@ trait GeoStore {
   /**
    * Update the location of a given GUID
    */
-  def update(guid: GUID, location: GeoLocation): Unit
+  def update(guid: GUID, location: List[GeoLocation]): Unit
 
   /**
    * Find a series of locations that are within a range of the
    * specified location
    */
   def find(location: GeoLocation, distance: Double,
-           first: Int = 0, max: Int = 200): List[GUID]
+           first: Int = 0, max: Int = 200): List[(GUID, Double)]
 
   /**
    * Find the GUIDs that do not have a location

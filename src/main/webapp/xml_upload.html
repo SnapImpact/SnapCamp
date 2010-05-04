@@ -1,3 +1,7 @@
 <lift:surround with="default" at="content">
-  // FIXME xml upload
+  Select an XML file to upload to our servers
+  <lift:upload form="post" multipart="true">
+    File: <upload:file/><br/>
+    <input type="submit" value="Upload"/>
+  </lift:upload>
 </lift:surround>
