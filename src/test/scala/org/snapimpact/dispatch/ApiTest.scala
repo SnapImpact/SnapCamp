@@ -44,7 +44,7 @@ class APISpec extends ApiSubmitTester
     }
 
     "Give a 200 with a key" in {
-      get("/api/volopps", "key" -> "test") match {
+      get("/api/volopps", "key" -> "test", "q" -> "hunger") match {
         case r: HttpResponse =>
           r.code must_== 200
         case x =>

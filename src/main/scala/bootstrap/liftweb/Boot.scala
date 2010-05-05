@@ -52,7 +52,6 @@ class Boot {
 
     // where to search snippet
     LiftRules.addToPackages("org.snapimpact")
-    
 
 
     LiftRules.setSiteMapFunc(MenuData.siteMap) // () => SiteMap(entries:_*))
@@ -73,7 +72,7 @@ class Boot {
 
     LiftRules.statelessDispatchTable.append {
       case r @ Req("api" :: "upload" :: Nil, _, _) =>
-        () => org.snapimpact.dispatch.FeedUpload.upload(r)
+        () => Full(org.snapimpact.dispatch.FeedUpload.upload(r))
       case r @ Req("api" :: "volopps" :: Nil, _, _) =>
         () => Full(org.snapimpact.dispatch.Api.volopps(r))
     }

@@ -1,4 +1,5 @@
-package org.snapimpact.dispatch
+package org.snapimpact
+package dispatch
 
 import scala.xml.NodeSeq
 import net.liftweb.http._
@@ -6,6 +7,8 @@ import net.liftweb.common._
 import net.liftweb.json._
 import net.liftweb.util._
 import org.snapimpact.lib.Serializers.anyToRss
+import model._
+import geocode._
 
 sealed trait OutputType
 final case object JsonOutputType extends OutputType
@@ -17,12 +20,23 @@ object Api {
     for{
       key <- r.param("key") ?~ missingKey ~> 401
       valKey <- validateKey(key) ?~ ("Invalid key. " + missingKey) ~> 401
-    } yield
+      q <- r.param("q").map(_.trim).filter(_.length > 0) ?~ "Missing query"
+    } yield {
+      val loc: Option[GeoLocation] = 
+        for {
+          l <- r.param("loc").map(_.trim).filter(_.length > 0)
+          geo <- Geocoder(l)
+        } yield geo
+
+      val store = PersistenceFactory.store.vend
+      val res = store.read(store.search(q, loc = loc))
+
       r.param("output") match {
-        case Full("json") => JsonResponse(sampleJson)
+        case Full("json") => JsonResponse(Extraction.decompose(res)) // sampleJson)
         case Full("rss") => XmlResponse(sampleRss, "application/rss+xml")
         case _ => XmlResponse(sampleHtml)
       }
+    }
   }
 
   /*
