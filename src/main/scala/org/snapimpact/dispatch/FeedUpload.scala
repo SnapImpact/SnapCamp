@@ -1,16 +1,13 @@
-package org.snapimpact.dispatch
-import _root_.scala.xml.{NodeSeq, Text, Group, XML}
-import _root_.net.liftweb.http._
-import _root_.net.liftweb.http.S
-import _root_.net.liftweb.mapper._
-import _root_.net.liftweb.http.S._
-import _root_.net.liftweb.http.SHtml._
-import _root_.net.liftweb.util.Helpers._
-import _root_.net.liftweb.util._
-import _root_.java.util.Locale
-import net.liftweb.common.{Box, Empty, Full}
-import org.snapimpact.etl.model.dto.FootprintFeed
-import java.io.ByteArrayInputStream
+package org.snapimpact
+package dispatch
+
+import net.liftweb.common._
+import org.snapimpact.etl.model.dto._
+import model._
+import net.liftweb._
+import http._
+import util.Helpers._
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,46 +36,30 @@ import java.io.ByteArrayInputStream
  */
 
 object FeedUpload {
-  // the request-local variable that hold the file parameter
-  private object theUpload extends RequestVar[Box[FileParamHolder]](Empty)
-
-  def upload(r:Req): Box[LiftResponse] = {
-    var s = if (r.body.isEmpty) {"Empty"} else {
-      val subject = XML.load(new ByteArrayInputStream(r.body.open_!))
-      val item = FootprintFeed.fromXML(subject)
-      println("FeedUpload.upload: "+item.toString)
-      r.body.get.size.toString
+  def upload(r:Req): LiftResponse = 
+    for {
+      key <- r.param("key") ?~ Api.missingKey ~> 401
+      valKey <- Api.validateKey(key) ?~ ("Invalid key. " + Api.missingKey) ~> 401
+      xml <- r.xml ?~ "You didn't supply XML"
+      info <- tryo(FootprintFeed.fromXML(xml)) ?~ "Couldn't ETL the XML"
+    } yield {
+      val store = PersistenceFactory.store.vend
+      info.opportunities.opps.foreach {store.add _}
+      OkResponse()
     }
-println("FeedUpload.upload: body: "+s);
-    s = if (r.uploadedFiles.isEmpty) {"Empty"} else {r.uploadedFiles.size.toString}
-println("FeedUpload.upload: uploadedFiles: "+s);
-    // This will only be set if mime-type is text/xml
-    // Regardless, body will still be populated
-    s = if (r.xml_?) {"xml"} else {"not xml"}
-println("FeedUpload.upload: the xml is: "+s);
-    /* list [FileParamHolder] */
-    r.uploadedFiles.foreach(v => {
-      val subject = XML.load(new ByteArrayInputStream(v.file))
-      val item = FootprintFeed.fromXML(subject)
-      println("FeedUpload.upload: "+item.toString)
-    })
-//    r.uploadedFiles /* list [FileParamHolder] */
-//    r.body/* Box[Array[Byte]] */
-//    r.xml/* Box[Elem] */
-//    "file_name" -> theUpload.is.map(v => Text(v.fileName)),
-//    "mime_type" -> theUpload.is.map(v => Box.legacyNullTest(v.mimeType).map(Text).openOr(Text("No mime type supplied"))), // Text(v.mimeType)),
-//    "length" -> theUpload.is.map(v => Text(v.file.length.toString)),
-//    "md5" -> theUpload.is.map(v => Text(hexEncode(md5(v.file))))
 
-    // so far this isn't getting set
-  //    theUpload.is.map(v => {
-//      val subject = XML.load(new ByteArrayInputStream(v.file))
-//      val item = FootprintFeed.fromXML(subject)
-//      println("FeedUpload.upload: "+item.toString)
-//      v.fileName
-//    })
+    private implicit def respToBox(in: Box[LiftResponse]): LiftResponse = {
+    def build(msg: String, code: Int) = {
+      InMemoryResponse(msg.getBytes("UTF-8"), List("Content-Type" -> "text/plain"), Nil, code)
+    }
 
-    Full(OkResponse())
+    in match {
+      case Full(r) => r
+      case ParamFailure(msg, _, _, code: Int) => build(msg, code)
+      case Failure(msg, _, _) => build(msg, 404)
+      case _ => build("Not Found", 404)
+    }
   }
+
 }
   

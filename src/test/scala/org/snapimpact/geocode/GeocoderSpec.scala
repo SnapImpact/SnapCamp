@@ -1,6 +1,6 @@
 package org.snapimpact.geocode
 
-import org.slf4j.LoggerFactory
+// import org.slf4j.LoggerFactory
 
 import org.specs._
 import org.specs.runner._
@@ -21,19 +21,13 @@ class GeocoderSpecTest extends Runner(new GeocoderSpec) with
         JUnit with Console
 
 class GeocoderSpec extends Specification {
-
-
-
   "Geocoder" should {
     "take a String and return a GeoLocation" in {
       val goog = "1600 Amphitheatre Parkway, Mountain View, CA"
       val gl = Geocoder(goog)
       val expectedLat = 37.422782
       val expectedLong = -122.085099
-      //
-      System.out.println( "* Expected lat=" + expectedLat + ", was=" + gl.get.latitude )
-      System.out.println( "* Expected long=" + expectedLong + ", was=" + gl.get.longitude )
-      //
+
       gl.get must haveClass[GeoLocation]
       gl.get.latitude must beCloseTo( expectedLat, 0.009999 )
       gl.get.longitude must beCloseTo( expectedLong, 0.009999 )
@@ -44,9 +38,7 @@ class GeocoderSpec extends Specification {
     "take empty String and return empty / None object" in {
       val fubar = ""
       val glFubar = Geocoder(fubar)
-      //
-      System.out.println( "* Expected val=None, was=" + glFubar )
-      //
+
       glFubar must_== Empty // beNone
     }
   }
@@ -60,10 +52,7 @@ class GeocoderSpec extends Specification {
       val gl = Geocoder(goog)
       val expectedLat = 40.015062
       val expectedLong = -105.260474
-      //
-      System.out.println( "* Expected lat=" + expectedLat + ", was=" + gl.get.latitude )
-      System.out.println( "* Expected long=" + expectedLong + ", was=" + gl.get.longitude )
-      //
+
       gl.get must haveClass[GeoLocation]
       gl.get.latitude must beCloseTo( expectedLat, 0.009999 )
       gl.get.longitude must beCloseTo( expectedLong, 0.009999 )
@@ -76,24 +65,20 @@ class GeocoderSpec extends Specification {
 
       val goog = "2525 Arapahoe Ave, Boulder, CO 80302"
       val goog2 = "200 Arapahoe Ave, Boulder, CO 80302"
-      val glFirst = Geocoder(goog).get
+      val glFirst = Geocoder(goog).open_!
       // the GeoLocation
-      val glSecond = Geocoder(goog2).get  // asInstanceOf[GeoLocation] 
+      val glSecond = Geocoder(goog2).open_!
       val trueValue = true
 
       // Try 5 miles
-      System.out.println( "* Expected val=" + trueValue + ", was=" + glFirst.withinMiles( 5, glSecond ) )
       glFirst.withinMiles( 5, glSecond ) must beTrue
 
       // Not within smaller radius
-      System.out.println( "* Expected val=" + !trueValue + ", was=" + glFirst.withinMiles( 0, glSecond ) )
       glFirst.withinMiles( 0, glSecond ) must beFalse
       //
-      System.out.println( "* Expected val=" + !trueValue + ", was=" + glFirst.withinMiles( 1, glSecond ) )
       glFirst.withinMiles( 1, glSecond ) must beFalse
 
       // Also compare in reverse, just to be sure
-      System.out.println( "* Expected val=" + trueValue + ", was=" + glSecond.withinMiles( 5,  glFirst ) )
       glSecond.withinMiles( 5, glFirst ) must beTrue
     }
   }
