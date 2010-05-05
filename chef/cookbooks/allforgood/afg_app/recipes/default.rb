@@ -12,6 +12,7 @@ end
 #delete the sample root directory if it exists
 directory "/usr/share/jetty/webapps/root" do
   action :delete
+  recursive true
   only_if "test -d /usr/share/jetty/webapps/root"
 end
 
