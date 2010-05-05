@@ -4,7 +4,7 @@ include_recipe "postgresql::server"
 #the lift app will actually be the one to create the DB/tables.
 
 #stop postgres
-service "postgres-8.3" do
+service "postgresql-8.3" do
   action :stop
 end
 
@@ -17,6 +17,6 @@ remote_file "pg_hba_conf" do
 end
 
 #and restart the service
-service "postgres-8.3" do
+service "postgresql-8.3" do
   action :start
 end
