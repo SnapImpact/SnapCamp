@@ -72,6 +72,9 @@ class APISpec extends ApiSubmitTester
       org.snapimpact.util.SkipHandler.pendingUntilFixed
                 {searchForHunger}
     }
+    "search for specific dates" in {
+      org.snapimpact.util.SkipHandler.pendingUntilFixed{searchForSpecificDates}
+    }
 
 
   }  //  "api" should
@@ -102,6 +105,10 @@ class V1SysSpec extends ApiSubmitTester
   "The API from the old V1 system" should
   {
     "search for hunger" in {searchForHunger}
+  }
+  "The API from the old V1 system" should
+  {
+    "search for specific dates" in {searchForSpecificDates}
   }
 }  // V1SysSpec
 
@@ -185,6 +192,25 @@ trait ApiSubmitTester extends Specification with TestKit
         item must notBe( null )
       }
    }
+
+  // Search by date - always assumes there are events bewteen now + 7 days and now + 8 days
+  def searchForSpecificDates = {
+    val fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+    val now = new DateTime
+    val plus7 = now.plusDays(7)
+    val plus14 = now.plusDays(14)
+
+    val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest",
+      "vol_startdate" -> fmt.print(plus7), "vol_enddate" -> fmt.print(plus14))
+
+    val count = 0;
+      ( ret.items.length > count ) must_== true
+
+    // Make sure they are not null
+      for( item <- ret.items ){
+        item must notBe( null )
+      }
+  }
 
 }  // trait ApiSubmitTester
 
