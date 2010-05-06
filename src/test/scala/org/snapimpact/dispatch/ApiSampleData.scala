@@ -28,7 +28,7 @@ import scala.xml.XML
 
 class ApiSampleDataTest extends Runner(new ApiSampleDataSpec) with JUnit with Console
 //
-class ApiSampleDataSpec extends ApiSubmitTester
+class ApiSampleDataSpec extends Specification with ApiSubmitTester with TestKit
 {
   def baseUrl = "http://localhost:8989"
   RunWebApp.start()
@@ -52,7 +52,6 @@ class ApiSampleDataSpec extends ApiSubmitTester
             val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "zx_NotThere_xz" )
             // no events will be returned on this criteria zx_NotThere_xz
             val count = 0;
-            System.out.println( "**** Expected val=" + count + ", was=" + ret.items.length )
             ( ret.items.length == count ) must_== true
         }
       }
@@ -63,7 +62,6 @@ class ApiSampleDataSpec extends ApiSubmitTester
             val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "MicroMentor" )
             // no events will be returned on this criteria zx_NotThere_xz
             val count = 1;
-            System.out.println( "**** Expected val=" + count + ", was=" + ret.items.length )
             ( ret.items.length == count ) must_== true
         }
       }
@@ -74,7 +72,6 @@ class ApiSampleDataSpec extends ApiSubmitTester
             val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "dodgeball" )
             // no events will be returned on this criteria zx_NotThere_xz
             val count = 1;
-            System.out.println( "**** Expected val=" + count + ", was=" + ret.items.length )
             ( ret.items.length == count ) must_== true
         }
       }
@@ -85,7 +82,6 @@ class ApiSampleDataSpec extends ApiSubmitTester
             val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "volunteer" )
             // no events will be returned on this criteria zx_NotThere_xz
             val count = 5;
-            System.out.println( "**** Expected val=" + count + ", was=" + ret.items.length )
             ( ret.items.length == count ) must_== true
         }
       }
@@ -96,7 +92,6 @@ class ApiSampleDataSpec extends ApiSubmitTester
           val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "Micro*", "vol_loc" -> "97232" )
           // no events will be returned on this criteria zx_NotThere_xz
           val count = 1;
-          System.out.println( "**** Expected val=" + count + ", was=" + ret.items.length )
           ( ret.items.length == count ) must_== true
       }
     }
@@ -107,7 +102,6 @@ class ApiSampleDataSpec extends ApiSubmitTester
           val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "Micro*", "vol_loc" -> "Portland,OR" )
           // no events will be returned on this criteria zx_NotThere_xz
           val count = 1;
-          System.out.println( "**** Expected val=" + count + ", was=" + ret.items.length )
           ( ret.items.length == count ) must_== true
       }
     }
@@ -118,7 +112,6 @@ class ApiSampleDataSpec extends ApiSubmitTester
           val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "MicroMentor", "vol_loc" -> "Portland,OR" )
           // no events will be returned on this criteria zx_NotThere_xz
           val count = 1;
-          System.out.println( "**** Expected val=" + count + ", was=" + ret.items.length )
           ( ret.items.length == count ) must_== true
       }
     }
@@ -130,7 +123,6 @@ class ApiSampleDataSpec extends ApiSubmitTester
           val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "In", "vol_loc" -> "CA" )
           // no events will be returned on this criteria zx_NotThere_xz
           val count = 2;
-          System.out.println( "**** Expected val=" + count + ", was=" + ret.items.length )
           ( ret.items.length == count ) must_== true
       }
     }
@@ -142,7 +134,6 @@ class ApiSampleDataSpec extends ApiSubmitTester
           val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "Hunger" )
           // no events will be returned on this criteria zx_NotThere_xz
           val count = 1;
-          System.out.println( "**** Expected val=" + count + ", was=" + ret.items.length )
           ( ret.items.length == count ) must_== true
       }
     }
@@ -153,7 +144,6 @@ class ApiSampleDataSpec extends ApiSubmitTester
           val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "community" )
           // no events will be returned on this criteria zx_NotThere_xz
           val count = 6;
-          System.out.println( "**** Expected val=" + count + ", was=" + ret.items.length )
           ( ret.items.length == count ) must_== true
       }
     }
