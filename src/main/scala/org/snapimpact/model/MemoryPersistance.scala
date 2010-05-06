@@ -67,16 +67,16 @@ private object MemoryGeoStore extends MemoryGeoStore
 
 private class MemoryGeoStore extends GeoStore {
   import scala.collection.immutable.{TreeMap, TreeSet}
-  private var locs: TreeMap[GUID, GeoLocation] = TreeMap()
+  private var locs: TreeMap[GUID, List[GeoLocation]] = TreeMap()
   private var nonLocSet: TreeSet[GUID] = TreeSet()
 
   /**
    * Assocate the GUID and a geo location
    */
-  def add(guid: GUID, location: GeoLocation): Unit = synchronized {
+  def add(guid: GUID, location: List[GeoLocation]): Unit = synchronized {
     remove(guid)
     locs += guid -> location
-    if (!location.hasLocation) {
+    if (location.find(!_.hasLocation).isDefined) {
       nonLocSet += guid
     }
   }
@@ -92,7 +92,8 @@ private class MemoryGeoStore extends GeoStore {
   /**
    * Update the location of a given GUID
    */
-  def update(guid: GUID, location: GeoLocation): Unit = add(guid, location)
+  def update(guid: GUID, location: List[GeoLocation]): Unit = 
+    add(guid, location)
 
   /**
    * Find a series of locations that are within a range of the
@@ -103,11 +104,18 @@ private class MemoryGeoStore extends GeoStore {
   def find(location: GeoLocation,
            radius: Double,
            first: Int,
-           max: Int): List[GUID] =
+           max: Int): List[(GUID, Double)] =
 	     {
 	       val set = synchronized{locs}
-	       set.view.filter{ case (_, loc) => loc.withinMiles(radius, location)}.
-	       drop(first).take(max).map(_._1).toList
+               
+               val view: List[(GUID, Double)] = 
+                 for {
+                   (guid, locs) <- set.toList
+                   loc <- locs
+                   distance <- loc.distanceFrom(location) if distance <= radius
+                 } yield guid -> distance
+
+               view.sortWith(_._2 < _._2).drop(first).take(max)
 	     }
 
   /**
@@ -209,7 +217,7 @@ private class MemoryLuceneStore extends SearchStore {
    import org.apache.lucene.analysis.standard.StandardAnalyzer;
    */
 
-  private lazy val idx = {
+  private val idx = {
     val rd = new RAMDirectory()
     val writer = new IndexWriter(rd, new StandardAnalyzer(Version.LUCENE_30),
                                  true, IndexWriter.MaxFieldLength.UNLIMITED)
@@ -220,6 +228,24 @@ private class MemoryLuceneStore extends SearchStore {
     rd
   }
 
+  private val writer = new IndexWriter(idx,
+                                       new StandardAnalyzer(Version.LUCENE_30),
+                                       false, IndexWriter.MaxFieldLength.UNLIMITED)
+
+  private var writeCnt = 0L
+
+  private def write[T](f: IndexWriter => T): T = synchronized {
+    val ret = f(writer)
+    writeCnt += 1
+    if (writeCnt % 1000L == 0) {
+      writer.optimize
+    }
+
+    writer.commit
+
+    ret
+  }
+
   /**
    * Assocate the GUID and an item.
    * @param guid the GUID to associate
@@ -228,6 +254,7 @@ private class MemoryLuceneStore extends SearchStore {
    */
   def add[T](guid: GUID, item: T)(implicit splitter: T => Seq[(String, Option[String])]): Unit = {
     val doc = new Document()
+
     doc.add(new Field("guid", guid.guid, Field.Store.YES, Field.Index.ANALYZED))
 
     splitter(item).foreach {
@@ -235,14 +262,7 @@ private class MemoryLuceneStore extends SearchStore {
 					      Field.Store.YES, Field.Index.ANALYZED))
     }
 
-    val writer = new IndexWriter(idx, new StandardAnalyzer(Version.LUCENE_30),
-                                 false, IndexWriter.MaxFieldLength.UNLIMITED)
-
-    writer.addDocument(doc)
-    writer.optimize
-    writer.commit
-    writer.close
-    
+    write(_.addDocument(doc))
   }
 
   /**

@@ -1,11 +1,13 @@
-package org.snapimpact.etl.model.dto
+package org.snapimpact
+package etl.model.dto
 
 import org.snapimpact.etl.model.DataModel
 import org.joda.time.DateTime
 import xml.Node
 import net.liftweb.util.Helpers
 import net.liftweb.common._
-import org.snapimpact.model._
+import model._
+import geocode._
 
 /**
  * Created by IntelliJ IDEA.
@@ -194,6 +196,25 @@ case class Location(
   longitude:Option[Double],
   directions:Option[String]
   ) {
+
+  def toGeoLocation: Box[GeoLocation] = 
+    (virtual, latitude, longitude) match {
+    case (Some(Yes), _, _) => Full(GeoLocation(0,0, false))
+    case (_, Some(lat), Some(long)) => Full(GeoLocation(long, lat, true))
+      
+      case _ => Geocoder(streetAddress1 ::
+                       streetAddress2 ::
+                       streetAddress3 ::
+                       city ::
+                       region ::
+                       postalCode ::
+                       country :: Nil)
+  }
+
+   private implicit def optStrListToStr(in: List[Option[String]]): String = {
+     in.flatMap(a => a).mkString(", ")
+   }
+
   def toLatLngString: String = {
     val latStr = this.latitude match {
       case Some(n) => n.toString
@@ -224,8 +245,7 @@ object Location {
       node % "country",
       node % "latitude",
       node % "longitude",
-      node % "directions"
-    )
+      node % "directions")
 }
 
 /**
@@ -279,8 +299,12 @@ object VolunteerOpportunity {
   in.skills.map(s => (s -> Some("skill"))).toList :::
   in.language.map(s => (s -> Some("language"))).toList
   
-  implicit def voToGeo(in: VolunteerOpportunity): GeoLocation =
-    null
+  implicit def voToGeo(in: VolunteerOpportunity): List[GeoLocation] = 
+    in.locations match {
+      case Nil => List(GeoLocation(0,0, false))
+      case xs => xs.flatMap(_.toGeoLocation)
+    }
+    
 
   implicit def voToTags(in: VolunteerOpportunity): List[Tag] =
     (in.audienceTags.map(Tag.apply) :::
@@ -299,7 +323,10 @@ object VolunteerOpportunity {
       rsvpCount = node % "rsvpCount",
       dateTimeDurations =
 	(node \ "dateTimeDurations").toList.map(DateTimeDuration.fromXML(_)),
-      locations = (node \ "locations").toList.map(Location.fromXML(_)),
+      locations = (node \ "locations").toList.flatMap(
+        x =>
+          (x \ "location").map(Location.fromXML(_))
+      ),
       paid = node % "paid",
       audienceTags = (node \ "audienceTags").toList.map(_.text),
       categoryTags = (node \ "categoryTags").toList.map(_.text),

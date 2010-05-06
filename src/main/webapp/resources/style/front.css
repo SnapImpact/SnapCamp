@@ -2,6 +2,9 @@ body {
 	background: #1155A0 url('../images/_s_header-bg-gradient.png') repeat-x scroll left top;
 	margin: 0;
 }
+img {
+	border: none;
+}
 
 /* Overall container */
 div.fixedWidthContent {
@@ -16,8 +19,11 @@ div.header {
 	position: relative;
 }
 div.header h1 {
-	display: inline-block;
+	float: left;
 	margin: 0 0 0 35px;
+}
+div.header h1 img {
+	display: block;
 }
 div.header span.login {
 	float: right;
@@ -36,6 +42,7 @@ div.header em {
 
 div.roundedCorners {
 	background: url('../images/body-bg-roundedCorners.png') no-repeat scroll center top;
+	clear: both;
 	height: 48px;	
 }
 
@@ -46,7 +53,7 @@ div.mainContent {
 	min-height: 894px;
 	position: relative;
 }
-div.mainContent p {
+div.mainContent p.afgPurpose {
 	font-size: 20px;
 	letter-spacing: 0.5px;
 	margin: 0;
@@ -64,11 +71,13 @@ div.columnContainer {
 }
 div.leftColumn {
 	float: left;
-	margin-left: 25px;
-	width: 400px;
+	margin: 30px 20px 0 35px;
+	width: 410px;
 }
 div.rightColumn {
 	float: right;
+	margin: 30px 35px 0 0;
+	width: 430px;
 }
 div.clearColumns {
 	clear: both;
@@ -82,29 +91,52 @@ div.searchBox {
 	height: 199px;
 }
 div.searchBox form {
-	padding: 18px 0 0 30px;
+	padding: 18px 0 0 25px;
 }
 div.searchBox form #q, #find {
 	border: none;
-	background: none;
+	background: none no-repeat scroll 0 0 transparent;
 }
 div.searchBox form #q {
 	font-size: 18pt;
-	margin-top: 3px;
+	margin: 12px -1px 0 0px;
+	padding: 2px 4px 3px 5px;
 	width: 258px;
+}
+div.searchBox form #q.faded {
+	color: #5ac2e7;
 }
 div.searchBox form #find {
 	background: url('../images/searchBox-fg-submit.png') no-repeat scroll left top;
 	height: 60px;
+	margin: 0;
+	padding: 0;
+	vertical-align: top;
 	width: 60px;
 }
 
 /* post/share/develop buttons */
+div.buttons {
+	margin: 30px 0 0 4px;
+}
 div.buttons a {
+	clear: both;
+	color: inherit;
+	display: inline-block;
+	margin: 10px 0;
 	text-decoration: none;
 }
-div.buttons a img {
-	border:none;
+div.buttons a img, div.buttons a div {
+	display: inline-block;
+	vertical-align: middle;
+}
+div.buttons a p {
+	line-height: 1;
+	margin: 3px 2px;
+	text-align: left;
+}
+div.buttons a p em {
+	font-size: 22px;
 }
 div.button{
 	float: left;
@@ -115,7 +147,7 @@ div.share, div.develop{
 	clear: left;
 }
 div.button span{
-	font-size: 1.5em;
+	font-size: 22px;
 }
 div.text{
 	float: left;
@@ -177,7 +209,8 @@ div.footer div.last li {
 }
 
 /* partners column */
-div.footer p { /* delete when you get parter logos */
+div.footer p { /* delete when you get partner logos */
+	margin: 0;
 	text-align: inherit;
 }
 div.footer div.column div.columnContainer {
@@ -191,6 +224,7 @@ div.footer div.column div.leftColumn {
 }
 div.footer div.column div.rightColumn {
 	float: left;
+	margin: 0;
 	text-align: left;
 	width: 47.8%;
 }

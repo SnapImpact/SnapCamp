@@ -41,7 +41,7 @@ object SkipHandler extends skipTodo
      // If it's pending advertise and throw SkippedException
      if (isPending){
         val reason = "~~~ Test marked pending was skipped, "
-        System.out.println( reason )
+       //System.out.println( reason )
         throw new SkippedException( reason )
      }
      else

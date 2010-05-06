@@ -53,3 +53,7 @@ test-output
 
 # properties files
 dpp.props
+
+# test data
+test_data
+all_test_data

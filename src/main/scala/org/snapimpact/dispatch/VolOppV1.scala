@@ -19,6 +19,9 @@ final case class Bool(value: Boolean) extends BoolOrString
 final case class Str(value: String) extends BoolOrString
 
 object VolOppV1 {
+  def apply(in: VolunteerOpportunity): List[VolOppV1] = MapToV1(in)
+
+
   def apply(
           startDate: String,
           minAge: String,
@@ -64,9 +67,9 @@ object VolOppV1 {
           endTime: Int
           ) = {
     new VolOppV1(
-      startDate,
-      minAge,
-      endDate,
+      Some(startDate),
+      Some(minAge),
+      Some(endDate),
       contactPhone,
       quality_score,
       detailUrl,
@@ -105,14 +108,13 @@ object VolOppV1 {
       url_short,
       addrname1,
       backfill_number,
-      endTime
-      )
+      endTime)
   }
 }
 class VolOppV1(
-        val startDate: String,
-        val minAge: String,
-        val endDate: String,
+        val startDate: Option[String] = None,
+        val minAge: Option[String] = None,
+        val endDate: Option[String] = None,
         val contactPhone: String,
         val quality_score: Double,
         val detailUrl: String,
@@ -151,8 +153,7 @@ class VolOppV1(
         val url_short: String,
         val addrname1: String,
         val backfill_number: Int,
-        val endTime: Int
-        ) {}
+        val endTime: Int)
 
 case class RetV1(
         lastBuildDate: String,
@@ -160,30 +161,20 @@ case class RetV1(
         language: String,
         href: String,
         description: String,
-        items: List[VolOppV1]
-        )
+        items: List[VolOppV1])
 
 /*
 FixMe Add in Organization lookup once ORganizationStore implemented, sort out addr1, impressions, pubDate,
 base_url,backfill_title,
  */
-object mapToV1 {
+object MapToV1 {
   def apply(in: VolunteerOpportunity): List[VolOppV1] = {
     val fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
     for (date <- in.dateTimeDurations; loc <- in.locations)
     yield new VolOppV1(
-      date.startDate match {
-        case Some(d) => fmt.print(d)
-        case None => ""
-      },
-      in.minimumAge match {
-        case Some(a) => a.toString
-        case None => ""
-      },
-      date.endDate match {
-        case Some(d) => fmt.print(d)
-        case None => ""
-      },
+      date.startDate.map(fmt.print),
+      in.minimumAge.map(_.toString),
+      date.endDate.map(fmt.print),
       in.contactInfo.contactPhone.getOrElse(""),
       0.0, // quality_score
       in.detailURL.getOrElse(""),
