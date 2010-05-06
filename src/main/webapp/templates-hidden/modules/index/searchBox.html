@@ -1,13 +1,12 @@
 <div class="searchBox">
 	<form method="get" action="/search">
-		<input type="text" id="q" class="faded" name="q" value="find"
-			onfocus="if (this.className == 'faded') { this.value = ''; this.className = ''; } else { this.select(); }"
-		onblur="if (! this.value) { this.value = 'find'; this.className = 'faded'; }"
+		<input type="text" id="q" class="faded" name="q" value="find" 
+			onfocus="if (this.className.indexOf('faded') >= 0) { this.value = ''; this.className = this.className.replace('faded',''); } else { this.select(); }"
+	    	onblur="if (! this.value) { this.value = 'find'; this.className += ' faded'; }"
 		/>
-		<input type="submit" id="find" name="find" value="&#8203;" />
+		<input type="submit" id="find" value="&#8203;" />
 		<!-- temporary addition until we figure out geolocation stuff -->
-			<br /><label for="lat">Lat</label><input id="lat" name="lat" />
-			<br /><label for="long">Long</label><input name="long" />
+		<br /><label for="loc">Location</label><input id="loc" name="loc" />
 		<!-- end temporary addition -->
 	</form>
 </div>

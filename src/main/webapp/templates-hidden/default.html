@@ -8,16 +8,19 @@
 <body>
 	<div class="fixedWidthContent">
 		<div class="header">
-			<h1><img src="/resources/images/header-fg-logo-afg.png" alt="All for Good (beta)" /></h1>
+			<h1><a href="/"><img src="/resources/images/header-fg-logo-afg.png" alt="All for Good (beta)" /></a></h1>
 			<span class="login"><a href="javascript:void(0);">sign in</a> with facebook, google, or <em><a href="javascript:void(0);">more</a></em></span>
+			<div style="clear:both;"></div>
 		</div>
-		<div class="roundedCorners"></div>
-		<div class="mainContent">
+		<div class="pageLayout">
+			<div class="roundedCornersTop"></div>
+			<div class="mainContent">
 
-			<lift:bind name="content" />
-
-			<lift:embed what="modules/default/defaultFooter" />
-
+				<lift:bind name="content" />
+			
+				<lift:embed what="modules/default/defaultFooter" />
+		
+			</div>	
 		</div><!--.mainContent-->
 	</div><!--.fixedWidthContent-->
     <script id="jquery" src="/classpath/jquery.js" />
