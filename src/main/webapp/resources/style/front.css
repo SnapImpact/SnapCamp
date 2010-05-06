@@ -124,7 +124,7 @@ div.searchBox form #q, #find {
 div.searchBox form #q {
 	font-size: 18pt;
 	margin: 12px -1px 0 0px;
-	padding: 2px 4px 3px 5px;
+	padding: 2px 4px 4px 5px;
 	width: 258px;
 }
 div.searchBox form #q.faded {
@@ -275,7 +275,7 @@ div.searchBoxSmall form #q, #find {
 div.searchBoxSmall form #q {
 	font-size: 18pt;
 	margin: 1px 0 4px 4px;
-	padding: 3px 5px 3px 6px;
+	padding: 3px 5px 4px 6px;
 	width: 258px;
 }
 div.searchBoxSmall form #q.faded {
