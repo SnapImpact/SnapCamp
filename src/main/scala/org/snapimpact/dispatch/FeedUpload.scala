@@ -36,7 +36,7 @@ import util.Helpers._
  */
 
 object FeedUpload {
-  def upload(r:Req): LiftResponse = 
+  def upload(r: Req): LiftResponse =
     for {
       key <- r.param("key") ?~ Api.missingKey ~> 401
       valKey <- Api.validateKey(key) ?~ ("Invalid key. " + Api.missingKey) ~> 401
@@ -44,9 +44,11 @@ object FeedUpload {
       info <- tryo(FootprintFeed.fromXML(xml)) ?~ "Couldn't ETL the XML"
     } yield {
       val store = PersistenceFactory.store.vend
-      info.opportunities.opps.foreach {store.add _}
+
+      info.opportunities.opps.foreach {a => store.add(a)}
       OkResponse()
     }
+
 
     private implicit def respToBox(in: Box[LiftResponse]): LiftResponse = {
     def build(msg: String, code: Int) = {

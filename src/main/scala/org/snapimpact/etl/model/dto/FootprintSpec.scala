@@ -245,8 +245,7 @@ object Location {
       node % "country",
       node % "latitude",
       node % "longitude",
-      node % "directions"
-    )
+      node % "directions")
 }
 
 /**
@@ -324,7 +323,10 @@ object VolunteerOpportunity {
       rsvpCount = node % "rsvpCount",
       dateTimeDurations =
 	(node \ "dateTimeDurations").toList.map(DateTimeDuration.fromXML(_)),
-      locations = (node \ "locations").toList.map(Location.fromXML(_)),
+      locations = (node \ "locations").toList.flatMap(
+        x =>
+          (x \ "location").map(Location.fromXML(_))
+      ),
       paid = node % "paid",
       audienceTags = (node \ "audienceTags").toList.map(_.text),
       categoryTags = (node \ "categoryTags").toList.map(_.text),

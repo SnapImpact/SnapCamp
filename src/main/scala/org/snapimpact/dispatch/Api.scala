@@ -17,6 +17,7 @@ final case object HtmlOutputType extends OutputType
 
 object Api {
   def volopps(r: Req): LiftResponse = {
+    try {
     for{
       key <- r.param("key") ?~ missingKey ~> 401
       valKey <- validateKey(key) ?~ ("Invalid key. " + missingKey) ~> 401
@@ -32,10 +33,20 @@ object Api {
       val res = store.read(store.search(q, loc = loc))
 
       r.param("output") match {
-        case Full("json") => JsonResponse(Extraction.decompose(res)) // sampleJson)
+        case Full("json") =>
+          JsonResponse(Extraction.decompose(RetV1("Sat, 01 May 2010 16:51:10 +0000",
+                                                1.0,
+                                                "English",
+                                                "http://dpp.im",
+                                                "All for Good search results",
+                                                res.flatMap(a => MapToV1(a._2)).toList)))
+
         case Full("rss") => XmlResponse(sampleRss, "application/rss+xml")
         case _ => XmlResponse(sampleHtml)
       }
+    }
+    } catch {
+      case e => e.printStackTrace ; System.exit(0); throw e
     }
   }
 
