@@ -4,9 +4,10 @@
 			onfocus="if (this.className.indexOf('faded') >= 0) { this.value = ''; this.className = this.className.replace('faded',''); } else { this.select(); }"
 	    	onblur="if (! this.value) { this.value = 'find'; this.className += ' faded'; }"
 		/>
-		<input type="submit" id="find" value="&#8203;" />
+		<input type="submit" id="find" name="find" value="&#8203;" />
 		<!-- temporary addition until we figure out geolocation stuff -->
-		<br /><label for="loc">Location</label><input id="loc" name="loc" />
+			<br /><label for="lat">Lat</label><input id="lat" name="lat" />
+			<br /><label for="long">Long</label><input name="long" />
 		<!-- end temporary addition -->
 	</form>
 </div>

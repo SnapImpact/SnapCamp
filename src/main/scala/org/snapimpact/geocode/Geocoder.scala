@@ -23,9 +23,18 @@ import org.snapimpact.model.GeoLocation
  * @param in String Takes the String and returns an Option[GeoLocation]
  */
 object Geocoder {
+  private val cache = new LRUMap[String, Box[GeoLocation]](2500)
+
   def apply(in: String): Box[GeoLocation] = {
-    val encoder = new Geocoder
-    encoder.getGeoLocation(in)
+    Empty
+    /*
+    synchronized{cache.get(in)} openOr {
+      val encoder = new Geocoder
+      val ret = encoder.getGeoLocation(in)
+      synchronized(cache(in) = ret)
+      ret
+    }
+    */
   }
 }
 class Geocoder extends TestKit {
@@ -56,25 +65,6 @@ class Geocoder extends TestKit {
       geoRet <- tryo(json.extract[GoogGeoRet]).filter(_.status == "OK")
       first <- geoRet.results.headOption
     } yield first.geometry.location
-
-/*
-    val ret = try {json.extract[GoogGeoRet]} catch {
-      case e: Exception => {
-        e.printStackTrace
-        new GoogGeoRet("", Nil)
-      }
-    }
-
-    ret.status match {
-      case "OK" => {
-        val first = ret.results.head
-        val loc = first.geometry.location
-
-        Some(loc)
-      }
-      case _ => None
-    }
-    */
   }
 }
 

@@ -217,7 +217,7 @@ private class MemoryLuceneStore extends SearchStore {
    import org.apache.lucene.analysis.standard.StandardAnalyzer;
    */
 
-  private lazy val idx = {
+  private val idx = {
     val rd = new RAMDirectory()
     val writer = new IndexWriter(rd, new StandardAnalyzer(Version.LUCENE_30),
                                  true, IndexWriter.MaxFieldLength.UNLIMITED)
@@ -228,6 +228,24 @@ private class MemoryLuceneStore extends SearchStore {
     rd
   }
 
+  private val writer = new IndexWriter(idx,
+                                       new StandardAnalyzer(Version.LUCENE_30),
+                                       false, IndexWriter.MaxFieldLength.UNLIMITED)
+
+  private var writeCnt = 0L
+
+  private def write[T](f: IndexWriter => T): T = synchronized {
+    val ret = f(writer)
+    writeCnt += 1
+    if (writeCnt % 1000L == 0) {
+      writer.optimize
+    }
+
+    writer.commit
+
+    ret
+  }
+
   /**
    * Assocate the GUID and an item.
    * @param guid the GUID to associate
@@ -236,6 +254,7 @@ private class MemoryLuceneStore extends SearchStore {
    */
   def add[T](guid: GUID, item: T)(implicit splitter: T => Seq[(String, Option[String])]): Unit = {
     val doc = new Document()
+
     doc.add(new Field("guid", guid.guid, Field.Store.YES, Field.Index.ANALYZED))
 
     splitter(item).foreach {
@@ -243,14 +262,7 @@ private class MemoryLuceneStore extends SearchStore {
 					      Field.Store.YES, Field.Index.ANALYZED))
     }
 
-    val writer = new IndexWriter(idx, new StandardAnalyzer(Version.LUCENE_30),
-                                 false, IndexWriter.MaxFieldLength.UNLIMITED)
-
-    writer.addDocument(doc)
-    writer.optimize
-    writer.commit
-    writer.close
-    
+    write(_.addDocument(doc))
   }
 
   /**

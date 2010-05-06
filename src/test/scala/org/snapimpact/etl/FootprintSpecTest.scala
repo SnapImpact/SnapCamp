@@ -347,7 +347,8 @@ class FootprintSpecs extends Specification
                       db.add(guid, item)
                       val memitem = db.find("hunger")
                       memitem must notBeNull
-                      memitem.head must beEqual(guid)
+
+                      memitem.find(_ == guid) must beEqual(Some(guid))
                     }
           }
 }

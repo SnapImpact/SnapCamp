@@ -33,8 +33,9 @@ trait Store {
     val guid = store.create(op)
     geo.add(guid, op)
     tag.add(guid, op)
+
     search.add(guid, op)
-    
+
     guid
   }
 
