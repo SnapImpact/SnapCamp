@@ -1,5 +1,86 @@
 <lift:surround with="default" at="content">
-  <h2>Search Results</h2>
+	<head>
+		<title>All for Good - Find and Share ways to do Good.</title>
+	</head>
+
+	<lift:embed what="modules/search/searchBoxSmall" />
+
+	<div class="columnContainerSearch">
+		<div class="leftColumn">
+			
+		
+		</div><!--.leftColumn-->
+		<div class="rightColumn">
+			
+			<!-- search results mock-up -->
+			<!-- Each result uses the following html template,
+			     with the exception of the last result on the page,
+				 which should be have the class "last" on the containing div,
+				 like <div class="searchResult last"> -->
+			<div class="searchResult">
+				<div class="resultLabel">A</div>
+				<div class="resultInfo">
+					<h3><a href="javascript:alert('developer needs to insert the URL to the volunteer opportunity');">This is the Title of the Event</a></h3>
+					<p class="whereWhen">[[City, ST] [zipcode] -] Month DD [- Month DD]</p>
+					<p class="what">
+						This is a paragraph that describes the event.  It is usually several
+						lines long.  If it's more than a few lines, then it should be trimmed
+						and fitted with a trailing ellipsis.  It might also be necessary to trim
+						the VolunteerOrganizationName below this paragraph. I don't really have 
+						anything else to say, but I need some more text so I can see what it 
+						looks like when...  
+					</p>
+					<p class="who">
+						[VolunteerOrganizationName] [<span class="via">via</span> DataProviderName] [- <span class="category">Category:</span> CategoryName(s)]
+					</p>
+				</div>
+			</div>
+			<!-- end search results mock-up -->
+			<div class="searchResult">
+				<div class="resultLabel">B</div>
+				<div class="resultInfo">
+					<h3><a href="javascript:alert('developer needs to insert the URL to the volunteer opportunity');">Non-Profit Management</a></h3>
+					<p class="whereWhen">Boulder, CO - Present - December 31</p>
+					<p class="what">
+						Summary The Non-Profit Management volunteer/intern works with the program staff 
+						at the Colorado School Mediation Project (CSMP) and is supervised by the Office 
+						Manager. The individual will provide support to the Director of Development and 
+						Executive Director through research, writing ...   
+					</p>
+					<p class="who">
+						School Mediation Center 
+						<span class="via">via</span> 
+						<a href="http://www.idealist.org">idealist.org</a> - 
+						<span class="category">Category:</span> Education, Technology
+					</p>
+				</div>
+			</div>
+			<div class="searchResult last">
+				<div class="resultLabel">C</div>
+				<div class="resultInfo">
+					<h3>
+						<a href="javascript:alert('developer needs to insert the URL to the volunteer opportunity');">
+							DART Victim Advocate
+						</a>
+					</h3>
+					<p class="whereWhen">Boulder, CO 80304 - May 5 - August 31</p>
+					<p class="what">
+						Victim Advocates provide emotional support to survivors and their children by 
+						responding immediately by phone or to the scene of the incident, after the police 
+						have stabilized the situation and the abuser is in custody. Victim Advocate are on 
+						primary call one weekend each month.   
+					</p>
+					<p class="who">
+						 Safehouse Progressive Alliance for Nonviolence 
+						 <span class="via">via</span> 
+						 <a href="http://www.volunteermatch.org">www.volunteermatch.org</a>
+					</p>
+				</div>
+			</div>
+		
+<p>=======================================================</p>	
+<h2>Search Results</h2>
+
   <p>
     <table>
       <tr>
@@ -22,4 +103,8 @@
       </lift:search>
     </table>
   </p>
+			
+		</div><!--.rightColumn-->
+		<div class="clearColumns"></div><!--.clearColumns-->
+	</div><!--.columnContainerSearch-->
 </lift:surround>
