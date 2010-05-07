@@ -75,6 +75,9 @@ class APISpec extends Specification with ApiSubmitTester with TestKit
     "search for specific dates" in {
       org.snapimpact.util.SkipHandler.pendingUntilFixed{searchForSpecificDates}
     }
+    "search for zip code" in {
+      org.snapimpact.util.SkipHandler.pendingUntilFixed{searchForZip}
+    }
 
 
   }  //  "api" should
@@ -110,6 +113,10 @@ class V1SysSpec extends Specification with TestKit with ApiSubmitTester
   "The API from the old V1 system" should
   {
     "search for specific dates" in {searchForSpecificDates}
+  }
+  "The API from the old V1 system" should
+  {
+    "search for zip code" in {searchForZip}
   }
 }  // V1SysSpec
 
@@ -203,6 +210,19 @@ trait ApiSubmitTester // extends  // with TestKit
       ( ret.items.length > count ) must_== true
 
     // Make sure they are not null
+      for( item <- ret.items ){
+        item must notBe( null )
+      }
+  }
+
+  // Search by zip code - always assumes there are events in 94117 (San Francisco)
+  def searchForZip = {
+    val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "vol_loc" -> "94117" )
+
+    val count = 0;
+      ( ret.items.length > count ) must_== true
+
+      // Make sure they are not null
       for( item <- ret.items ){
         item must notBe( null )
       }
