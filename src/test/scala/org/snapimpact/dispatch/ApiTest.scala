@@ -78,7 +78,9 @@ class APISpec extends Specification with ApiSubmitTester with TestKit
     "search for zip code" in {
       org.snapimpact.util.SkipHandler.pendingUntilFixed{searchForZip}
     }
-
+    "search for date then zip code" in {
+      org.snapimpact.util.SkipHandler.pendingUntilFixed{searchForDateThenZip}
+    }
 
   }  //  "api" should
 }   // ApiSpec
@@ -105,18 +107,14 @@ class V1SysSpec extends Specification with TestKit with ApiSubmitTester
   "The API from the old V1 system" should
   {
     "search for something not there" in {searchFor_zx_NotThere_xz }
-  }
-  "The API from the old V1 system" should
-  {
+
     "search for hunger" in {searchForHunger}
-  }
-  "The API from the old V1 system" should
-  {
+
     "search for specific dates" in {searchForSpecificDates}
-  }
-  "The API from the old V1 system" should
-  {
+
     "search for zip code" in {searchForZip}
+
+    "search for date then zip code" in {searchForDateThenZip}
   }
 }  // V1SysSpec
 
@@ -196,7 +194,7 @@ trait ApiSubmitTester // extends  // with TestKit
       }
    }
 
-  // Search by date - always assumes there are events bewteen now + 7 days and now + 8 days
+  // Search by date - always assumes there are events bewteen now + 7 days and now + 14 days
   def searchForSpecificDates = {
     val fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
     val now = new DateTime
@@ -223,6 +221,26 @@ trait ApiSubmitTester // extends  // with TestKit
       ( ret.items.length > count ) must_== true
 
       // Make sure they are not null
+      for( item <- ret.items ){
+        item must notBe( null )
+      }
+  }
+
+  // Search by date then zip code - always assumes there are events bewteen now + 7 days and now + 14 days
+  // near the zip 94117 (San Francisco)
+  def searchForDateThenZip = {
+    val fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+    val now = new DateTime
+    val plus7 = now.plusDays(7)
+    val plus14 = now.plusDays(14)
+
+    val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest",
+      "vol_startdate" -> fmt.print(plus7), "vol_enddate" -> fmt.print(plus14), "vol_loc" -> "94117")
+
+    val count = 0;
+      ( ret.items.length > count ) must_== true
+
+    // Make sure they are not null
       for( item <- ret.items ){
         item must notBe( null )
       }
