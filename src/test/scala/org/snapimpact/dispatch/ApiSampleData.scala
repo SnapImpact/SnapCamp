@@ -48,12 +48,11 @@ class ApiSampleDataSpec extends Specification with ApiSubmitTester with TestKit
 
       "not return events for something that is not available in the data " in
       {
-        org.snapimpact.util.SkipHandler.pendingUntilFixed{
             val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "zx_NotThere_xz" )
             // no events will be returned on this criteria zx_NotThere_xz
             val count = 0;
+            //System.out.println( "* Expected zx_NotThere_xz val=" + count + ", was=" + ret.items.length )
             ( ret.items.length == count ) must_== true
-        }
       }
 
       "return events from description MicroMentor " in
@@ -68,12 +67,11 @@ class ApiSampleDataSpec extends Specification with ApiSubmitTester with TestKit
 
       "return events from description dodgeball " in
       {
-        org.snapimpact.util.SkipHandler.pendingUntilFixed{
             val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "dodgeball" )
             // no events will be returned on this criteria zx_NotThere_xz
             val count = 1;
+            //System.out.println( "* Expected Dodgeball val=" + count + ", was=" + ret.items.length )
             ( ret.items.length == count ) must_== true
-        }
       }
 
       "return events from description volunteer" in
@@ -148,6 +146,21 @@ class ApiSampleDataSpec extends Specification with ApiSubmitTester with TestKit
       }
     }
 
+    // hunger cats
+    "return events for hunger category" in {
+      org.snapimpact.util.SkipHandler.pendingUntilFixed{
+          val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "category:Hunger" )
+
+          val count = 0;
+          //System.out.println( "* Expected Hunger val=" + count + ", was=" + ret.items.length )
+          ( ret.items.length > count ) must_== true
+
+          // Make sure they are not null
+          for( item <- ret.items ){
+            item must notBe( null )
+          }
+      }
+    }
 
 
     // Done
