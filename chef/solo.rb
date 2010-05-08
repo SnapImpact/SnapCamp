@@ -1,4 +1,4 @@
-file_cache_path "/tmp/chef-solo"
+file_cache_path "/tmp/bootstrap/chef"
 # cookbook_path should go from least to most specific
 # we consider the opscode recipes the most generic
 # common contains homemade recipes for common components (e.g. jetty)
