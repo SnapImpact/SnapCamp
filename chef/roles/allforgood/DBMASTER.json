@@ -1,9 +1,0 @@
-{
-  "name": "DBMASTER",
-  "default_attributes": { },
-  "override_attributes": { },
-  "json_class": "Chef::Role",
-  "description": "Our master postgres DB.",
-  "chef_type": "role",
-  "recipes": "postgresql::server"
-}

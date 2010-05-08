@@ -1,9 +1,0 @@
-{
-  "name": "APP",
-  "default_attributes": { },
-  "override_attributes": { },
-  "json_class": "Chef::Role",
-  "description": "Our basic Jetty app server.",
-  "chef_type": "role",
-  "recipes": "afg_app"
-}

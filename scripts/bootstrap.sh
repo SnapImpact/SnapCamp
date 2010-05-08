@@ -8,25 +8,23 @@ set -e -x
 ## STEP 0: Pull args
 while getopts :r: o
 do case "$o" in
-  r) ROLES="$OPTARG"
+  r) DNA="$OPTARG"
   esac
 done
 
-if [ -z "${ROLES}" ];
+if [ -f "${DNA}" ];
 then
-  echo "ERROR: No roles defined!"
+  echo "ERROR: DNA file not found!"
   exit 1
 fi
-
-#strip quotes out of roles
-ROLES=`echo ${ROLES} | sed "s/\"//g"`
 
 ## STEP 1: Setup Chef
 ./scripts/setup/chef.sh
 
 ## STEP 2: Run Chef for our roles (TODO: use chef server instead of solo)
-echo "Starting chef with roles: ${ROLES}"
-./chef/run-solo-roles.rb ${ROLES}
+echo "Starting chef with DNA:"
+cat ${DNA}
+chef-solo -c /tmp/bootstrap/chef/solo.rb -j ${DNA}
 
 
 
