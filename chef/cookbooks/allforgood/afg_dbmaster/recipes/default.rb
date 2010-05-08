@@ -24,9 +24,14 @@ service "postgresql-8.3" do
   action :stop
 end
 
-#and restart the service
+#and start the service
 service "postgresql-8.3" do
   action :start
+end
+
+# Not sure why, but postgres isn't picking up my changes until I restart..
+service "postgresql-8.3" do
+  action :restart
 end
 
 #create our jetty and ubuntu roles
