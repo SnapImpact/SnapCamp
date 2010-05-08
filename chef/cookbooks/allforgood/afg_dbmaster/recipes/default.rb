@@ -13,7 +13,7 @@ remote_file "trust_localhost_pg_hba_conf" do
 end
 
 #make sure postgresql.conf has the proper owner
-file "/etc/postgresql/8.3/main/postgres.conf" do
+file "/etc/postgresql/8.3/main/postgresql.conf" do
   owner "postgres"
   group "postgres"
   mode 0600
