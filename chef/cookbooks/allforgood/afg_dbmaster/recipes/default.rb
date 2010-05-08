@@ -18,7 +18,7 @@ end
 
 #and restart the service
 service "postgresql-8.3" do
-  action :start
+  action :restart
 end
 
 #create our jetty and ubuntu roles
