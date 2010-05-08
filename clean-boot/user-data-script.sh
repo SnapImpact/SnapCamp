@@ -10,14 +10,15 @@
 ## 2. point DNA's afg_web.war to your WAR file
 ##
 export BOOTSTRAP_TARBALL_URL="http://github.com/ryanschneider/afg-bootstrap/tarball/master"
-export DNA=<<JSON
+# MAKE SURE YOU USE SINGLE QUOTES WHEN EDITTING DNA
+export DNA="
 {
   recipes: [ 'afg_web', 'afg_app', 'afg_dbmaster' ],
   afg_web: {
-    war: "http://allforgood-bootstrap.s3.amazonaws.com/all_for_good-0.1-SNAPSHOT.war"
+    war: 'http://allforgood-bootstrap.s3.amazonaws.com/all_for_good-0.1-SNAPSHOT.war'
   }
 }
-JSON
+"
 ## NOTHING BELOW HERE SHOULD NEED EDITTING
 
 ## log all commands, and exit on any errors (to aid debugging)
