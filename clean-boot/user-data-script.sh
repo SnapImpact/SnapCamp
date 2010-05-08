@@ -13,8 +13,8 @@ export BOOTSTRAP_TARBALL_URL="http://github.com/ryanschneider/afg-bootstrap/tarb
 # MAKE SURE YOU USE DOUBLE QUOTES WHEN EDITTING DNA
 export DNA='
 {
-  recipes: [ "afg_web", "afg_app", "afg_dbmaster" ],
-  war: "http://allforgood-bootstrap.s3.amazonaws.com/all_for_good-0.1-SNAPSHOT.war"
+  "recipes": [ "afg_web", "afg_app", "afg_dbmaster" ],
+  "war": "http://allforgood-bootstrap.s3.amazonaws.com/all_for_good-0.1-SNAPSHOT.war"
 }
 '
 ## NOTHING BELOW HERE SHOULD NEED EDITTING
