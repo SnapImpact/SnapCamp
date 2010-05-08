@@ -12,7 +12,7 @@ do case "$o" in
   esac
 done
 
-if [ -f "${DNA}" ];
+if [ ! -f "${DNA}" ];
 then
   echo "ERROR: DNA file not found!"
   exit 1

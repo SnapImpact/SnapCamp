@@ -41,4 +41,4 @@ then
   mv */* .
 fi
 ## launch bootstrap script
-./scripts/bootstrap.sh -r ./tmp/bootstrap/dna.json
+./scripts/bootstrap.sh -r /tmp/bootstrap/dna.json
