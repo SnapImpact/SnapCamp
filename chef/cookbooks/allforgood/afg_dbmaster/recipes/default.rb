@@ -20,3 +20,12 @@ end
 service "postgresql-8.3" do
   action :start
 end
+
+#create our jetty and ubuntu roles
+bash do
+  user "root"
+  code <<-EOH
+    psql -h localhost -d postgres -U postgres -c "CREATE ROLE \"jetty\" LOGIN PASSWORD '';"
+    psql -h localhost -d postgres -U postgres -c "CREATE ROLE \"ubuntu\" LOGIN PASSWORD '';"
+  EOH
+end

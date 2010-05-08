@@ -7,18 +7,16 @@
 ## Edit the following:
 ##
 ## 1. point BOOTSTRAP_TARBALL_URL to your bootstrap tarball
-## 2. point DNA's afg_web.war to your WAR file
+## 2. point DNA's war variable to your WAR file
 ##
 export BOOTSTRAP_TARBALL_URL="http://github.com/ryanschneider/afg-bootstrap/tarball/master"
-# MAKE SURE YOU USE SINGLE QUOTES WHEN EDITTING DNA
-export DNA="
+# MAKE SURE YOU USE DOUBLE QUOTES WHEN EDITTING DNA
+export DNA='
 {
-  recipes: [ 'afg_web', 'afg_app', 'afg_dbmaster' ],
-  afg_web: {
-    war: 'http://allforgood-bootstrap.s3.amazonaws.com/all_for_good-0.1-SNAPSHOT.war'
-  }
+  recipes: [ "afg_web", "afg_app", "afg_dbmaster" ],
+  war: "http://allforgood-bootstrap.s3.amazonaws.com/all_for_good-0.1-SNAPSHOT.war"
 }
-"
+'
 ## NOTHING BELOW HERE SHOULD NEED EDITTING
 
 ## log all commands, and exit on any errors (to aid debugging)
