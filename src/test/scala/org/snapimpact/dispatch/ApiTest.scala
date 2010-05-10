@@ -66,7 +66,9 @@ class APISpec extends Specification with ApiSubmitTester with TestKit
     "search for something not there" in {
                 searchFor_zx_NotThere_xz
     }
-
+    "search for hunger" in {
+                searchForHunger
+    }
     "search for specific dates" in {
       org.snapimpact.util.SkipHandler.pendingUntilFixed{searchForSpecificDates}
     }
