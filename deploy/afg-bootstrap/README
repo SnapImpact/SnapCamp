@@ -1,0 +1,17 @@
+Scripts for bootstrapping AllForGood 2.0.
+
+Currently only supports the alestic AMIs with user-data script support.
+
+I'm using AMI ami-6743ae0e.
+
+Workflow:
+
+- Launch an instance of a alestic AMI with the user-data set to the contents
+  of ./clean-boot/alestic-allroles.sh.
+- The instance will boot, check /var/log/syslog for progress.
+- It will pull down my repo from github as a tarball (TODO: pull from S3).
+- It will run /tmp/bootstrap/scripts/bootstrap.sh
+- ..which will install chef and any other dependencies we have.
+- ..and then launch chef with the defines roles.
+
+
