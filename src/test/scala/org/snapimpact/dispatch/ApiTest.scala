@@ -27,7 +27,7 @@ import org.joda.time.format._
 // Tests against the local server
 class APITest extends Runner(new APISpec) with JUnit with Console
 
-class APISpec extends Specification with ApiSubmitTester with TestKit
+class APISpec extends Specification with ApiSubmitTester with RequestKit
 {
   def baseUrl = "http://localhost:8989"
   RunWebApp.start()
@@ -35,21 +35,24 @@ class APISpec extends Specification with ApiSubmitTester with TestKit
   "api" should {
 
     "Give a 401 without a key" in {
-      get("/api/volopps", "q" -> "hunger") match {
+      get("/api/volopps", "q" -> "hunger").map(_.code) must_== Full(401)
+      /*match {
         case r: HttpResponse =>
           r.code must_== 401
         case x =>
           true must_== false
-      }
+      }*/
     }
 
     "Give a 200 with a key" in {
-      get("/api/volopps", "key" -> "test", "q" -> "hunger") match {
+      get("/api/volopps", "key" -> "test", "q" -> "hunger").
+      map(_.code)  must_== Full(200)
+      /*match {
         case r: HttpResponse =>
           r.code must_== 200
         case x =>
           true must_== false
-      }
+      }*/
     }
 
 
@@ -91,7 +94,7 @@ class APISpec extends Specification with ApiSubmitTester with TestKit
 
 class V1SysTest extends Runner(new V1SysSpec) with JUnit with Console
 
-class V1SysSpec extends Specification with TestKit with ApiSubmitTester
+class V1SysSpec extends Specification with RequestKit with ApiSubmitTester
 {
   def baseUrl = "http://www.allforgood.org"
 
@@ -123,30 +126,24 @@ class V1SysSpec extends Specification with TestKit with ApiSubmitTester
 // Does the actual interaction with the webserver and includes the common tests
 trait ApiSubmitTester // extends  // with TestKit
 {
-  self: Specification with TestKit =>
+  self: Specification with RequestKit =>
 
     // Returns RetV1 object from volopps API search
-    def submitApiRequest( pars: (String, Any)*): RetV1 =
+    def submitApiRequest( pars: (String, Any)*): Box[RetV1] =
     {
-      get( "/api/volopps", pars :_* ) match {
-        case r: HttpResponse => {
-          implicit val formats = DefaultFormats
-          r.code must_== 200
-          val jString = new String(r.body, "UTF-8")
-          val json = parse(jString)
-          val ret = json.extract[RetV1]
-
-          ret
-        }
-        case ex => throw new FailureException("Something went wrong while interacting with the webserver," +  ex.toString() )
-      }
+      for {
+        answer <- get( "/api/volopps", pars :_* ) if answer.code == 200
+        val jString = new String(answer.body)
+        json <- tryo(parse(jString))
+        ret <- tryo(json.extract[RetV1])
+      } yield ret
     }
 
 
     // Test for root and props set
     def sharedFunctionality = {
 
-        val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "a" )
+        val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "a" ).open_!
 
         // Root of correct type
         ret must haveClass[RetV1]
@@ -169,21 +166,19 @@ trait ApiSubmitTester // extends  // with TestKit
 
    // Search for something not available in the database
    def searchFor_zx_NotThere_xz = {
-          val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "zx_NotThere_xz" )
-
-          // no events will be returned on this criteria zx_NotThere_xz
-          val count = 0;
-
-          ( ret.items.length == count ) must_== true
-
+     val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "zx_NotThere_xz" ).open_!
+     
+     val count = 0
+     
+     ret.items.length must_== count
   }
 
     // *** Note *** This test assumes that there are always hunger events available in the database
     def searchForHunger= {
-      val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "hunger" )
+      val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "hunger" ).open_!
 
-      val count = 0;
-      ( ret.items.length > count ) must_== true
+      val count = 0
+      ret.items.length must be > count
 
       // Make sure they are not null
       for( item <- ret.items ){
@@ -199,28 +194,28 @@ trait ApiSubmitTester // extends  // with TestKit
     val plus14 = now.plusDays(14)
 
     val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest",
-      "vol_startdate" -> fmt.print(plus7), "vol_enddate" -> fmt.print(plus14))
+      "vol_startdate" -> fmt.print(plus7), "vol_enddate" -> fmt.print(plus14)).open_!
 
-    val count = 0;
-      ( ret.items.length > count ) must_== true
-
+    val count = 0
+    ret.items.length must be > count
+    
     // Make sure they are not null
-      for( item <- ret.items ){
-        item must notBe( null )
-      }
+    for( item <- ret.items ){
+      item must notBe( null )
+    }
   }
 
   // Search by zip code - always assumes there are events in 94117 (San Francisco)
   def searchForZip = {
-    val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "vol_loc" -> "94117" )
+    val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "vol_loc" -> "94117" ).open_!
 
-    val count = 0;
-      ( ret.items.length > count ) must_== true
-
-      // Make sure they are not null
-      for( item <- ret.items ){
-        item must notBe( null )
-      }
+    val count = 0
+    ret.items.length must be > count
+    
+    // Make sure they are not null
+    for( item <- ret.items ){
+      item must notBe( null )
+    }
   }
 
   // Search by date then zip code - always assumes there are events bewteen now + 7 days and now + 14 days
@@ -232,15 +227,17 @@ trait ApiSubmitTester // extends  // with TestKit
     val plus14 = now.plusDays(14)
 
     val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest",
-      "vol_startdate" -> fmt.print(plus7), "vol_enddate" -> fmt.print(plus14), "vol_loc" -> "94117")
-
-    val count = 0;
-      ( ret.items.length > count ) must_== true
-
+                               "vol_startdate" -> fmt.print(plus7), 
+                               "vol_enddate" -> fmt.print(plus14),
+                               "vol_loc" -> "94117").open_!
+    
+    val count = 0
+    ret.items.length must be > count
+    
     // Make sure they are not null
-      for( item <- ret.items ){
-        item must notBe( null )
-      }
+    for( item <- ret.items ){
+      item must notBe( null )
+    }
   }
 
 }  // trait ApiSubmitTester
@@ -301,7 +298,7 @@ object RunWebApp {
   }
 }
 
-object Uploader extends TestKit {
+object Uploader extends RequestKit {
   import java.io.{File => JFile, ByteArrayInputStream}
   import scala.xml.XML
 

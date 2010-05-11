@@ -28,7 +28,7 @@ import scala.xml.XML
 
 class ApiSampleDataTest extends Runner(new ApiSampleDataSpec) with JUnit with Console
 //
-class ApiSampleDataSpec extends Specification with ApiSubmitTester with TestKit
+class ApiSampleDataSpec extends Specification with ApiSubmitTester with RequestKit
 {
   def baseUrl = "http://localhost:8989"
   RunWebApp.start()
@@ -38,11 +38,12 @@ class ApiSampleDataSpec extends Specification with ApiSubmitTester with TestKit
 
     // Upload the sample file, that holds the test data
     "Accept valid xml upload" in {
-       post("/api/upload?key=somekey", XML.loadFile("src/test/resources/sampleData0.1.r1254.xml")) match {
+       post("/api/upload?key=somekey", XML.loadFile("src/test/resources/sampleData0.1.r1254.xml")).map(_.code) must_== Full(200)
+      /*match {
          case r: HttpResponse =>
            r.code must_== 200
          case x => x must fail
-       }
+       }*/
      }
 
 

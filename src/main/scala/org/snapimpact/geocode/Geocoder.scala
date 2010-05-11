@@ -37,14 +37,14 @@ object Geocoder {
     */
   }
 }
-class Geocoder extends TestKit {
+class Geocoder extends RequestKit {
   def baseUrl = "http://maps.google.com"
 
   protected def getString(url: String, params: (String, Any)*): Box[String] =
-    get(url, params :_*) match {
-      case hr: HttpResponse if hr.code == 200 => tryo(new String(hr.body, "UTF-8"))
-      case r => None
-    }
+    for {
+      resp <- get(url, params :_*).filter(_.code == 200) ?~ "Didn't get a 200"
+      answer <- tryo(new String(resp.body, "UTF-8"))
+    } yield answer
 
   private def getGeoLocation(in: String): Box[GeoLocation] = {
     val encodedString = urlEncode(in.trim)

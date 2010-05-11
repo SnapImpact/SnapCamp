@@ -47,7 +47,7 @@ object ProcessSearch {
 
 }
 
-/*object ProcessSearch extends TestKit {
+/*object ProcessSearch extends RequestKit {
   def baseUrl = "http://www.allforgood.org"
 
   def render(in: NodeSeq): NodeSeq = 
