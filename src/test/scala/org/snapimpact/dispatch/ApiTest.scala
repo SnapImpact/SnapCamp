@@ -128,15 +128,37 @@ trait ApiSubmitTester // extends  // with TestKit
 {
   self: Specification with RequestKit =>
 
+    implicit def formats = DefaultFormats
+
+
     // Returns RetV1 object from volopps API search
     def submitApiRequest( pars: (String, Any)*): Box[RetV1] =
     {
       for {
-        answer <- get( "/api/volopps", pars :_* ) if answer.code == 200
+        answer <- get( "/api/volopps", pars :_* ).filter(_.code == 200)
         val jString = new String(answer.body)
         json <- tryo(parse(jString))
         ret <- tryo(json.extract[RetV1])
       } yield ret
+    }
+
+
+    def dateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
+
+    def now = new DateTime
+
+    def later(days: Int):String = dateFormatter.print(now.plusDays(days))
+
+    def testParams(p: (String, Any)*)(countTest: Int => Unit) {
+      submitApiRequest("output" -> "json" :: 
+                      "key" -> "UnitTest" :: p.toList :_*) match {
+        case Full(ret) => {
+          countTest(ret.items.length)
+          for( item <- ret.items ) item must notBe( null )
+        }
+
+        case x => fail(x.toString)
+      }
     }
 
 

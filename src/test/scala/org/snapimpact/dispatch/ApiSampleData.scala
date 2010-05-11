@@ -25,6 +25,7 @@ import org.joda.time._
 import org.joda.time.format._
 import scala.xml.XML
 
+import org.snapimpact.util._
 
 class ApiSampleDataTest extends Runner(new ApiSampleDataSpec) with JUnit with Console
 //
@@ -35,138 +36,106 @@ class ApiSampleDataSpec extends Specification with ApiSubmitTester with RequestK
 
   "Sample loaded api" should
   {
-
+    
     // Upload the sample file, that holds the test data
     "Accept valid xml upload" in {
-       post("/api/upload?key=somekey", XML.loadFile("src/test/resources/sampleData0.1.r1254.xml")).map(_.code) must_== Full(200)
-      /*match {
-         case r: HttpResponse =>
-           r.code must_== 200
-         case x => x must fail
-       }*/
-     }
-
-
-      "not return events for something that is not available in the data " in
-      {
-            val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "zx_NotThere_xz" )
-            // no events will be returned on this criteria zx_NotThere_xz
-            val count = 0;
-            //System.out.println( "* Expected zx_NotThere_xz val=" + count + ", was=" + ret.items.length )
-            ( ret.items.length == count ) must_== true
+      post("/api/upload?key=somekey", XML.loadFile("src/test/resources/sampleData0.1.r1254.xml")).map(_.code) must_== Full(200)
+    }
+    
+    
+    "not return events for something that is not available in the data " in
+    {
+      testParams("q" -> "zx_NotThere_xz" ) {
+        _ must_== 0
       }
+    }
 
-      "return events from description MicroMentor " in
-      {
-        org.snapimpact.util.SkipHandler.pendingUntilFixed{
-            val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "MicroMentor" )
-            // no events will be returned on this criteria zx_NotThere_xz
-            val count = 1;
-            ( ret.items.length == count ) must_== true
+    "return events from description MicroMentor " in {
+      SkipHandler.pendingUntilFixed{
+        testParams("q" -> "MicroMentor" ) {
+          _ must be >= 1
         }
       }
+    }
 
-      "return events from description dodgeball " in
-      {
-            val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "dodgeball" )
-            // no events will be returned on this criteria zx_NotThere_xz
-            val count = 1;
-            //System.out.println( "* Expected Dodgeball val=" + count + ", was=" + ret.items.length )
-            ( ret.items.length == count ) must_== true
+    "return events from description dodgeball " in
+    {
+      testParams("q" -> "dodgeball" ) {
+        _ must be >= 1
       }
+    }
 
-      "return events from description volunteer" in
-      {
-        org.snapimpact.util.SkipHandler.pendingUntilFixed{
-            val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "volunteer" )
-            // no events will be returned on this criteria zx_NotThere_xz
-            val count = 5;
-            ( ret.items.length == count ) must_== true
+    "return events from description volunteer" in
+    {
+      SkipHandler.pendingUntilFixed{
+        testParams("q" -> "volunteer" ) {
+          _ must be >= 5
         }
       }
+    }
 
     "return events from locaiton 97232 and Micro*" in
     {
-      org.snapimpact.util.SkipHandler.pendingUntilFixed{
-          val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "Micro*", "vol_loc" -> "97232" )
-          // no events will be returned on this criteria zx_NotThere_xz
-          val count = 1;
-          ( ret.items.length == count ) must_== true
+      SkipHandler.pendingUntilFixed{
+        testParams("q" -> "Micro*", "vol_loc" -> "97232" ) {
+          _ must be >= 1
+        }
       }
     }
 
     "return events from locaiton Portland,OR and Micro*" in
     {
-      org.snapimpact.util.SkipHandler.pendingUntilFixed{
-          val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "Micro*", "vol_loc" -> "Portland,OR" )
-          // no events will be returned on this criteria zx_NotThere_xz
-          val count = 1;
-          ( ret.items.length == count ) must_== true
+      SkipHandler.pendingUntilFixed{
+        testParams("q" -> "Micro*", "vol_loc" -> "Portland,OR" ) {
+          _ must be >= 1
+        }
       }
     }
 
     "return events from locaiton Portland,OR and MicroMentor" in
     {
-      org.snapimpact.util.SkipHandler.pendingUntilFixed{
-          val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "MicroMentor", "vol_loc" -> "Portland,OR" )
-          // no events will be returned on this criteria zx_NotThere_xz
-          val count = 1;
-          ( ret.items.length == count ) must_== true
+      SkipHandler.pendingUntilFixed{
+        testParams("q" -> "MicroMentor", "vol_loc" -> "Portland,OR" ) {
+          _ must be >= 1
+        }
       }
     }
-
 
     "return events from locaiton CA and In" in
     {
-      org.snapimpact.util.SkipHandler.pendingUntilFixed{
-          val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "In", "vol_loc" -> "CA" )
-          // no events will be returned on this criteria zx_NotThere_xz
-          val count = 2;
-          ( ret.items.length == count ) must_== true
+      SkipHandler.pendingUntilFixed{
+        testParams("q" -> "In", "vol_loc" -> "CA" ) {
+          _ must be >= 2
+        }
       }
     }
 
-
     "return events from Hunger category" in
     {
-      org.snapimpact.util.SkipHandler.pendingUntilFixed{
-          val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "Hunger" )
-          // no events will be returned on this criteria zx_NotThere_xz
-          val count = 1;
-          ( ret.items.length == count ) must_== true
+      SkipHandler.pendingUntilFixed{
+        testParams("q" -> "Hunger" ) {
+          _ must be >= 1
+        }
       }
     }
 
     "return events from community category and descriptions" in
     {
-      org.snapimpact.util.SkipHandler.pendingUntilFixed{
-          val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "community" )
-          // no events will be returned on this criteria zx_NotThere_xz
-          val count = 6;
-          ( ret.items.length == count ) must_== true
+      SkipHandler.pendingUntilFixed{
+        testParams("q" -> "community" ) {
+          _ must be >= 6
+        }
       }
     }
 
     // hunger cats
     "return events for hunger category" in {
-      org.snapimpact.util.SkipHandler.pendingUntilFixed{
-          val ret = submitApiRequest( "output" -> "json", "key" -> "UnitTest", "q" -> "category:Hunger" )
-
-          val count = 0;
-          //System.out.println( "* Expected Hunger val=" + count + ", was=" + ret.items.length )
-          ( ret.items.length > count ) must_== true
-
-          // Make sure they are not null
-          for( item <- ret.items ){
-            item must notBe( null )
-          }
+      SkipHandler.pendingUntilFixed{
+        testParams("q" -> "category:Hunger" ) {
+          _ must be > 0
+        }
       }
     }
-
-
-    // Done
-    //RunWebApp.stop()
-
   }  //  "api" should
 
 }   // ApiSampleDataSpec
