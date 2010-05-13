@@ -51,6 +51,7 @@ object Geocoder {
 
 
   def apply(in: String): Box[GeoLocation] = {
+    val all = 
     synchronized{
       val key = md5(in)
       cache.get(key) openOr {
@@ -72,6 +73,10 @@ object Geocoder {
         ret
       }
     }
+
+    if (in.toLowerCase == "ca") println("Hey... loc for CA is "+all)
+
+    all
   }
 }
 

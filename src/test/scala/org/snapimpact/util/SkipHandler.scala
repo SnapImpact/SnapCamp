@@ -1,4 +1,5 @@
-package org.snapimpact.util
+package org.snapimpact
+package util
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,6 +21,7 @@ trait skipTodo
 // skipHandler handles pending tests, implements skipTodo
 object SkipHandler extends skipTodo
 {
+  def apply(theTest: => Unit) = pendingUntilFixed(theTest)
 
   // Skips tests that are wrapped with the pendingUntilFixed function
   // and fails test that succeed even when wrapped with pendingUntilFixed

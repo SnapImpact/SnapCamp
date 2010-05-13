@@ -170,8 +170,11 @@ base_url,backfill_title,
 object MapToV1 {
   def apply(in: VolunteerOpportunity): List[VolOppV1] = {
     val fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-    for (date <- in.dateTimeDurations; loc <- in.locations)
-    yield new VolOppV1(
+
+    for {
+      date <- in.dateTimeDurations
+      loc <- in.locations
+    }  yield new VolOppV1(
       date.startDate.map(fmt.print),
       in.minimumAge.map(_.toString),
       date.endDate.map(fmt.print),
@@ -228,8 +231,7 @@ object MapToV1 {
       date.endTime match {
         case Some(t) => t.time.toInt
         case None => 0
-      }
-      )
+      })
   }
 }
 

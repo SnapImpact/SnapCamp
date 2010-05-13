@@ -33,20 +33,20 @@ class SearchStoreSpec extends Specification {
     "Support storing and searching" in {
       searchStore.add(guid1, "I like to eat fruit")
       
-      searchStore.find("eat") must_== List(guid1)
+      searchStore.find("eat").map(_._1) must_== List(guid1)
     }
 
     "Searching works with a second record" in {
       searchStore.add(guid1, "I like to eat fruit")
       searchStore.add(guid2, "Moose are my favorite fruit")
       
-      searchStore.find("eat").take(1) must_== List(guid1)
+      searchStore.find("eat").take(1).map(_._1) must_== List(guid1)
       searchStore.find("fruit").length must_== 2
     }
 
 
     "You can search for a VolOpp" in {
-      val item = VolunteerOpportunity.fromXML(FootprintRawData.subject)
+      val item = VolunteerOpportunity.fromXML(Map(), FootprintRawData.subject)
       
       val guid = opStore.create(item)
 

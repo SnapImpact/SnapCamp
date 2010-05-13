@@ -21,16 +21,28 @@ object Api {
     for{
       key <- r.param("key") ?~ missingKey ~> 401
       valKey <- validateKey(key) ?~ ("Invalid key. " + missingKey) ~> 401
-      q <- r.param("q").map(_.trim).filter(_.length > 0) ?~ "Missing query"
     } yield {
       val loc: Option[GeoLocation] = 
         for {
-          l <- r.param("loc").map(_.trim).filter(_.length > 0)
+          l <- r.param("vol_loc").map(_.trim).filter(_.length > 0)
           geo <- Geocoder(l)
         } yield geo
 
+      val start = r.param("start").flatMap(Helpers.asInt).filter(_ > 0) openOr 1
+
+      val num = r.param("num").flatMap(Helpers.asInt).filter(_ > 0) openOr 10
+
+      val radius = r.param("vol_dist").flatMap(Helpers.asInt).filter(_ > 0).
+      openOr(50)
+
       val store = PersistenceFactory.store.vend
-      val res = store.read(store.search(q, loc = loc))
+      val res = store.read(store.search(query = r.param("q").map(_.trim).
+                                        filter(_.length > 0),
+                                        loc = loc,
+                                        start = start - 1,
+                                        num = num,
+                                        radius = radius
+                                      ))
 
       r.param("output") match {
         case Full("json") =>

@@ -40,8 +40,9 @@ private class MemoryOpportunityStore extends OpportunityStore {
   /**
    * Read a set of GUIDs from the backing store
    */
-  def read(guids: List[GUID]): List[(GUID, VolunteerOpportunity)] = synchronized {
-    guids.flatMap(g => data.get(g).map(f => (g, f)))
+  def read(guids: List[(GUID, Double)]): 
+  List[(GUID, VolunteerOpportunity, Double)] = synchronized {
+    guids.flatMap{ case (g, rank) => data.get(g).map(f => (g, f, rank))}
   }
 
   /**
@@ -228,11 +229,13 @@ private class MemoryLuceneStore extends SearchStore {
     rd
   }
 
-  private val writer = new IndexWriter(idx,
-                                       new StandardAnalyzer(Version.LUCENE_30),
-                                       false, IndexWriter.MaxFieldLength.UNLIMITED)
-
+  private lazy val writer = new IndexWriter(idx,
+                                            new StandardAnalyzer(Version.LUCENE_30),
+                                            false, IndexWriter.MaxFieldLength.UNLIMITED)
+  
   private var writeCnt = 0L
+
+
 
   private def write[T](f: IndexWriter => T): T = synchronized {
     val ret = f(writer)
@@ -290,29 +293,33 @@ private class MemoryLuceneStore extends SearchStore {
    */
   def find(search: String,
            first: Int = 0, max: Int = 200,
-           inSet: Option[Seq[GUID]] = None): List[GUID]
+           inSet: Option[Seq[GUID]] = None): List[(GUID, Double)]
   = {
-    val q = new QueryParser(Version.LUCENE_CURRENT, "body",
-			  new StandardAnalyzer(Version.LUCENE_30)).
-    parse(search)
-
-    val searcher = new IndexSearcher(idx, true)
-    
     try {
+      val qp = new QueryParser(Version.LUCENE_CURRENT, "body",
+			       new StandardAnalyzer(Version.LUCENE_30))
+
+      qp.setAllowLeadingWildcard(true)
+      val q = qp.parse(search)
+      
       val collector = TopScoreDocCollector.create(max + first, true)
+      
+      val searcher = new IndexSearcher(idx, true)
       
       searcher.search(q, collector)
       
       val hits = collector.topDocs().scoreDocs.drop(first)
 
-      for {
+      val ret = for {
 	h <- hits.toList
 	doc <- Box !! searcher.doc(h.doc, new MapFieldSelector("guid"))
 	guid <- Box !! doc.getField("guid")
 	value <- Box !! guid.stringValue
-      } yield GUID(value)
-    } finally {
-      searcher.close()
+      } yield GUID(value) -> h.score.toDouble
+
+      ret
+    } catch {
+      case pe: org.apache.lucene.queryParser.ParseException => Nil
     }
   }
 }

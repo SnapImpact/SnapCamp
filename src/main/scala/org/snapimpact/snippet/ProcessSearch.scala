@@ -26,10 +26,10 @@ object ProcessSearch {
         } yield geo
 
       val store = PersistenceFactory.store.vend
-      store.read(store.search(q, loc = loc)) match {
+      store.read(store.search(Full(q), loc = loc)) match {
         case Nil => Text("No results")
         case xs => xs.flatMap{
-          case (guid, vo) => bind("results", in,
+          case (guid, vo, _) => bind("results", in,
                                   "title" -> vo.title,
                                   "description" -> 
                                   (vo.description getOrElse "N/A"))

@@ -20,14 +20,11 @@ class GeoStoreSpec extends Specification {
       val geoLoc1 = GeoLocation(45.0,1.0)
       val geoLoc2 = GeoLocation(46.0,2.0)
       val geoLoc3 = GeoLocation(47.0,3.0)
-      geoStore.add( guid, geoLoc1)
-      geoStore.add( guid, geoLoc2)
-      geoStore.add( guid, geoLoc3)
+      geoStore.add( guid, geoLoc1 :: geoLoc2 :: geoLoc3 :: Nil)
       
-      /* FIXME -- re-enable geocode test
-      geoStore.find( geoLoc1, 2.0,1,50).
-      filter(_ == geoLoc2) must_== List(geoLoc2)
-      */
+      val found = geoStore.find( geoLoc1, 2.0, 0, 50)
+
+      found.map(_._1).filter(_ == guid) must_== List(guid)
     }
   }
 }

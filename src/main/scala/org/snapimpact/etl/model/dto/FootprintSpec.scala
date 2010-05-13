@@ -59,9 +59,9 @@ object ParseHelper {
   implicit def cvtLocation: Node => Option[Location] =
     n => Some(Location.fromXML(n))
 
-  implicit def cvtVolOp: Node => Option[VolunteerOpportunities] =
-    n => Some(VolunteerOpportunities.fromXML(n))
-
+  implicit def cvtVolOp(implicit orgMap: Map[String, Organization]): Node => Option[VolunteerOpportunities] =
+    n => Some(VolunteerOpportunities.fromXML(orgMap, n))
+  
   implicit def cvtFeedInfo: Node => Option[FeedInfo] =
     n => Some(FeedInfo.fromXML(n))
 
@@ -93,12 +93,20 @@ object FootprintFeed {
   def fromXML(node: scala.xml.Node) =
     if (node \ "@schemaVersion" != "0.1")
       throw new RuntimeException("""missing required attribute schemaVersion="0.1" in FootprintFeed""")
-    else FootprintFeed(
-      node %% "FeedInfo",
-      node % "Organizations",
-      node %% "VolunteerOpportunities",
-      node % "Reviews"
-    )
+    else {
+      val orgs: Option[Organizations] = node % "Organizations"
+      
+      implicit val orgMap = Map((for {
+        orgList <- orgs.toList
+        org <- orgList.orgs
+      } yield org.organizationID -> org) :_*)
+
+      FootprintFeed(
+        node %% "FeedInfo",
+        orgs,
+        node %% "VolunteerOpportunities",
+        node % "Reviews")
+    }
 }
 
 case class Organizations(
@@ -113,8 +121,8 @@ object Organizations {
 case class VolunteerOpportunities(opps: List[VolunteerOpportunity]) extends DataModel
 
 object VolunteerOpportunities {
-  def fromXML(node: scala.xml.Node) =
-    VolunteerOpportunities((node \ "VolunteerOpportunity").toList.map(VolunteerOpportunity.fromXML(_)))
+  def fromXML(orgMap: Map[String, Organization], node: scala.xml.Node) =
+    VolunteerOpportunities((node \ "VolunteerOpportunity").toList.map(VolunteerOpportunity.fromXML(orgMap, _)))
 }
 
 case class Reviews(
@@ -256,6 +264,7 @@ case class VolunteerOpportunity(
   volunteerOpportunityID:String,
   sponsoringOrganizationIDs:List[String/*sponsoringOrganizationID*/],
   volunteerHubOrganizationIDs:List[String/*volunteerHubOrganizationID*/],
+  organizations: List[Organization],
   title:String,
   abstractStr:Option[String], /* * is abstract in schema ** */
   volunteersNeeded:Option[Int],
@@ -290,14 +299,16 @@ object ContactInfo {
 
 object VolunteerOpportunity {
   implicit def voToSearch(in: VolunteerOpportunity):
-  Seq[(String, Option[String])] =
-    (in.title -> Some("title")) ::
+  Seq[(String, Option[String])] = {
+    (in.title -> None) ::
+    in.organizations.map(_.name -> None) :::
     in.description.map(d => (d -> None)).toList :::
-  in.abstractStr.map(d => (d -> Some("abstract"))).toList :::
-  in.audienceTags.map(t => (t -> Some("tag"))) :::
-  in.categoryTags.map(t => (t -> Some("tag"))) :::
-  in.skills.map(s => (s -> Some("skill"))).toList :::
-  in.language.map(s => (s -> Some("language"))).toList
+    in.abstractStr.map(d => (d -> Some("abstract"))).toList :::
+    in.audienceTags.map(t => (t -> Some("audience"))) :::
+    in.categoryTags.map(t => (t -> Some("category"))) :::
+    in.skills.map(s => (s -> Some("skill"))).toList :::
+    in.language.map(s => (s -> Some("language"))).toList
+  }
   
   implicit def voToGeo(in: VolunteerOpportunity): List[GeoLocation] = 
     in.locations match {
@@ -310,13 +321,22 @@ object VolunteerOpportunity {
     (in.audienceTags.map(Tag.apply) :::
      in.categoryTags.map(Tag.apply)).removeDuplicates
 
-  def fromXML(node: scala.xml.Node) = {
+  def fromXML(orgMap: Map[String, Organization], 
+              node: scala.xml.Node) = {
+    
+    val sponsors =
+      (node \ "sponsoringOrganizationIDs").toList.map(_.text.trim)
+
+    val hubs = 
+      (node \ "volunteerHubOrganizationIDs").toList.map(_.text)
+
+    val orgs = (sponsors ::: hubs).flatMap(orgMap.get)
+
     new VolunteerOpportunity(
     volunteerOpportunityID = (node \ "volunteerOpportunityID").text,
-    sponsoringOrganizationIDs =
-      (node \ "sponsoringOrganizationIDs").toList.map(_.text.trim),
-      volunteerHubOrganizationIDs =
-	(node \ "volunteerHubOrganizationIDs").toList.map(_.text),
+    sponsoringOrganizationIDs = sponsors,
+      volunteerHubOrganizationIDs = hubs,
+      organizations = orgs,
       title = (node \ "title").text,
       abstractStr = node % "abstractStr",
       volunteersNeeded = node % "volunteersNeeded",

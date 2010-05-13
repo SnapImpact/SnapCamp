@@ -4,6 +4,7 @@ package model
 import org.snapimpact.etl.model.dto._
 
 import net.liftweb.util._
+import net.liftweb.common._
 import net.liftweb.http._
 import geocode.Earth
 
@@ -39,22 +40,80 @@ trait Store {
     guid
   }
 
-  def search(query: String,
+  def search(query: Option[String] = None,
              start: Int = 0,
              num: Int = 100,
              provider: Option[String] = None,
              timeperiod: Option[Timeperiod.Value] = None,
-             loc: Option[GeoLocation] = None, radius: Double = 50): List[GUID] 
+             loc: Option[GeoLocation] = None,
+             radius: Double = 50): List[(GUID, Double)] 
   = {
-    search.find(query, start, num)
+    def geoFind(geoLocation: GeoLocation, start: Int, num: Int) = 
+      geo.find(location = geoLocation, 
+               distance = radius,
+               first = start,
+               max = num).map
+    {
+      case (guid, dist) =>
+        if (Math.abs(dist) <= 1d) (guid -> 1d)
+        else (guid -> (1d / Math.abs(dist)))
+    }
+
+    implicit def ltom(in: List[(GUID, Double)]): Map[GUID, Double] =
+      Map(in :_*)
+
+    def merge(seed: Map[GUID, Double], other: List[(GUID, Double)]*):
+    List[(GUID, Double)] = {
+      other.toList match {
+        case _ if seed.isEmpty => Nil
+        case Nil => seed.toList.sortWith{_._2 > _._2}
+        case x :: xs => 
+          merge(x.foldLeft[Map[GUID, Double]](Map()){
+            case (map, (guid, rank)) =>
+              seed.get(guid) match {
+                case Some(or) => map + (guid -> (rank * or))
+                case None => map
+              }
+          }, xs :_*)
+      }
+    }
+      
+    (query, loc) match {
+      case (Some(q), None) => search.find(q, start, num)
+      
+      case (None, Some(geoLocation)) => {
+        geoFind(geoLocation, start, num).sortWith {
+          _._2 > _._2
+        }
+      }
+
+
+      case (Some(q), Some(geoLocation)) => {
+        val qr = search.find(q, 0, (start+ num) * 10)
+        
+        merge(qr,
+              geoFind(geoLocation, 0, (start + num) * 10)).drop(start).take(num)
+      }
+
+      case _ => Nil
+    }
   }
                
 
   /**
    * Read a set of GUIDs from the backing store
    */
-  def read(guids: List[GUID]): List[(GUID, VolunteerOpportunity)] =
-    store.read(guids)
+  def read(guids: List[(GUID, Double)]): List[(GUID, VolunteerOpportunity, Double)] = {
+    val ret = store.read(guids)
+
+    /*
+    if (ret.length != guids.length) {
+      pri ntln("***Failed*** to find "+guids)
+    }
+    */
+
+    ret
+  }
 }
 
 private object DefaultStore extends Store
@@ -90,7 +149,7 @@ trait OpportunityStore {
   /**
    * Read a set of GUIDs from the backing store
    */
-  def read(guids: List[GUID]): List[(GUID, VolunteerOpportunity)]
+  def read(guids: List[(GUID, Double)]): List[(GUID, VolunteerOpportunity, Double)]
 
   /**
    * Update the record
@@ -238,5 +297,5 @@ trait SearchStore {
    */
   def find(search: String,
            first: Int = 0, max: Int = 200,
-           inSet: Option[Seq[GUID]] = None): List[GUID]
+           inSet: Option[Seq[GUID]] = None): List[(GUID, Double)]
 }
